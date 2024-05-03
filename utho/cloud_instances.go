@@ -357,6 +357,22 @@ func (s *CloudInstancesService) EnableBackup(instanceId string) (*BasicResponse,
 	return &basicResponse, nil
 }
 
+func (s *CloudInstancesService) DisableBackup(instanceId string) (*BasicResponse, error) {
+	reqUrl := "cloud/" + instanceId + "/backups/disable"
+	req, _ := s.client.NewRequest("POST", reqUrl)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
 func (s *CloudInstancesService) HardReboot(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/hardreboot"
 	req, _ := s.client.NewRequest("POST", reqUrl)
