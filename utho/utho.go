@@ -4,15 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 )
-
-const version = "1.49.0"
 
 const BaseUrl = "https://api.utho.com/v2/"
 
@@ -24,6 +21,7 @@ type Client interface {
 
 	Account() *AccountService
 	ApiKey() *ApiKeyService
+	Action() *ActionService
 }
 
 type service struct {
@@ -35,8 +33,9 @@ type client struct {
 	baseURL *url.URL
 	token   string
 
-	account *AccountService
-	apiKey  *ApiKeyService
+	account        *AccountService
+	apiKey         *ApiKeyService
+	action         *ActionService
 }
 
 // NewClient creates a new Clerk client.
@@ -67,6 +66,7 @@ func NewClient(token string, options ...ClerkOption) (Client, error) {
 	commonService := &service{client: client}
 	client.account = (*AccountService)(commonService)
 	client.apiKey = (*ApiKeyService)(commonService)
+	client.action = (*ActionService)(commonService)
 
 	return client, nil
 }
@@ -110,8 +110,8 @@ func (c *client) NewRequest(method, url string, body ...interface{}) (*http.Requ
 		return nil, err
 	}
 
-	// Add custom header with the current SDK version
-	req.Header.Set("X-Clerk-SDK", fmt.Sprintf("go/%s", version))
+	req.Header.Add("Content-Type", "application/json")
+	req.Header.Add("Accept-Encoding", "application/json")
 
 	return req, nil
 }
@@ -170,3 +170,8 @@ func (c *client) Account() *AccountService {
 func (c *client) ApiKey() *ApiKeyService {
 	return c.apiKey
 }
+
+func (c *client) Action() *ActionService {
+	return c.action
+}
+
