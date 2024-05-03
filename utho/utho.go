@@ -13,7 +13,7 @@ import (
 
 const BaseUrl = "https://api.utho.com/v2/"
 
-var defaultHTTPClient = &http.Client{Timeout: time.Second * 5}
+var defaultHTTPClient = &http.Client{Timeout: time.Second * 300}
 
 type Client interface {
 	NewRequest(method, url string, body ...interface{}) (*http.Request, error)
