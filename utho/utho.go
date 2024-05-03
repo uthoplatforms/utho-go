@@ -22,6 +22,7 @@ type Client interface {
 	Account() *AccountService
 	ApiKey() *ApiKeyService
 	Action() *ActionService
+	CloudInstances() *CloudInstancesService
 }
 
 type service struct {
@@ -36,6 +37,7 @@ type client struct {
 	account        *AccountService
 	apiKey         *ApiKeyService
 	action         *ActionService
+	cloudInstances *CloudInstancesService
 }
 
 // NewClient creates a new Clerk client.
@@ -67,6 +69,7 @@ func NewClient(token string, options ...ClerkOption) (Client, error) {
 	client.account = (*AccountService)(commonService)
 	client.apiKey = (*ApiKeyService)(commonService)
 	client.action = (*ActionService)(commonService)
+	client.cloudInstances = (*CloudInstancesService)(commonService)
 
 	return client, nil
 }
@@ -175,3 +178,6 @@ func (c *client) Action() *ActionService {
 	return c.action
 }
 
+func (c *client) CloudInstances() *CloudInstancesService {
+	return c.cloudInstances
+}
