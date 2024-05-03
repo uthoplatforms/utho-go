@@ -38,10 +38,13 @@ func (s *ApiKeyService) Create(params CreateApiKeyParams) (*CreateApiKeyResponse
 	if err != nil {
 		return nil, err
 	}
+	if apiKey.Status != "success" && apiKey.Status != "" {
+		return nil, errors.New(apiKey.Message)
+	}
 	return &apiKey, nil
 }
 
-func (s *ApiKeyService) ListApiKey() (*[]APIKey, error) {
+func (s *ApiKeyService) List() (*[]APIKey, error) {
 	reqUrl := "api"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 

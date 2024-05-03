@@ -67,7 +67,7 @@ type Resources struct {
 	Count   string `json:"count,omitempty"`
 }
 
-func (s *AccountService) GetAccount() (*User, error) {
+func (s *AccountService) Read() (*User, error) {
 	userUrl := "account/info"
 	req, _ := s.client.NewRequest("GET", userUrl)
 
