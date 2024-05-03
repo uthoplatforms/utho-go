@@ -30,11 +30,11 @@ type CloudInstance struct {
 	Cost              float64                  `json:"cost"`
 	Vmcost            float64                  `json:"vmcost"`
 	Imagecost         int                      `json:"imagecost"`
-	Backupcost        int                      `json:"backupcost"`
+	Backupcost        float64                  `json:"backupcost"`
 	Hourlycost        float64                  `json:"hourlycost"`
 	Cloudhourlycost   float64                  `json:"cloudhourlycost"`
 	Imagehourlycost   int                      `json:"imagehourlycost"`
-	Backuphourlycost  int                      `json:"backuphourlycost"`
+	Backuphourlycost  float64                  `json:"backuphourlycost"`
 	Creditrequired    float64                  `json:"creditrequired"`
 	Creditreserved    int                      `json:"creditreserved"`
 	Nextinvoiceamount float64                  `json:"nextinvoiceamount"`
@@ -186,25 +186,32 @@ type Plan struct {
 }
 
 type CreateCloudInstanceParams struct {
-	Dcslug       string  `json:"dcslug"`
-	Image        string  `json:"image"`
-	Planid       string  `json:"planid"`
-	Auth         string  `json:"auth"`
-	Enablebackup string  `json:"enablebackup"`
-	Support      string  `json:"support"`
-	Management   string  `json:"management"`
-	Billingcycle string  `json:"billingcycle"`
-	Cloud        []Cloud `json:"cloud"`
+	Dcslug       string          `json:"dcslug"`
+	Image        string          `json:"image"`
+	Planid       string          `json:"planid"`
+	Auth         string          `json:"auth,omitempty"`
+	RootPassword string          `json:"root_password,omitempty"`
+	Firewall     string          `json:"firewall"`
+	Enablebackup string          `json:"enablebackup,omitempty"`
+	Support      string          `json:"support,omitempty"`
+	Management   string          `json:"management,omitempty"`
+	Billingcycle string          `json:"billingcycle,omitempty"`
+	Backupid     string          `json:"backupid,omitempty"`
+	Snapshotid   string          `json:"snapshotid,omitempty"`
+	Sshkeys      string          `json:"sshkeys,omitempty"`
+	Cloud        []CloudHostname `json:"cloud"`
 }
-type Cloud struct {
-	// Instance name
+
+type CloudHostname struct {
 	Hostname string `json:"hostname"`
 }
 
 type CreateCloudInstanceResponse struct {
-	Status         string `json:"status"`
-	CloudInstances string `json:"cloudinstances"`
-	Message        string `json:"message"`
+	Cloudid  string `json:"cloudid"`
+	Password string `json:"password"`
+	Ipv4     string `json:"ipv4"`
+	Status   string `json:"status"`
+	Message  string `json:"message"`
 }
 
 func (s *CloudInstancesService) CreateCloudInstance(params CreateCloudInstanceParams) (*CreateCloudInstanceResponse, error) {
