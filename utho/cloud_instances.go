@@ -131,7 +131,7 @@ type Snapshot struct {
 	Note      any    `json:"note"`
 	Name      string `json:"name"`
 }
-type Firewall struct {
+type CloudInstanceFirewall struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	CreatedAt string `json:"created_at"`
@@ -191,7 +191,7 @@ type CreateCloudInstanceParams struct {
 	Planid       string          `json:"planid"`
 	Auth         string          `json:"auth,omitempty"`
 	RootPassword string          `json:"root_password,omitempty"`
-	Firewall     string          `json:"firewall"`
+	CloudInstanceFirewall     string          `json:"firewall"`
 	Enablebackup string          `json:"enablebackup,omitempty"`
 	Support      string          `json:"support,omitempty"`
 	Management   string          `json:"management,omitempty"`
