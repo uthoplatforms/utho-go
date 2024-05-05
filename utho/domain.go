@@ -83,7 +83,6 @@ func (s *DomainService) ListDomains() (*[]Domain, error) {
 
 func (s *DomainService) DeleteDomain(domainId string) (*DeleteResponse, error) {
 	reqUrl := "dns/" + domainId + "/delete"
-
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -106,17 +105,11 @@ type CreateDnsRecordParams struct {
 	Wight    string `json:"wight"`
 }
 
-type CreateDnsRecordResponse struct {
-	ID      string `json:"id"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
-}
-
-func (s *DomainService) CreateDnsRecord(params CreateDnsRecordParams) (*CreateDnsRecordResponse, error) {
+func (s *DomainService) CreateDnsRecord(params CreateDnsRecordParams) (*CreateResponse, error) {
 	reqUrl := "dns/" + params.Domain + "/record/add"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var dnsRecord CreateDnsRecordResponse
+	var dnsRecord CreateResponse
 	_, err := s.client.Do(req, &dnsRecord)
 	if err != nil {
 		return nil, err
@@ -170,7 +163,6 @@ func (s *DomainService) ListDnsRecords(domainName string) (*[]Record, error) {
 
 func (s *DomainService) DeleteDnsRecord(domainId, recordId string) (*DeleteResponse, error) {
 	reqUrl := "dns/" + domainId + "/record/" + recordId + "/delete"
-
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
