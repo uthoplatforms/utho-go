@@ -25,6 +25,7 @@ type Client interface {
 	CloudInstances() *CloudInstancesService
 	Domain() *DomainService
 	Firewall() *FirewallService
+	ISO() *ISOService
 }
 
 type service struct {
@@ -42,6 +43,7 @@ type client struct {
 	cloudInstances *CloudInstancesService
 	domain         *DomainService
 	firewall       *FirewallService
+	iso            *ISOService
 }
 
 // NewClient creates a new Clerk client.
@@ -76,6 +78,7 @@ func NewClient(token string, options ...ClerkOption) (Client, error) {
 	client.cloudInstances = (*CloudInstancesService)(commonService)
 	client.domain = (*DomainService)(commonService)
 	client.firewall = (*FirewallService)(commonService)
+	client.iso = (*ISOService)(commonService)
 
 	return client, nil
 }
@@ -194,4 +197,8 @@ func (c *client) Domain() *DomainService {
 
 func (c *client) Firewall() *FirewallService {
 	return c.firewall
+}
+
+func (c *client) ISO() *ISOService {
+	return c.iso
 }
