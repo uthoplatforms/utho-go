@@ -23,6 +23,7 @@ type Client interface {
 	ApiKey() *ApiKeyService
 	Action() *ActionService
 	CloudInstances() *CloudInstancesService
+	Domain() *DomainService
 }
 
 type service struct {
@@ -38,6 +39,7 @@ type client struct {
 	apiKey         *ApiKeyService
 	action         *ActionService
 	cloudInstances *CloudInstancesService
+	domain         *DomainService
 }
 
 // NewClient creates a new Clerk client.
@@ -70,6 +72,7 @@ func NewClient(token string, options ...ClerkOption) (Client, error) {
 	client.apiKey = (*ApiKeyService)(commonService)
 	client.action = (*ActionService)(commonService)
 	client.cloudInstances = (*CloudInstancesService)(commonService)
+	client.domain = (*DomainService)(commonService)
 
 	return client, nil
 }
@@ -180,4 +183,8 @@ func (c *client) Action() *ActionService {
 
 func (c *client) CloudInstances() *CloudInstancesService {
 	return c.cloudInstances
+}
+
+func (c *client) Domain() *DomainService {
+	return c.domain
 }
