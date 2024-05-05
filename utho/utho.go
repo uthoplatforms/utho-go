@@ -27,6 +27,7 @@ type Client interface {
 	Firewall() *FirewallService
 	ISO() *ISOService
 	Loadbalancers() *LoadbalancersService
+	Monitoring() *MonitoringService
 }
 
 type service struct {
@@ -46,6 +47,7 @@ type client struct {
 	firewall       *FirewallService
 	iso            *ISOService
 	loadbalancers  *LoadbalancersService
+	monitoring     *MonitoringService
 }
 
 // NewClient creates a new Clerk client.
@@ -82,6 +84,7 @@ func NewClient(token string, options ...ClerkOption) (Client, error) {
 	client.firewall = (*FirewallService)(commonService)
 	client.iso = (*ISOService)(commonService)
 	client.loadbalancers = (*LoadbalancersService)(commonService)
+	client.monitoring = (*MonitoringService)(commonService)
 
 	return client, nil
 }
@@ -208,4 +211,8 @@ func (c *client) ISO() *ISOService {
 
 func (c *client) Loadbalancers() *LoadbalancersService {
 	return c.loadbalancers
+}
+
+func (c *client) Monitoring() *MonitoringService {
+	return c.monitoring
 }
