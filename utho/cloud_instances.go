@@ -76,12 +76,6 @@ type Image struct {
 	Image        string `json:"image"`
 	Cost         string `json:"cost"`
 }
-type Dclocation struct {
-	Location string `json:"location"`
-	Country  string `json:"country"`
-	Dc       string `json:"dc"`
-	Dccc     string `json:"dccc"`
-}
 type Networks struct {
 	Public  Public  `json:"public"`
 	Private Private `json:"private"`
