@@ -11,6 +11,12 @@ type CreateResponse struct {
 	Message string `json:"message"`
 }
 
+type UpdateResponse struct {
+	ID      string `json:"firewallid"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
 type DeleteResponse struct {
 	Status  string `json:"status,omitempty"`
 	Message string `json:"message,omitempty"`
