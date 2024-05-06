@@ -138,6 +138,9 @@ func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*
 			rule = r
 		}
 	}
+	if len(rule.ID) == 0 {
+		return nil, errors.New("firewall rule not found")
+	}
 
 	return &rule, nil
 }
