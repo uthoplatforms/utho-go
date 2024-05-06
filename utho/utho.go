@@ -34,6 +34,7 @@ type Client interface {
 	Stacks() *StacksService
 	TargetGroup() *TargetGroupService
 	Vpc() *VpcService
+	AutoScaling() *AutoScalingService
 }
 
 type service struct {
@@ -60,6 +61,7 @@ type client struct {
 	stacks         *StacksService
 	targetgroup    *TargetGroupService
 	vpc            *VpcService
+	autoscaling    *AutoScalingService
 }
 
 // NewClient creates a new Utho client.
@@ -103,6 +105,7 @@ func NewClient(token string, options ...UthoOption) (Client, error) {
 	client.stacks = (*StacksService)(commonService)
 	client.targetgroup = (*TargetGroupService)(commonService)
 	client.vpc = (*VpcService)(commonService)
+	client.autoscaling = (*AutoScalingService)(commonService)
 
 	return client, nil
 }
@@ -257,4 +260,8 @@ func (c *client) TargetGroup() *TargetGroupService {
 
 func (c *client) Vpc() *VpcService {
 	return c.vpc
+}
+
+func (c *client) AutoScaling() *AutoScalingService {
+	return c.autoscaling
 }
