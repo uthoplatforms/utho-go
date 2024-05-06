@@ -32,6 +32,7 @@ type Client interface {
 	Sqs() *SqsService
 	Ssl() *SslService
 	Stacks() *StacksService
+	TargetGroup() *TargetGroupService
 }
 
 type service struct {
@@ -56,6 +57,7 @@ type client struct {
 	sqs            *SqsService
 	ssl            *SslService
 	stacks         *StacksService
+	targetgroup    *TargetGroupService
 }
 
 // NewClient creates a new Utho client.
@@ -97,6 +99,7 @@ func NewClient(token string, options ...UthoOption) (Client, error) {
 	client.sqs = (*SqsService)(commonService)
 	client.ssl = (*SslService)(commonService)
 	client.stacks = (*StacksService)(commonService)
+	client.targetgroup = (*TargetGroupService)(commonService)
 
 	return client, nil
 }
@@ -243,4 +246,8 @@ func (c *client) Ssl() *SslService {
 
 func (c *client) Stacks() *StacksService {
 	return c.stacks
+}
+
+func (c *client) TargetGroup() *TargetGroupService {
+	return c.targetgroup
 }
