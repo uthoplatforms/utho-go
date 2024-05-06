@@ -30,6 +30,7 @@ type Client interface {
 	Monitoring() *MonitoringService
 	ObjectStorage() *ObjectStorageService
 	Sqs() *SqsService
+	Ssl() *SslService
 }
 
 type service struct {
@@ -52,6 +53,7 @@ type client struct {
 	monitoring     *MonitoringService
 	objectStorage  *ObjectStorageService
 	sqs            *SqsService
+	ssl            *SslService
 }
 
 // NewClient creates a new Utho client.
@@ -91,6 +93,7 @@ func NewClient(token string, options ...UthoOption) (Client, error) {
 	client.monitoring = (*MonitoringService)(commonService)
 	client.objectStorage = (*ObjectStorageService)(commonService)
 	client.sqs = (*SqsService)(commonService)
+	client.ssl = (*SslService)(commonService)
 
 	return client, nil
 }
@@ -229,4 +232,8 @@ func (c *client) ObjectStorage() *ObjectStorageService {
 
 func (c *client) Sqs() *SqsService {
 	return c.sqs
+}
+
+func (c *client) Ssl() *SslService {
+	return c.ssl
 }
