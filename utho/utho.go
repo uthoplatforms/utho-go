@@ -52,10 +52,10 @@ type client struct {
 	objectStorage  *ObjectStorageService
 }
 
-// NewClient creates a new Clerk client.
+// NewClient creates a new Utho client.
 // Because the token supplied will be used for all authenticated requests,
 // the created client should not be used across different users
-func NewClient(token string, options ...ClerkOption) (Client, error) {
+func NewClient(token string, options ...UthoOption) (Client, error) {
 	if token == "" {
 		return nil, errors.New("you must provide an API token")
 	}
@@ -177,7 +177,7 @@ func checkForErrors(resp *http.Response) error {
 
 	data, err := io.ReadAll(resp.Body)
 	if err == nil && data != nil {
-		// it's ok if we cannot unmarshal to Clerk's error response
+		// it's ok if we cannot unmarshal to Utho's error response
 		_ = json.Unmarshal(data, errorResponse)
 	}
 
