@@ -47,7 +47,7 @@ func (s *ISOService) CreateISO(params CreateISOParams) (*CreateResponse, error) 
 	return &iso, nil
 }
 
-func (s *ISOService) ListISOs() (*[]ISO, error) {
+func (s *ISOService) ListISOs() ([]ISO, error) {
 	reqUrl := "iso"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -60,7 +60,7 @@ func (s *ISOService) ListISOs() (*[]ISO, error) {
 		return nil, errors.New(iso.Message)
 	}
 
-	return &iso.ISOs, nil
+	return iso.ISOs, nil
 }
 
 func (s *ISOService) DeleteISO(isoId string) (*DeleteResponse, error) {
@@ -68,7 +68,8 @@ func (s *ISOService) DeleteISO(isoId string) (*DeleteResponse, error) {
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
-	if _, err := s.client.Do(req, &delResponse); err != nil {
+	_, err := s.client.Do(req, &delResponse)
+	if err != nil {
 		return nil, err
 	}
 
