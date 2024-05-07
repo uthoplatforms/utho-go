@@ -6,13 +6,13 @@ type BasicResponse struct {
 }
 
 type CreateResponse struct {
-	ID      string `json:"firewallid"`
+	ID      string `json:"id"`
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
 type UpdateResponse struct {
-	ID      string `json:"firewallid"`
+	ID      string `json:"id"`
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
