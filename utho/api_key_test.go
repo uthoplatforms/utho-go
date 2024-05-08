@@ -43,7 +43,7 @@ func TestApiKeyService_Create_invalidServer(t *testing.T) {
 	}
 }
 
-func TestApiKeyService_ListAll_happyPath(t *testing.T) {
+func TestApiKeyService_List_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
@@ -69,7 +69,7 @@ func TestApiKeyService_ListAll_happyPath(t *testing.T) {
 	}
 }
 
-func TestApiKeyService_ListAll_invalidServer(t *testing.T) {
+func TestApiKeyService_List_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	apikey, err := client.ApiKey().List()
