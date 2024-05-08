@@ -9,9 +9,9 @@ type ApiKeyService service
 type ApiKeys struct {
 	Status  string   `json:"status,omitempty"`
 	Message string   `json:"message,omitempty"`
-	API     []APIKey `json:"api"`
+	API     []ApiKey `json:"api"`
 }
-type APIKey struct {
+type ApiKey struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
 	Write     string `json:"write"`
@@ -44,7 +44,7 @@ func (s *ApiKeyService) Create(params CreateApiKeyParams) (*CreateApiKeyResponse
 	return &apiKey, nil
 }
 
-func (s *ApiKeyService) List() ([]APIKey, error) {
+func (s *ApiKeyService) List() ([]ApiKey, error) {
 	reqUrl := "api"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
