@@ -18,9 +18,9 @@ type Domain struct {
 	Nspoint        string   `json:"nspoint"`
 	CreatedAt      string   `json:"created_at"`
 	DnsrecordCount string   `json:"dnsrecord_count"`
-	Records        []Record `json:"records"`
+	Records        []DnsRecord `json:"records"`
 }
-type Record struct {
+type DnsRecord struct {
 	ID       string `json:"id"`
 	Hostname string `json:"hostname"`
 	Type     string `json:"type"`
@@ -81,8 +81,8 @@ func (s *DomainService) ListDomains() ([]Domain, error) {
 	return domain.Domains, nil
 }
 
-func (s *DomainService) DeleteDomain(domainId string) (*DeleteResponse, error) {
-	reqUrl := "dns/" + domainId + "/delete"
+func (s *DomainService) DeleteDomain(domainName string) (*DeleteResponse, error) {
+	reqUrl := "dns/" + domainName + "/delete"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -121,7 +121,7 @@ func (s *DomainService) CreateDnsRecord(params CreateDnsRecordParams) (*CreateRe
 	return &dnsRecord, nil
 }
 
-func (s *DomainService) ReadDnsRecord(domainName, dnsRecordID string) (*Record, error) {
+func (s *DomainService) ReadDnsRecord(domainName, dnsRecordID string) (*DnsRecord, error) {
 	reqUrl := "dns/" + domainName
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -134,7 +134,7 @@ func (s *DomainService) ReadDnsRecord(domainName, dnsRecordID string) (*Record, 
 		return nil, errors.New(domain.Message)
 	}
 
-	var record Record
+	var record DnsRecord
 	for _, dnsRecord := range domain.Domains[0].Records {
 		if dnsRecord.ID == dnsRecordID {
 			record = dnsRecord
@@ -145,7 +145,7 @@ func (s *DomainService) ReadDnsRecord(domainName, dnsRecordID string) (*Record, 
 	return &record, nil
 }
 
-func (s *DomainService) ListDnsRecords(domainName string) ([]Record, error) {
+func (s *DomainService) ListDnsRecords(domainName string) ([]DnsRecord, error) {
 	reqUrl := "dns/" + domainName
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -161,8 +161,8 @@ func (s *DomainService) ListDnsRecords(domainName string) ([]Record, error) {
 	return domain.Domains[0].Records, nil
 }
 
-func (s *DomainService) DeleteDnsRecord(domainId, recordId string) (*DeleteResponse, error) {
-	reqUrl := "dns/" + domainId + "/record/" + recordId + "/delete"
+func (s *DomainService) DeleteDnsRecord(domainName, recordId string) (*DeleteResponse, error) {
+	reqUrl := "dns/" + domainName + "/record/" + recordId + "/delete"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
