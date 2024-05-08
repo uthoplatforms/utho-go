@@ -306,16 +306,11 @@ func (s *CloudInstancesService) ListResizePlans(instanceId string) ([]Plan, erro
 	return plans.Plans, nil
 }
 
-type CreateSnapshotResponse struct {
-	Status  string `json:"status"`
-	Message string `json:"message"`
-}
-
-func (s *CloudInstancesService) CreateSnapshot(instanceId string) (*CreateSnapshotResponse, error) {
-	reqUrl := "api/generate"
+func (s *CloudInstancesService) CreateSnapshot(instanceId string) (*CreateBasicResponse, error) {
+	reqUrl := "cloud/" + instanceId + "/snapshot/create"
 	req, _ := s.client.NewRequest("POST", reqUrl)
 
-	var snapshot CreateSnapshotResponse
+	var snapshot CreateBasicResponse
 	_, err := s.client.Do(req, &snapshot)
 	if err != nil {
 		return nil, err
@@ -327,8 +322,8 @@ func (s *CloudInstancesService) CreateSnapshot(instanceId string) (*CreateSnapsh
 	return &snapshot, nil
 }
 
-func (s *CloudInstancesService) DeleteSnapshot(cloudInstancesId, snapshotId string) (*DeleteResponse, error) {
-	reqUrl := "cloud/" + cloudInstancesId + "/snapshot/" + snapshotId + "/delete"
+func (s *CloudInstancesService) DeleteSnapshot(cloudInstanceId, snapshotId string) (*DeleteResponse, error) {
+	reqUrl := "cloud/" + cloudInstanceId + "/snapshot/" + snapshotId + "/delete"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
