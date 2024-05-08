@@ -1,5 +1,7 @@
 # Utho Go API client
 
+[![GoDoc](https://godoc.org/github.com/uthoplatforms/utho-go?status.svg)](https://godoc.org/github.com/uthoplatforms/utho-go)
+
 Godo is a Go client library for accessing the Utho API V2.
 
 You can view the client API docs here: [https://pkg.go.dev/github.com/uthoplatforms/utho-go](https://pkg.go.dev/github.com/uthoplatforms/utho-go)
