@@ -12,12 +12,12 @@ type DnsDomains struct {
 	Message string   `json:"message,omitempty"`
 }
 type Domain struct {
-	Domain         string   `json:"domain"`
-	Status         string   `json:"status"`
-	Message        string   `json:"message"`
-	Nspoint        string   `json:"nspoint"`
-	CreatedAt      string   `json:"created_at"`
-	DnsrecordCount string   `json:"dnsrecord_count"`
+	Domain         string      `json:"domain"`
+	Status         string      `json:"status"`
+	Message        string      `json:"message"`
+	Nspoint        string      `json:"nspoint"`
+	CreatedAt      string      `json:"created_at"`
+	DnsrecordCount string      `json:"dnsrecord_count"`
 	Records        []DnsRecord `json:"records"`
 }
 type DnsRecord struct {
