@@ -13,14 +13,14 @@ type Firewalls struct {
 }
 
 type Firewall struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	CreatedAt    string `json:"created_at"`
-	Rulecount    string `json:"rulecount"`
-	Serverscount string `json:"serverscount"`
-	Rules        []Rule `json:"rules"`
+	ID           string         `json:"id"`
+	Name         string         `json:"name"`
+	CreatedAt    string         `json:"created_at"`
+	Rulecount    string         `json:"rulecount"`
+	Serverscount string         `json:"serverscount"`
+	Rules        []FirewallRule `json:"rules"`
 }
-type Rule struct {
+type FirewallRule struct {
 	ID         string `json:"id"`
 	Firewallid string `json:"firewallid"`
 	Type       string `json:"type"`
@@ -119,7 +119,7 @@ func (s *FirewallService) CreateFirewallRule(params CreateFirewallRuleParams) (*
 	return &firewallRule, nil
 }
 
-func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*Rule, error) {
+func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*FirewallRule, error) {
 	reqUrl := "firewall/" + firewallId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -132,7 +132,7 @@ func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*
 		return nil, errors.New(firewall.Message)
 	}
 
-	var rule Rule
+	var rule FirewallRule
 	for _, r := range firewall.Firewalls[0].Rules {
 		if r.ID == firewallRuleId {
 			rule = r
@@ -145,8 +145,8 @@ func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*
 	return &rule, nil
 }
 
-func (s *FirewallService) ListFirewallRules() ([]Rule, error) {
-	reqUrl := "firewall"
+func (s *FirewallService) ListFirewallRules(firewallId string) ([]FirewallRule, error) {
+	reqUrl := "firewall/" + firewallId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
 	var firewall Firewalls
