@@ -373,6 +373,7 @@ const dummyReadDomainServerRes = `{
     ]
 }
 `
+
 const dummyListDomainServerRes = `[
 	{
 		"domain": "examqweple.com",
