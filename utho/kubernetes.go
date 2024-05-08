@@ -41,7 +41,7 @@ type CreateKubernetesPoliciesParams struct {
 	Minsize  string `json:"minsize"`
 }
 
-func (s *KubernetesService) CreateKubernetes(params CreateKubernetesParams) (*CreateResponse, error) {
+func (s *KubernetesService) Create(params CreateKubernetesParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/deploy"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -57,7 +57,7 @@ func (s *KubernetesService) CreateKubernetes(params CreateKubernetesParams) (*Cr
 	return &kubernetes, nil
 }
 
-// func (s *KubernetesService) ReadKubernetes(certId string) (*Certificates, error) {
+// func (s *KubernetesService) Read(certId string) (*Certificates, error) {
 // 	reqUrl := "certificates"
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -83,7 +83,7 @@ func (s *KubernetesService) CreateKubernetes(params CreateKubernetesParams) (*Cr
 // 	return &cert, nil
 // }
 
-// func (s *KubernetesService) ListKubernetess() (*[]Certificates, error) {
+// func (s *KubernetesService) List() ([]Certificates, error) {
 // 	reqUrl := "certificates"
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -96,7 +96,7 @@ func (s *KubernetesService) CreateKubernetes(params CreateKubernetesParams) (*Cr
 // 		return nil, errors.New(kubernetes.Message)
 // 	}
 
-// 	return &kubernetes.Certificates, nil
+// 	return kubernetes.Certificates, nil
 // }
 
 type DeleteKubernetesParams struct {
@@ -105,7 +105,7 @@ type DeleteKubernetesParams struct {
 	Confirm string `json:"confirm"`
 }
 
-func (s *KubernetesService) DeleteKubernetes(params DeleteKubernetesParams) (*DeleteResponse, error) {
+func (s *KubernetesService) Delete(params DeleteKubernetesParams) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + params.ClusterId + "/destroy"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -163,7 +163,7 @@ func (s *KubernetesService) CreateKubernetesLoadbalancer(params CreateKubernetes
 // 	return &loadbalancers, nil
 // }
 
-// func (s *KubernetesService) ListKubernetesLoadbalancer(kubernetesId string) (*[]Loadbalancers, error) {
+// func (s *KubernetesService) ListKubernetesLoadbalancer(kubernetesId string) ([]Loadbalancers, error) {
 // 	reqUrl := "kubernetes/" + kubernetesId
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -176,7 +176,7 @@ func (s *KubernetesService) CreateKubernetesLoadbalancer(params CreateKubernetes
 // 		return nil, errors.New(kubernetess.Message)
 // 	}
 
-// 	return &kubernetess.Groups[0].Loadbalancers, nil
+// 	return kubernetess.Groups[0].Loadbalancers, nil
 // }
 
 func (s *KubernetesService) DeleteKubernetesLoadbalancer(kuberneteseId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
@@ -237,7 +237,7 @@ func (s *KubernetesService) CreateKubernetesSecurityGroup(params CreateKubernete
 // 	return &securitygroups, nil
 // }
 
-// func (s *KubernetesService) ListKubernetesSecurityGroup(kubernetesId string) (*[]SecurityGroups, error) {
+// func (s *KubernetesService) ListKubernetesSecurityGroup(kubernetesId string) ([]SecurityGroups, error) {
 // 	reqUrl := "kubernetes/" + kubernetesId
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -250,7 +250,7 @@ func (s *KubernetesService) CreateKubernetesSecurityGroup(params CreateKubernete
 // 		return nil, errors.New(kubernetess.Message)
 // 	}
 
-// 	return &kubernetess.Groups[0].SecurityGroups, nil
+// 	return kubernetess.Groups[0].SecurityGroups, nil
 // }
 
 func (s *KubernetesService) DeleteKubernetesSecurityGroup(kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
@@ -311,7 +311,7 @@ func (s *KubernetesService) CreateKubernetesTargetgroup(params CreateKubernetesT
 // 	return &targetgroups, nil
 // }
 
-// func (s *KubernetesService) ListKubernetesTargetgroup(kubernetesId string) (*[]KubernetesTargetGroups, error) {
+// func (s *KubernetesService) ListKubernetesTargetgroup(kubernetesId string) ([]KubernetesTargetGroups, error) {
 // 	reqUrl := "kubernetes/" + kubernetesId
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -324,7 +324,7 @@ func (s *KubernetesService) CreateKubernetesTargetgroup(params CreateKubernetesT
 // 		return nil, errors.New(kubernetess.Message)
 // 	}
 
-// 	return &kubernetess.Groups[0].TargetGroups, nil
+// 	return kubernetess.Groups[0].TargetGroups, nil
 // }
 
 func (s *KubernetesService) DeleteKubernetesTargetgroup(kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {

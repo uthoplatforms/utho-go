@@ -37,7 +37,7 @@ type CreateSslParams struct {
 	CertificateChain string `json:"certificateChain"`
 }
 
-func (s *SslService) CreateSsl(params CreateSslParams) (*CreateResponse, error) {
+func (s *SslService) Create(params CreateSslParams) (*CreateResponse, error) {
 	reqUrl := "certificates"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -53,7 +53,7 @@ func (s *SslService) CreateSsl(params CreateSslParams) (*CreateResponse, error) 
 	return &ssl, nil
 }
 
-func (s *SslService) ReadSsl(certId string) (*Certificates, error) {
+func (s *SslService) Read(certId string) (*Certificates, error) {
 	reqUrl := "certificates"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -79,7 +79,7 @@ func (s *SslService) ReadSsl(certId string) (*Certificates, error) {
 	return &cert, nil
 }
 
-func (s *SslService) ListSsls() (*[]Certificates, error) {
+func (s *SslService) List() ([]Certificates, error) {
 	reqUrl := "certificates"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -92,10 +92,10 @@ func (s *SslService) ListSsls() (*[]Certificates, error) {
 		return nil, errors.New(ssl.Message)
 	}
 
-	return &ssl.Certificates, nil
+	return ssl.Certificates, nil
 }
 
-func (s *SslService) DeleteSsl(certId string) (*DeleteResponse, error) {
+func (s *SslService) Delete(certId string) (*DeleteResponse, error) {
 	reqUrl := "certificates/" + certId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 

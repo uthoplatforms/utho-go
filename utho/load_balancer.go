@@ -111,7 +111,7 @@ type LoadbalancerResponse struct {
 	Message        string `json:"message"`
 }
 
-func (s *LoadbalancersService) CreateLoadbalancer(params CreateLoadbalancerParams) (*LoadbalancerResponse, error) {
+func (s *LoadbalancersService) Create(params CreateLoadbalancerParams) (*LoadbalancerResponse, error) {
 	reqUrl := "loadbalancer"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -127,7 +127,7 @@ func (s *LoadbalancersService) CreateLoadbalancer(params CreateLoadbalancerParam
 	return &loadbalancer, nil
 }
 
-func (s *LoadbalancersService) ReadLoadbalancer(loadbalancerId string) (*Loadbalancer, error) {
+func (s *LoadbalancersService) Read(loadbalancerId string) (*Loadbalancer, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -143,7 +143,7 @@ func (s *LoadbalancersService) ReadLoadbalancer(loadbalancerId string) (*Loadbal
 	return &loadbalancer.Loadbalancers[0], nil
 }
 
-func (s *LoadbalancersService) ListLoadbalancers() (*[]Loadbalancer, error) {
+func (s *LoadbalancersService) List() ([]Loadbalancer, error) {
 	reqUrl := "loadbalancer"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -156,10 +156,10 @@ func (s *LoadbalancersService) ListLoadbalancers() (*[]Loadbalancer, error) {
 		return nil, errors.New(loadbalancer.Message)
 	}
 
-	return &loadbalancer.Loadbalancers, nil
+	return loadbalancer.Loadbalancers, nil
 }
 
-func (s *LoadbalancersService) DeleteLoadbalancer(loadbalancerId string) (*DeleteResponse, error) {
+func (s *LoadbalancersService) Delete(loadbalancerId string) (*DeleteResponse, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -218,7 +218,7 @@ func (s *LoadbalancersService) ReadLoadbalancerACL(loadbalancerId, loadbalancerA
 	return &acl, nil
 }
 
-func (s *LoadbalancersService) ListLoadbalancerACLs(loadbalancerId string) (*[]ACLs, error) {
+func (s *LoadbalancersService) ListLoadbalancerACLs(loadbalancerId string) ([]ACLs, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -231,7 +231,7 @@ func (s *LoadbalancersService) ListLoadbalancerACLs(loadbalancerId string) (*[]A
 		return nil, errors.New(loadbalancer.Message)
 	}
 
-	return &loadbalancer.Loadbalancers[0].Acls, nil
+	return loadbalancer.Loadbalancers[0].Acls, nil
 }
 
 func (s *LoadbalancersService) DeleteLoadbalancerACL(loadbalancerId, loadbalancerACLId string) (*DeleteResponse, error) {
@@ -296,7 +296,7 @@ func (s *LoadbalancersService) ReadLoadbalancerFrontend(loadbalancerId, loadbala
 	return &frontend, nil
 }
 
-func (s *LoadbalancersService) ListLoadbalancerFrontends(loadbalancerId string) (*[]Frontends, error) {
+func (s *LoadbalancersService) ListLoadbalancerFrontends(loadbalancerId string) ([]Frontends, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -309,7 +309,7 @@ func (s *LoadbalancersService) ListLoadbalancerFrontends(loadbalancerId string) 
 		return nil, errors.New(loadbalancer.Message)
 	}
 
-	return &loadbalancer.Loadbalancers[0].Frontends, nil
+	return loadbalancer.Loadbalancers[0].Frontends, nil
 }
 
 func (s *LoadbalancersService) DeleteLoadbalancerFrontend(loadbalancerId, loadbalancerFrontendId string) (*DeleteResponse, error) {
@@ -370,7 +370,7 @@ func (s *LoadbalancersService) ReadLoadbalancerBackend(loadbalancerId, loadbalan
 	return &backend, nil
 }
 
-func (s *LoadbalancersService) ListLoadbalancerBackends(loadbalancerId string) (*[]Backends, error) {
+func (s *LoadbalancersService) ListLoadbalancerBackends(loadbalancerId string) ([]Backends, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -383,7 +383,7 @@ func (s *LoadbalancersService) ListLoadbalancerBackends(loadbalancerId string) (
 		return nil, errors.New(loadbalancer.Message)
 	}
 
-	return &loadbalancer.Loadbalancers[0].Backends, nil
+	return loadbalancer.Loadbalancers[0].Backends, nil
 }
 
 func (s *LoadbalancersService) DeleteLoadbalancerBackend(loadbalancerId, loadbalancerBackendId string) (*DeleteResponse, error) {
@@ -445,7 +445,7 @@ func (s *LoadbalancersService) ReadLoadbalancerRoute(loadbalancerId, loadbalance
 	return &backend, nil
 }
 
-func (s *LoadbalancersService) ListLoadbalancerRoutes(loadbalancerId string) (*[]Routes, error) {
+func (s *LoadbalancersService) ListLoadbalancerRoutes(loadbalancerId string) ([]Routes, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -458,7 +458,7 @@ func (s *LoadbalancersService) ListLoadbalancerRoutes(loadbalancerId string) (*[
 		return nil, errors.New(loadbalancer.Message)
 	}
 
-	return &loadbalancer.Loadbalancers[0].Routes, nil
+	return loadbalancer.Loadbalancers[0].Routes, nil
 }
 
 func (s *LoadbalancersService) DeleteLoadbalancerRoute(loadbalancerId, loadbalancerRouteId string) (*DeleteResponse, error) {

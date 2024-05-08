@@ -31,7 +31,7 @@ type CreateISOParams struct {
 	Name   string `json:"name"`
 }
 
-func (s *ISOService) CreateISO(params CreateISOParams) (*CreateResponse, error) {
+func (s *ISOService) Create(params CreateISOParams) (*CreateResponse, error) {
 	reqUrl := "iso/add"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -47,7 +47,7 @@ func (s *ISOService) CreateISO(params CreateISOParams) (*CreateResponse, error) 
 	return &iso, nil
 }
 
-func (s *ISOService) ListISOs() ([]ISO, error) {
+func (s *ISOService) List() ([]ISO, error) {
 	reqUrl := "iso"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -63,7 +63,7 @@ func (s *ISOService) ListISOs() ([]ISO, error) {
 	return iso.ISOs, nil
 }
 
-func (s *ISOService) DeleteISO(isoId string) (*DeleteResponse, error) {
+func (s *ISOService) Delete(isoId string) (*DeleteResponse, error) {
 	reqUrl := "iso/" + isoId + "/delete"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 

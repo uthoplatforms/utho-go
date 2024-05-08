@@ -33,7 +33,7 @@ type CreateStacksParams struct {
 	Script      string `json:"script"`
 }
 
-func (s *StacksService) CreateStack(params CreateStacksParams) (*CreateResponse, error) {
+func (s *StacksService) Create(params CreateStacksParams) (*CreateResponse, error) {
 	reqUrl := "stacks"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -49,7 +49,7 @@ func (s *StacksService) CreateStack(params CreateStacksParams) (*CreateResponse,
 	return &stacks, nil
 }
 
-func (s *StacksService) ReadStack(stackId string) (*Stack, error) {
+func (s *StacksService) Read(stackId string) (*Stack, error) {
 	reqUrl := "stacks"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -75,7 +75,7 @@ func (s *StacksService) ReadStack(stackId string) (*Stack, error) {
 	return &stack, nil
 }
 
-func (s *StacksService) ListStacks() (*[]Stack, error) {
+func (s *StacksService) List() ([]Stack, error) {
 	reqUrl := "stacks"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -88,7 +88,7 @@ func (s *StacksService) ListStacks() (*[]Stack, error) {
 		return nil, errors.New(stacks.Message)
 	}
 
-	return &stacks.Stacks, nil
+	return stacks.Stacks, nil
 }
 
 type UpdateStacksParams struct {
@@ -100,7 +100,7 @@ type UpdateStacksParams struct {
 	Script      string `json:"script"`
 }
 
-func (s *StacksService) UpdateStack(params UpdateStacksParams) (*UpdateResponse, error) {
+func (s *StacksService) Update(params UpdateStacksParams) (*UpdateResponse, error) {
 	reqUrl := "stacks/" + params.StackId
 	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
@@ -116,7 +116,7 @@ func (s *StacksService) UpdateStack(params UpdateStacksParams) (*UpdateResponse,
 	return &stacks, nil
 }
 
-func (s *StacksService) DeleteStack(stackId string) (*DeleteResponse, error) {
+func (s *StacksService) Delete(stackId string) (*DeleteResponse, error) {
 	reqUrl := "stacks/" + stackId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 

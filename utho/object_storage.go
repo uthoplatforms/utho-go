@@ -138,7 +138,7 @@ func (s *ObjectStorageService) ReadBucket(dcslug, bucketName string) (*Bucket, e
 	return &bucket, nil
 }
 
-func (s *ObjectStorageService) ListBuckets(dcslug string) (*[]Bucket, error) {
+func (s *ObjectStorageService) ListBuckets(dcslug string) ([]Bucket, error) {
 	reqUrl := "objectstorage/" + dcslug + "/bucket"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -151,7 +151,7 @@ func (s *ObjectStorageService) ListBuckets(dcslug string) (*[]Bucket, error) {
 		return nil, errors.New(buckets.Message)
 	}
 
-	return &buckets.Buckets, nil
+	return buckets.Buckets, nil
 }
 
 func (s *ObjectStorageService) DeleteBucket(dcslug, bucketName string) (*DeleteResponse, error) {
@@ -219,7 +219,7 @@ func (s *ObjectStorageService) ReadAccessKey(dcslug, accesskeyName string) (*Acc
 	return &accesskey, nil
 }
 
-func (s *ObjectStorageService) ListAccessKeys(dcslug string) (*[]AccessKey, error) {
+func (s *ObjectStorageService) ListAccessKeys(dcslug string) ([]AccessKey, error) {
 	reqUrl := "objectstorage/" + dcslug + "/accesskeys"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -232,7 +232,7 @@ func (s *ObjectStorageService) ListAccessKeys(dcslug string) (*[]AccessKey, erro
 		return nil, errors.New(accesskeys.Message)
 	}
 
-	return &accesskeys.AccessKeys, nil
+	return accesskeys.AccessKeys, nil
 }
 
 // func (s *ObjectStorageService) DeleteAccessKey(dcslug, accesskeyName string) (*DeleteResponse, error) {
@@ -290,7 +290,7 @@ func (s *ObjectStorageService) CreateDirectroy(params CreateDirectroyParams) (*C
 	return &accesskey, nil
 }
 
-func (s *ObjectStorageService) ListBucketObjectsAndDirectories(dcslug, bucketName, path string) (*[]Object, error) {
+func (s *ObjectStorageService) ListBucketObjectsAndDirectories(dcslug, bucketName, path string) ([]Object, error) {
 	reqUrl := "objectstorage/" + dcslug + "/bucket/" + bucketName + "/objects?path=" + path
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -303,7 +303,7 @@ func (s *ObjectStorageService) ListBucketObjectsAndDirectories(dcslug, bucketNam
 		return nil, errors.New(objects.Message)
 	}
 
-	return &objects.Objects, nil
+	return objects.Objects, nil
 }
 
 func (s *ObjectStorageService) DeleteDirectroy(dcslug, bucketName, directoryName string) (*DeleteResponse, error) {
@@ -340,7 +340,7 @@ func (s *ObjectStorageService) GetSharableUrlOfObject(dcslug, bucketName, path s
 	return &object, nil
 }
 
-func (s *ObjectStorageService) ListSubscriptionPlanPricing(dcslug string) (*[]Pricing, error) {
+func (s *ObjectStorageService) ListSubscriptionPlanPricing(dcslug string) ([]Pricing, error) {
 	reqUrl := "pricing/objectstorage"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -353,7 +353,7 @@ func (s *ObjectStorageService) ListSubscriptionPlanPricing(dcslug string) (*[]Pr
 		return nil, errors.New(planList.Message)
 	}
 
-	return &planList.Pricing, nil
+	return planList.Pricing, nil
 }
 
 type UpdateBucketAccessKeyPermissionParams struct {

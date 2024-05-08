@@ -44,7 +44,7 @@ type CreateVpcParams struct {
 	Size    string `json:"size"`
 }
 
-func (s *VpcService) CreateVpc(params CreateVpcParams) (*CreateResponse, error) {
+func (s *VpcService) Create(params CreateVpcParams) (*CreateResponse, error) {
 	reqUrl := "vpc/create"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -60,7 +60,7 @@ func (s *VpcService) CreateVpc(params CreateVpcParams) (*CreateResponse, error) 
 	return &vpc, nil
 }
 
-func (s *VpcService) ReadVpc(vpcId string) (*Vpc, error) {
+func (s *VpcService) Read(vpcId string) (*Vpc, error) {
 	reqUrl := "vpc"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -76,7 +76,7 @@ func (s *VpcService) ReadVpc(vpcId string) (*Vpc, error) {
 	return &vpc, nil
 }
 
-// func (s *VpcService) ListVpcs() (*[]Vpc, error) {
+// func (s *VpcService) List() ([]Vpc, error) {
 // 	reqUrl := "vpc"
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -89,10 +89,10 @@ func (s *VpcService) ReadVpc(vpcId string) (*Vpc, error) {
 // 		return nil, errors.New(vpc.Message)
 // 	}
 
-// 	return &vpc.Vpcs, nil
+// 	return vpc.Vpcs, nil
 // }
 
-func (s *VpcService) DeleteVpc(vpcId string) (*DeleteResponse, error) {
+func (s *VpcService) Delete(vpcId string) (*DeleteResponse, error) {
 	reqUrl := "vpc/" + vpcId + "/destroy"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 

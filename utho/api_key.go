@@ -44,7 +44,7 @@ func (s *ApiKeyService) Create(params CreateApiKeyParams) (*CreateApiKeyResponse
 	return &apiKey, nil
 }
 
-func (s *ApiKeyService) List() (*[]APIKey, error) {
+func (s *ApiKeyService) List() ([]APIKey, error) {
 	reqUrl := "api"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -57,7 +57,7 @@ func (s *ApiKeyService) List() (*[]APIKey, error) {
 		return nil, errors.New(apikeys.Message)
 	}
 
-	return &apikeys.API, nil
+	return apikeys.API, nil
 }
 
 func (s *ApiKeyService) Delete(apiKeyId string) (*DeleteResponse, error) {

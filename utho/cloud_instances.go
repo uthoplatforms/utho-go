@@ -208,7 +208,7 @@ type CreateCloudInstanceResponse struct {
 	Message  string `json:"message"`
 }
 
-func (s *CloudInstancesService) CreateCloudInstance(params CreateCloudInstanceParams) (*CreateCloudInstanceResponse, error) {
+func (s *CloudInstancesService) Create(params CreateCloudInstanceParams) (*CreateCloudInstanceResponse, error) {
 	reqUrl := "cloud/deploy"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -224,7 +224,7 @@ func (s *CloudInstancesService) CreateCloudInstance(params CreateCloudInstancePa
 	return &cloudInstances, nil
 }
 
-func (s *CloudInstancesService) ReadCloudInstance(instanceId string) (*CloudInstance, error) {
+func (s *CloudInstancesService) Read(instanceId string) (*CloudInstance, error) {
 	reqUrl := "cloud/" + instanceId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -240,7 +240,7 @@ func (s *CloudInstancesService) ReadCloudInstance(instanceId string) (*CloudInst
 	return &cloudInstances.CloudInstance[0], nil
 }
 
-func (s *CloudInstancesService) ListCloudInstance() (*[]CloudInstance, error) {
+func (s *CloudInstancesService) List() ([]CloudInstance, error) {
 	reqUrl := "cloud"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -253,7 +253,7 @@ func (s *CloudInstancesService) ListCloudInstance() (*[]CloudInstance, error) {
 		return nil, errors.New(cloudInstances.Message)
 	}
 
-	return &cloudInstances.CloudInstance, nil
+	return cloudInstances.CloudInstance, nil
 }
 
 type DeleteCloudInstanceParams struct {
@@ -261,7 +261,7 @@ type DeleteCloudInstanceParams struct {
 	Confirm string `json:"confirm"`
 }
 
-func (s *CloudInstancesService) DeleteCloudInstance(cloudInstancesId string, deleteCloudInstanceParams DeleteCloudInstanceParams) (*DeleteResponse, error) {
+func (s *CloudInstancesService) Delete(cloudInstancesId string, deleteCloudInstanceParams DeleteCloudInstanceParams) (*DeleteResponse, error) {
 	reqUrl := "cloud/" + cloudInstancesId + "/destroy"
 
 	req, _ := s.client.NewRequest("DELETE", reqUrl, deleteCloudInstanceParams)
@@ -274,7 +274,7 @@ func (s *CloudInstancesService) DeleteCloudInstance(cloudInstancesId string, del
 	return &delResponse, nil
 }
 
-func (s *CloudInstancesService) ListOsImages() (*[]OsImage, error) {
+func (s *CloudInstancesService) ListOsImages() ([]OsImage, error) {
 	reqUrl := "cloud/images"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -287,10 +287,10 @@ func (s *CloudInstancesService) ListOsImages() (*[]OsImage, error) {
 		return nil, errors.New(osImages.Message)
 	}
 
-	return &osImages.OsImages, nil
+	return osImages.OsImages, nil
 }
 
-func (s *CloudInstancesService) ListResizePlans(instanceId string) (*[]Plan, error) {
+func (s *CloudInstancesService) ListResizePlans(instanceId string) ([]Plan, error) {
 	reqUrl := "cloud/" + instanceId + "/resizeplans"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -303,7 +303,7 @@ func (s *CloudInstancesService) ListResizePlans(instanceId string) (*[]Plan, err
 		return nil, errors.New(plans.Message)
 	}
 
-	return &plans.Plans, nil
+	return plans.Plans, nil
 }
 
 type CreateSnapshotResponse struct {

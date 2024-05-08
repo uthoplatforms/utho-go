@@ -144,7 +144,7 @@ type CreateSchedulesParams struct {
 	SelectedDate string    `json:"selectedDate"`
 }
 
-func (s *AutoScalingService) CreateAutoScaling(params CreateAutoScalingParams) (*CreateResponse, error) {
+func (s *AutoScalingService) Create(params CreateAutoScalingParams) (*CreateResponse, error) {
 	reqUrl := "autoscaling"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -160,7 +160,7 @@ func (s *AutoScalingService) CreateAutoScaling(params CreateAutoScalingParams) (
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) ReadAutoScaling(autoscalingId string) (*Groups, error) {
+func (s *AutoScalingService) Read(autoscalingId string) (*Groups, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -176,7 +176,7 @@ func (s *AutoScalingService) ReadAutoScaling(autoscalingId string) (*Groups, err
 	return &autoscalings.Groups[0], nil
 }
 
-func (s *AutoScalingService) ListAutoScaling() (*[]Groups, error) {
+func (s *AutoScalingService) List() ([]Groups, error) {
 	reqUrl := "autoscaling"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -189,7 +189,7 @@ func (s *AutoScalingService) ListAutoScaling() (*[]Groups, error) {
 		return nil, errors.New(autoscalings.Message)
 	}
 
-	return &autoscalings.Groups, nil
+	return autoscalings.Groups, nil
 }
 
 type UpdateAutoScalingParams struct {
@@ -200,7 +200,7 @@ type UpdateAutoScalingParams struct {
 	Desiredsize   string `json:"desiredsize"`
 }
 
-func (s *AutoScalingService) UpdateAutoScaling(params UpdateAutoScalingParams) (*UpdateResponse, error) {
+func (s *AutoScalingService) Update(params UpdateAutoScalingParams) (*UpdateResponse, error) {
 	reqUrl := "autoscaling/" + params.AutoScalingId
 	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
@@ -216,7 +216,7 @@ func (s *AutoScalingService) UpdateAutoScaling(params UpdateAutoScalingParams) (
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) DeleteAutoScaling(autoscalingId, autoscalingName string) (*DeleteResponse, error) {
+func (s *AutoScalingService) Delete(autoscalingId, autoscalingName string) (*DeleteResponse, error) {
 	reqUrl := "autoscaling/" + autoscalingId + "?name=" + autoscalingName
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -281,7 +281,7 @@ func (s *AutoScalingService) ReadAutoScalingPolicy(autoscalingId, policyId strin
 	return &policies, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingPolicy(autoscalingId string) (*[]Policies, error) {
+func (s *AutoScalingService) ListAutoScalingPolicy(autoscalingId string) ([]Policies, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -294,7 +294,7 @@ func (s *AutoScalingService) ListAutoScalingPolicy(autoscalingId string) (*[]Pol
 		return nil, errors.New(autoscalings.Message)
 	}
 
-	return &autoscalings.Groups[0].Policies, nil
+	return autoscalings.Groups[0].Policies, nil
 }
 
 type UpdateAutoScalingPolicyParams struct {
@@ -385,7 +385,7 @@ func (s *AutoScalingService) ReadAutoScalingSchedule(autoscalingId, scheduleId s
 	return &schedules, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingSchedule(autoscalingId string) (*[]Schedules, error) {
+func (s *AutoScalingService) ListAutoScalingSchedule(autoscalingId string) ([]Schedules, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -398,7 +398,7 @@ func (s *AutoScalingService) ListAutoScalingSchedule(autoscalingId string) (*[]S
 		return nil, errors.New(autoscalings.Message)
 	}
 
-	return &autoscalings.Groups[0].Schedules, nil
+	return autoscalings.Groups[0].Schedules, nil
 }
 
 type UpdateAutoScalingScheduleParams struct {
@@ -484,7 +484,7 @@ func (s *AutoScalingService) DeleteAutoScalingSchedule(autoScalingeId, autoScali
 // 	return &loadbalancers, nil
 // }
 
-// func (s *AutoScalingService) ListAutoScalingLoadbalancer(autoscalingId string) (*[]Loadbalancers, error) {
+// func (s *AutoScalingService) ListAutoScalingLoadbalancer(autoscalingId string) ([]Loadbalancers, error) {
 // 	reqUrl := "autoscaling/" + autoscalingId
 // 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -497,7 +497,7 @@ func (s *AutoScalingService) DeleteAutoScalingSchedule(autoScalingeId, autoScali
 // 		return nil, errors.New(autoscalings.Message)
 // 	}
 
-// 	return &autoscalings.Groups[0].Loadbalancers, nil
+// 	return autoscalings.Groups[0].Loadbalancers, nil
 // }
 
 // type UpdateAutoScalingLoadbalancerParams struct {
@@ -583,7 +583,7 @@ func (s *AutoScalingService) ReadAutoScalingSecurityGroup(autoscalingId, securit
 	return &securitygroups, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingSecurityGroup(autoscalingId string) (*[]SecurityGroups, error) {
+func (s *AutoScalingService) ListAutoScalingSecurityGroup(autoscalingId string) ([]SecurityGroups, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -596,7 +596,7 @@ func (s *AutoScalingService) ListAutoScalingSecurityGroup(autoscalingId string) 
 		return nil, errors.New(autoscalings.Message)
 	}
 
-	return &autoscalings.Groups[0].SecurityGroups, nil
+	return autoscalings.Groups[0].SecurityGroups, nil
 }
 
 func (s *AutoScalingService) DeleteAutoScalingSecurityGroup(autoScalingeId, autoScalingSecurityGroupId string) (*DeleteResponse, error) {
@@ -657,7 +657,7 @@ func (s *AutoScalingService) ReadAutoScalingTargetgroup(autoscalingId, targetgro
 	return &targetgroups, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingTargetgroup(autoscalingId string) (*[]AutoScalingTargetGroups, error) {
+func (s *AutoScalingService) ListAutoScalingTargetgroup(autoscalingId string) ([]AutoScalingTargetGroups, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -670,7 +670,7 @@ func (s *AutoScalingService) ListAutoScalingTargetgroup(autoscalingId string) (*
 		return nil, errors.New(autoscalings.Message)
 	}
 
-	return &autoscalings.Groups[0].TargetGroups, nil
+	return autoscalings.Groups[0].TargetGroups, nil
 }
 
 func (s *AutoScalingService) DeleteAutoScalingTargetgroup(autoScalingeId, autoScalingTargetgroupId string) (*DeleteResponse, error) {

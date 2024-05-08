@@ -29,7 +29,7 @@ type CreateSqsParams struct {
 	Name   string `json:"name"`
 }
 
-func (s *SqsService) CreateSqs(params CreateSqsParams) (*CreateResponse, error) {
+func (s *SqsService) Create(params CreateSqsParams) (*CreateResponse, error) {
 	reqUrl := "sqs"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -45,7 +45,7 @@ func (s *SqsService) CreateSqs(params CreateSqsParams) (*CreateResponse, error) 
 	return &sqs, nil
 }
 
-func (s *SqsService) ReadSqs(sqsId string) (*Sqs, error) {
+func (s *SqsService) Read(sqsId string) (*Sqs, error) {
 	reqUrl := "sqs/" + sqsId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -61,7 +61,7 @@ func (s *SqsService) ReadSqs(sqsId string) (*Sqs, error) {
 	return &sqs.Sqs[0], nil
 }
 
-func (s *SqsService) ListSqss() (*[]Sqs, error) {
+func (s *SqsService) List() ([]Sqs, error) {
 	reqUrl := "sqs"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -74,10 +74,10 @@ func (s *SqsService) ListSqss() (*[]Sqs, error) {
 		return nil, errors.New(sqs.Message)
 	}
 
-	return &sqs.Sqs, nil
+	return sqs.Sqs, nil
 }
 
-func (s *SqsService) DeleteSqs(sqsId, sqsName string) (*DeleteResponse, error) {
+func (s *SqsService) Delete(sqsId, sqsName string) (*DeleteResponse, error) {
 	reqUrl := "sqs/" + sqsId + "/destroy?confirm=" + sqsName
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 

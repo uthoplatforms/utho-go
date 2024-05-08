@@ -34,7 +34,7 @@ type CreateFirewallParams struct {
 	Name string `json:"name"`
 }
 
-func (s *FirewallService) CreateFirewall(params CreateFirewallParams) (*CreateResponse, error) {
+func (s *FirewallService) Create(params CreateFirewallParams) (*CreateResponse, error) {
 	reqUrl := "firewall/create"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -50,7 +50,7 @@ func (s *FirewallService) CreateFirewall(params CreateFirewallParams) (*CreateRe
 	return &firewall, nil
 }
 
-func (s *FirewallService) ReadFirewall(firewallId string) (*Firewall, error) {
+func (s *FirewallService) Read(firewallId string) (*Firewall, error) {
 	reqUrl := "firewall/" + firewallId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -66,7 +66,7 @@ func (s *FirewallService) ReadFirewall(firewallId string) (*Firewall, error) {
 	return &firewall.Firewalls[0], nil
 }
 
-func (s *FirewallService) ListFirewalls() (*[]Firewall, error) {
+func (s *FirewallService) List() ([]Firewall, error) {
 	reqUrl := "firewall"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -79,10 +79,10 @@ func (s *FirewallService) ListFirewalls() (*[]Firewall, error) {
 		return nil, errors.New(firewall.Message)
 	}
 
-	return &firewall.Firewalls, nil
+	return firewall.Firewalls, nil
 }
 
-func (s *FirewallService) DeleteFirewall(firewallId string) (*DeleteResponse, error) {
+func (s *FirewallService) Delete(firewallId string) (*DeleteResponse, error) {
 	reqUrl := "firewall/" + firewallId + "/destroy"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -145,7 +145,7 @@ func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*
 	return &rule, nil
 }
 
-func (s *FirewallService) ListFirewallRules() (*[]Rule, error) {
+func (s *FirewallService) ListFirewallRules() ([]Rule, error) {
 	reqUrl := "firewall"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -158,7 +158,7 @@ func (s *FirewallService) ListFirewallRules() (*[]Rule, error) {
 		return nil, errors.New(firewall.Message)
 	}
 
-	return &firewall.Firewalls[0].Rules, nil
+	return firewall.Firewalls[0].Rules, nil
 }
 
 func (s *FirewallService) DeleteFirewallRule(firewallId, firewallRuleId string) (*DeleteResponse, error) {

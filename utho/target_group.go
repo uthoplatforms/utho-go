@@ -52,7 +52,7 @@ type CreateTargetGroupParams struct {
 	UnhealthyThreshold  string `json:"unhealthy_threshold"`
 }
 
-func (s *TargetGroupService) CreateTargetGroup(params CreateTargetGroupParams) (*CreateResponse, error) {
+func (s *TargetGroupService) Create(params CreateTargetGroupParams) (*CreateResponse, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -68,7 +68,7 @@ func (s *TargetGroupService) CreateTargetGroup(params CreateTargetGroupParams) (
 	return &targetgroup, nil
 }
 
-func (s *TargetGroupService) ReadTargetGroup(targetGroupId string) (*TargetGroup, error) {
+func (s *TargetGroupService) Read(targetGroupId string) (*TargetGroup, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -94,7 +94,7 @@ func (s *TargetGroupService) ReadTargetGroup(targetGroupId string) (*TargetGroup
 	return &targetGroup, nil
 }
 
-func (s *TargetGroupService) ListTargetGroup() (*[]TargetGroup, error) {
+func (s *TargetGroupService) List() ([]TargetGroup, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -107,7 +107,7 @@ func (s *TargetGroupService) ListTargetGroup() (*[]TargetGroup, error) {
 		return nil, errors.New(targetgroups.Message)
 	}
 
-	return &targetgroups.Targetgroups, nil
+	return targetgroups.Targetgroups, nil
 }
 
 type UpdateTargetGroupParams struct {
@@ -123,7 +123,7 @@ type UpdateTargetGroupParams struct {
 	UnhealthyThreshold  string `json:"unhealthy_threshold"`
 }
 
-func (s *TargetGroupService) UpdateTargetGroup(params UpdateTargetGroupParams) (*UpdateResponse, error) {
+func (s *TargetGroupService) Update(params UpdateTargetGroupParams) (*UpdateResponse, error) {
 	reqUrl := "targetgroup/" + params.TargetGroupId
 	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
@@ -139,7 +139,7 @@ func (s *TargetGroupService) UpdateTargetGroup(params UpdateTargetGroupParams) (
 	return &targetgroup, nil
 }
 
-func (s *TargetGroupService) DeleteTargetGroup(targetGroupId, targetGroupName string) (*DeleteResponse, error) {
+func (s *TargetGroupService) Delete(targetGroupId, targetGroupName string) (*DeleteResponse, error) {
 	reqUrl := "targetgroup/" + targetGroupId + "?name=" + targetGroupName
 	// targetgroup/:id?name=target_group_name
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
@@ -212,7 +212,7 @@ func (s *TargetGroupService) ReadTargetGroupTarget(targetGroupId, targetId strin
 	return &target, nil
 }
 
-func (s *TargetGroupService) ListTargetGroupTarget(targetGroupId string) (*[]Target, error) {
+func (s *TargetGroupService) ListTargetGroupTarget(targetGroupId string) ([]Target, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -235,7 +235,7 @@ func (s *TargetGroupService) ListTargetGroupTarget(targetGroupId string) (*[]Tar
 		return nil, errors.New("target groupId not found")
 	}
 
-	return &targetGroup.Targets, nil
+	return targetGroup.Targets, nil
 }
 
 func (s *TargetGroupService) DeleteTargetGroupTarget(targetGroupId, targetId string) (*DeleteResponse, error) {

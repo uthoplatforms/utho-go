@@ -23,7 +23,7 @@ type Action struct {
 	Status       string `json:"status"`
 }
 
-func (s *ActionService) ListAction() (*[]Action, error) {
+func (s *ActionService) List() ([]Action, error) {
 	actionUrl := "actions"
 	req, _ := s.client.NewRequest("GET", actionUrl)
 
@@ -36,5 +36,5 @@ func (s *ActionService) ListAction() (*[]Action, error) {
 		return nil, errors.New(actions.Message)
 	}
 
-	return &actions.Actions, nil
+	return actions.Actions, nil
 }

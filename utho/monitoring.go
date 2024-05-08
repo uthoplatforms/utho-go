@@ -88,7 +88,7 @@ func (s *MonitoringService) ReadAlert(alertId string) (*Alert, error) {
 	return &alert, nil
 }
 
-func (s *MonitoringService) ListAlerts() (*[]Alert, error) {
+func (s *MonitoringService) ListAlerts() ([]Alert, error) {
 	reqUrl := "alert"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -101,7 +101,7 @@ func (s *MonitoringService) ListAlerts() (*[]Alert, error) {
 		return nil, errors.New(alert.Message)
 	}
 
-	return &alert.Alerts, nil
+	return alert.Alerts, nil
 }
 
 type UpdateAlertParams struct {
@@ -194,7 +194,7 @@ func (s *MonitoringService) ReadContact(contactId string) (*Contact, error) {
 	return &contact, nil
 }
 
-func (s *MonitoringService) ListContacts() (*[]Contact, error) {
+func (s *MonitoringService) ListContacts() ([]Contact, error) {
 	reqUrl := "alert/contact/list"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -207,7 +207,7 @@ func (s *MonitoringService) ListContacts() (*[]Contact, error) {
 		return nil, errors.New(contact.Message)
 	}
 
-	return &contact.Contacts, nil
+	return contact.Contacts, nil
 }
 
 type UpdateContactParams struct {

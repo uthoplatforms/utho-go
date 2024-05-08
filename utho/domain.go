@@ -65,7 +65,7 @@ func (s *DomainService) ReadDomain(domainName string) (*Domain, error) {
 	return &domain.Domains[0], nil
 }
 
-func (s *DomainService) ListDomains() (*[]Domain, error) {
+func (s *DomainService) ListDomains() ([]Domain, error) {
 	reqUrl := "dns"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -78,7 +78,7 @@ func (s *DomainService) ListDomains() (*[]Domain, error) {
 		return nil, errors.New(domain.Message)
 	}
 
-	return &domain.Domains, nil
+	return domain.Domains, nil
 }
 
 func (s *DomainService) DeleteDomain(domainId string) (*DeleteResponse, error) {
@@ -145,7 +145,7 @@ func (s *DomainService) ReadDnsRecord(domainName, dnsRecordID string) (*Record, 
 	return &record, nil
 }
 
-func (s *DomainService) ListDnsRecords(domainName string) (*[]Record, error) {
+func (s *DomainService) ListDnsRecords(domainName string) ([]Record, error) {
 	reqUrl := "dns/" + domainName
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -158,7 +158,7 @@ func (s *DomainService) ListDnsRecords(domainName string) (*[]Record, error) {
 		return nil, errors.New(domain.Message)
 	}
 
-	return &domain.Domains[0].Records, nil
+	return domain.Domains[0].Records, nil
 }
 
 func (s *DomainService) DeleteDnsRecord(domainId, recordId string) (*DeleteResponse, error) {
