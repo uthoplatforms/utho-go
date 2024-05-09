@@ -27,7 +27,7 @@ func TestLoadbalancerService_Create_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateLoadbalancerResponseJson)
 	})
 
-	got, err := client.Loadbalancers().client.Loadbalancers().Create(payload)
+	got, err := client.Loadbalancers().Create(payload)
 
 	var want CreateLoadbalancerResponse
 	_ = json.Unmarshal([]byte(dummyCreateLoadbalancerResponseJson), &want)
@@ -170,7 +170,7 @@ func TestLoadbalancerService_CreateACL_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Loadbalancers().client.Loadbalancers().CreateACL(payload)
+	got, err := client.Loadbalancers().CreateACL(payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
@@ -319,7 +319,7 @@ func TestLoadbalancerService_CreateFrontend_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Loadbalancers().client.Loadbalancers().CreateFrontend(payload)
+	got, err := client.Loadbalancers().CreateFrontend(payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
@@ -465,7 +465,7 @@ func TestLoadbalancerService_CreateBackend_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Loadbalancers().client.Loadbalancers().CreateBackend(payload)
+	got, err := client.Loadbalancers().CreateBackend(payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
@@ -612,7 +612,7 @@ func TestLoadbalancerService_CreateRoute_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Loadbalancers().client.Loadbalancers().CreateRoute(payload)
+	got, err := client.Loadbalancers().CreateRoute(payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
