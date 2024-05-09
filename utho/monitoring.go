@@ -155,11 +155,11 @@ type CreateContactParams struct {
 	Status       string `json:"status"`
 }
 
-func (s *MonitoringService) CreateContact(params CreateContactParams) (*BasicResponse, error) {
+func (s *MonitoringService) CreateContact(params CreateContactParams) (*CreateResponse, error) {
 	reqUrl := "alert/contact/add"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var contact BasicResponse
+	var contact CreateResponse
 	_, err := s.client.Do(req, &contact)
 	if err != nil {
 		return nil, err
