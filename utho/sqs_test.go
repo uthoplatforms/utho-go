@@ -27,7 +27,7 @@ func TestSqsService_Create_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Sqs().client.Sqs().Create(payload)
+	got, err := client.Sqs().Create(payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)

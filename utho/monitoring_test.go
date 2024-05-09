@@ -33,7 +33,7 @@ func TestMonitoringService_CreateAlert_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
-	got, err := client.Monitoring().client.Monitoring().CreateAlert(payload)
+	got, err := client.Monitoring().CreateAlert(payload)
 
 	var want BasicResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)

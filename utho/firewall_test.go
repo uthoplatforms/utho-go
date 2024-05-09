@@ -23,7 +23,7 @@ func TestFirewallService_Create_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Firewall().client.Firewall().Create(payload)
+	got, err := client.Firewall().Create(payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
