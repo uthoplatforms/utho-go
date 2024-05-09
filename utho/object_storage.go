@@ -167,8 +167,8 @@ func (s *ObjectStorageService) DeleteBucket(dcslug, bucketName string) (*DeleteR
 }
 
 type CreateAccessKeyParams struct {
-	Dcslug    string
-	Accesskey string `json:"accesskey"`
+	Dcslug        string
+	AccesskeyName string `json:"accesskey"`
 }
 type CreateAccessKeyResponse struct {
 	Status    string `json:"status"`
@@ -340,7 +340,7 @@ func (s *ObjectStorageService) GetSharableUrlOfObject(dcslug, bucketName, path s
 	return &object, nil
 }
 
-func (s *ObjectStorageService) ListSubscriptionPlanPricing(dcslug string) ([]Pricing, error) {
+func (s *ObjectStorageService) ListSubscriptionPlanPricing() ([]Pricing, error) {
 	reqUrl := "pricing/objectstorage"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
