@@ -1,5 +1,5 @@
 .PHONY: publish
-publish:
+publish: tidy
 	git tag $(tag)
 	git push origin v$(tag)
 	GOPROXY=proxy.golang.org go list -m github.com/uthoplatforms/utho-go@v$(tag)
