@@ -140,7 +140,7 @@ func TestSqsService_Delete_happyPath(t *testing.T) {
 	}
 }
 
-func TestSqsService_DeleteSqs_invalidServer(t *testing.T) {
+func TestSqsService_Delete_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	delResponse, err := client.Sqs().Delete("someSqsId", "sqsname")
