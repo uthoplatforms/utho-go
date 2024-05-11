@@ -160,7 +160,7 @@ type CreateTargetGroupTargetParams struct {
 	Cloudid         string `json:"cloudid,omitempty"`
 }
 
-func (s *TargetGroupService) CreateTargetGroupTarget(params CreateTargetGroupTargetParams) (*CreateResponse, error) {
+func (s *TargetGroupService) CreateTarget(params CreateTargetGroupTargetParams) (*CreateResponse, error) {
 	reqUrl := "targetgroup/" + params.TargetGroupId + "/target"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -176,7 +176,7 @@ func (s *TargetGroupService) CreateTargetGroupTarget(params CreateTargetGroupTar
 	return &targetgroup, nil
 }
 
-func (s *TargetGroupService) ReadTargetGroupTarget(targetGroupId, targetId string) (*Target, error) {
+func (s *TargetGroupService) ReadTarget(targetGroupId, targetId string) (*Target, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -212,7 +212,7 @@ func (s *TargetGroupService) ReadTargetGroupTarget(targetGroupId, targetId strin
 	return &target, nil
 }
 
-func (s *TargetGroupService) ListTargetGroupTarget(targetGroupId string) ([]Target, error) {
+func (s *TargetGroupService) ListTarget(targetGroupId string) ([]Target, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -238,7 +238,7 @@ func (s *TargetGroupService) ListTargetGroupTarget(targetGroupId string) ([]Targ
 	return targetGroup.Targets, nil
 }
 
-func (s *TargetGroupService) DeleteTargetGroupTarget(targetGroupId, targetId string) (*DeleteResponse, error) {
+func (s *TargetGroupService) DeleteTarget(targetGroupId, targetId string) (*DeleteResponse, error) {
 	reqUrl := "targetgroup/" + targetGroupId + "/target/" + targetId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
