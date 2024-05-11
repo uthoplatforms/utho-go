@@ -6,6 +6,12 @@ const dummyCreateResponseJson = `{
     "message": "success"
 }`
 
+const dummyUpdateResponseJson = `{
+	"id":"111",
+    "status": "success",
+    "message": "success"
+}`
+
 const dummyCreateBasicResponseJson = `{
     "status": "success",
     "message": "success"
