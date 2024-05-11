@@ -291,7 +291,6 @@ func (s *KubernetesService) ListSecurityGroups(kubernetesId string) ([]K8sSecuri
 	if kubernetess.Status != "success" && kubernetess.Status != "" {
 		return nil, errors.New(kubernetess.Message)
 	}
-	
 
 	return kubernetess.K8s[0].SecurityGroups, nil
 }
