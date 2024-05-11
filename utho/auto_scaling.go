@@ -13,48 +13,70 @@ type AutoScalings struct {
 	Message string   `json:"message"`
 }
 type Groups struct {
-	ID                 string                    `json:"id"`
-	Userid             string                    `json:"userid"`
-	Name               string                    `json:"name"`
-	Dcslug             string                    `json:"dcslug"`
-	Minsize            string                    `json:"minsize"`
-	Maxsize            string                    `json:"maxsize"`
-	Desiredsize        string                    `json:"desiredsize"`
-	Planid             string                    `json:"planid"`
-	Planname           string                    `json:"planname"`
-	InstanceTemplateid string                    `json:"instance_templateid"`
-	Image              string                    `json:"image"`
-	ImageName          string                    `json:"image_name"`
-	Snapshotid         string                    `json:"snapshotid"`
-	Status             string                    `json:"status"`
-	CreatedAt          string                    `json:"created_at"`
-	SuspendedAt        string                    `json:"suspended_at"`
-	StoppedAt          string                    `json:"stopped_at"`
-	StartedAt          string                    `json:"started_at"`
-	DeletedAt          string                    `json:"deleted_at"`
-	PublicIPEnabled    string                    `json:"public_ip_enabled"`
-	Vpc                string                    `json:"vpc"`
-	CooldownTill       string                    `json:"cooldown_till"`
-	LoadBalancers      []any                     `json:"load_balancers"`
-	TargetGroups       []AutoScalingTargetGroups `json:"target_groups"`
-	SecurityGroups     []SecurityGroups          `json:"security_groups"`
-	Backupid           string                    `json:"backupid"`
-	Stack              string                    `json:"stack"`
-	StackFields        string                    `json:"stack_fields"`
-	Instances          []Instances               `json:"instances"`
-	Policies           []Policies                `json:"policies"`
-	Schedules          []Schedules               `json:"schedules"`
-	DeletedInstances   []any                     `json:"deleted_instances"`
-	Dclocation         Dclocation                `json:"dclocation"`
-	Plan               AutoScalingPlan           `json:"plan"`
+	ID                 string                     `json:"id"`
+	Userid             string                     `json:"userid"`
+	Name               string                     `json:"name"`
+	Dcslug             string                     `json:"dcslug"`
+	Minsize            string                     `json:"minsize"`
+	Maxsize            string                     `json:"maxsize"`
+	Desiredsize        string                     `json:"desiredsize"`
+	Planid             string                     `json:"planid"`
+	Planname           string                     `json:"planname"`
+	InstanceTemplateid string                     `json:"instance_templateid"`
+	Image              string                     `json:"image"`
+	ImageName          string                     `json:"image_name"`
+	Snapshotid         string                     `json:"snapshotid"`
+	Status             string                     `json:"status"`
+	CreatedAt          string                     `json:"created_at"`
+	SuspendedAt        string                     `json:"suspended_at"`
+	StoppedAt          string                     `json:"stopped_at"`
+	StartedAt          string                     `json:"started_at"`
+	DeletedAt          string                     `json:"deleted_at"`
+	PublicIPEnabled    string                     `json:"public_ip_enabled"`
+	Vpc                []AutoScalingVpc           `json:"vpc"`
+	CooldownTill       string                     `json:"cooldown_till"`
+	Loadbalancers      []AutoScalingLoadbalancers `json:"load_balancers"`
+	TargetGroups       []AutoScalingTargetGroup   `json:"target_groups"`
+	SecurityGroups     []SecurityGroup            `json:"security_groups"`
+	Backupid           string                     `json:"backupid"`
+	Stack              string                     `json:"stack"`
+	StackFields        string                     `json:"stack_fields"`
+	Instances          []Instances                `json:"instances"`
+	Policies           []Policy                   `json:"policies"`
+	Schedules          []Schedule                 `json:"schedules"`
+	DeletedInstances   []any                      `json:"deleted_instances"`
+	Dclocation         Dclocation                 `json:"dclocation"`
+	Plan               AutoScalingPlan            `json:"plan"`
 }
-type AutoScalingTargetGroups struct {
+type AutoScalingVpc struct {
+	Total      int                    `json:"total"`
+	Available  int                    `json:"available"`
+	Network    string                 `json:"network"`
+	Name       string                 `json:"name"`
+	Size       string                 `json:"size"`
+	Dcslug     string                 `json:"dcslug"`
+	Dclocation Dclocation             `json:"dclocation"`
+	IsDefault  any                    `json:"is_default"`
+	Resources  []AutoScalingResources `json:"resources"`
+}
+type AutoScalingResources struct {
+	Type string `json:"type"`
+	ID   string `json:"id"`
+	Name string `json:"name"`
+	IP   string `json:"ip"`
+}
+type AutoScalingLoadbalancers struct {
+	ID   string `json:"lbid"`
+	Name string `json:"name"`
+	IP   string `json:"ip"`
+}
+type AutoScalingTargetGroup struct {
 	ID       string `json:"id"`
 	Name     string `json:"name"`
 	Protocol string `json:"protocol"`
 	Port     string `json:"port"`
 }
-type SecurityGroups struct {
+type SecurityGroup struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
@@ -65,7 +87,7 @@ type Instances struct {
 	IP        string `json:"ip"`
 	Status    string `json:"status"`
 }
-type Policies struct {
+type Policy struct {
 	ID                 string `json:"id"`
 	Userid             string `json:"userid"`
 	Product            string `json:"product"`
@@ -87,7 +109,7 @@ type Policies struct {
 	Maxsize            string `json:"maxsize"`
 	Minsize            string `json:"minsize"`
 }
-type Schedules struct {
+type Schedule struct {
 	ID          string `json:"id"`
 	Groupid     string `json:"groupid"`
 	Name        string `json:"name"`
@@ -228,6 +250,7 @@ func (s *AutoScalingService) Delete(autoscalingId, autoscalingName string) (*Del
 	return &delResponse, nil
 }
 
+// Auto Scaling Policy
 type CreateAutoScalingPolicyParams struct {
 	Name      string `json:"name"`
 	Type      string `json:"type"`
@@ -240,7 +263,7 @@ type CreateAutoScalingPolicyParams struct {
 	Productid string `json:"productid"`
 }
 
-func (s *AutoScalingService) CreateAutoScalingPolicy(params CreateAutoScalingPolicyParams) (*CreateResponse, error) {
+func (s *AutoScalingService) CreatePolicy(params CreateAutoScalingPolicyParams) (*CreateResponse, error) {
 	reqUrl := "autoscaling/policy"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -256,7 +279,7 @@ func (s *AutoScalingService) CreateAutoScalingPolicy(params CreateAutoScalingPol
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) ReadAutoScalingPolicy(autoscalingId, policyId string) (*Policies, error) {
+func (s *AutoScalingService) ReadPolicy(autoscalingId, policyId string) (*Policy, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -268,7 +291,7 @@ func (s *AutoScalingService) ReadAutoScalingPolicy(autoscalingId, policyId strin
 	if autoscalings.Status != "success" && autoscalings.Status != "" {
 		return nil, errors.New(autoscalings.Message)
 	}
-	var policies Policies
+	var policies Policy
 	for _, r := range autoscalings.Groups[0].Policies {
 		if r.ID == policyId {
 			policies = r
@@ -281,7 +304,7 @@ func (s *AutoScalingService) ReadAutoScalingPolicy(autoscalingId, policyId strin
 	return &policies, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingPolicy(autoscalingId string) ([]Policies, error) {
+func (s *AutoScalingService) ListPolicies(autoscalingId string) ([]Policy, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -308,7 +331,7 @@ type UpdateAutoScalingPolicyParams struct {
 	Cooldown            string `json:"cooldown"`
 }
 
-func (s *AutoScalingService) UpdateAutoScalingPolicy(params UpdateAutoScalingPolicyParams) (*UpdateResponse, error) {
+func (s *AutoScalingService) UpdatePolicy(params UpdateAutoScalingPolicyParams) (*UpdateResponse, error) {
 	reqUrl := "autoscaling/policy/" + params.AutoScalingPolicyId
 	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
@@ -324,7 +347,7 @@ func (s *AutoScalingService) UpdateAutoScalingPolicy(params UpdateAutoScalingPol
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) DeleteAutoScalingPolicy(autoScalingPolicyId string) (*DeleteResponse, error) {
+func (s *AutoScalingService) DeletePolicy(autoScalingPolicyId string) (*DeleteResponse, error) {
 	reqUrl := "autoscaling/policy/" + autoScalingPolicyId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -336,6 +359,7 @@ func (s *AutoScalingService) DeleteAutoScalingPolicy(autoScalingPolicyId string)
 	return &delResponse, nil
 }
 
+// Auto Scaling Schedule
 type CreateAutoScalingScheduleParams struct {
 	AutoScalingId string
 	Name          string `json:"name"`
@@ -344,7 +368,7 @@ type CreateAutoScalingScheduleParams struct {
 	StartDate     string `json:"start_date"`
 }
 
-func (s *AutoScalingService) CreateAutoScalingSchedule(params CreateAutoScalingScheduleParams) (*CreateResponse, error) {
+func (s *AutoScalingService) CreateSchedule(params CreateAutoScalingScheduleParams) (*CreateResponse, error) {
 	reqUrl := "autoscaling/" + params.AutoScalingId + "/schedulepolicy"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -360,7 +384,7 @@ func (s *AutoScalingService) CreateAutoScalingSchedule(params CreateAutoScalingS
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) ReadAutoScalingSchedule(autoscalingId, scheduleId string) (*Schedules, error) {
+func (s *AutoScalingService) ReadSchedule(autoscalingId, scheduleId string) (*Schedule, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -372,7 +396,7 @@ func (s *AutoScalingService) ReadAutoScalingSchedule(autoscalingId, scheduleId s
 	if autoscalings.Status != "success" && autoscalings.Status != "" {
 		return nil, errors.New(autoscalings.Message)
 	}
-	var schedules Schedules
+	var schedules Schedule
 	for _, r := range autoscalings.Groups[0].Schedules {
 		if r.ID == scheduleId {
 			schedules = r
@@ -385,7 +409,7 @@ func (s *AutoScalingService) ReadAutoScalingSchedule(autoscalingId, scheduleId s
 	return &schedules, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingSchedule(autoscalingId string) ([]Schedules, error) {
+func (s *AutoScalingService) ListSchedules(autoscalingId string) ([]Schedule, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -410,7 +434,7 @@ type UpdateAutoScalingScheduleParams struct {
 	StartDate             string `json:"start_date"`
 }
 
-func (s *AutoScalingService) UpdateAutoScalingSchedule(params UpdateAutoScalingScheduleParams) (*UpdateResponse, error) {
+func (s *AutoScalingService) UpdateSchedule(params UpdateAutoScalingScheduleParams) (*UpdateResponse, error) {
 	reqUrl := "autoscaling/" + params.AutoScalingeId + "/schedulepolicy/" + params.AutoScalingScheduleId
 	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
@@ -426,7 +450,7 @@ func (s *AutoScalingService) UpdateAutoScalingSchedule(params UpdateAutoScalingS
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) DeleteAutoScalingSchedule(autoScalingeId, autoScalingScheduleId string) (*DeleteResponse, error) {
+func (s *AutoScalingService) DeleteSchedule(autoScalingeId, autoScalingScheduleId string) (*DeleteResponse, error) {
 	reqUrl := "autoscaling/" + autoScalingeId + "/schedulepolicy/" + autoScalingScheduleId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -438,111 +462,88 @@ func (s *AutoScalingService) DeleteAutoScalingSchedule(autoScalingeId, autoScali
 	return &delResponse, nil
 }
 
-// type CreateAutoScalingLoadbalancerParams struct {
-// 	AutoScalingId  string
-// 	LoadbalancerId string
-// }
+// Auto Scaling Loadbalancer
+type CreateAutoScalingLoadbalancerParams struct {
+	AutoScalingId  string
+	LoadbalancerId string
+}
 
-// func (s *AutoScalingService) CreateAutoScalingLoadbalancer(params CreateAutoScalingLoadbalancerParams) (*CreateResponse, error) {
-// 	reqUrl := "autoscaling/" + params.AutoScalingId + "/loadbalancer/" + params.LoadbalancerId
-// 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+func (s *AutoScalingService) CreateLoadbalancer(params CreateAutoScalingLoadbalancerParams) (*CreateResponse, error) {
+	reqUrl := "autoscaling/" + params.AutoScalingId + "/loadbalancer/" + params.LoadbalancerId
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-// 	var autoscaling CreateResponse
-// 	_, err := s.client.Do(req, &autoscaling)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if autoscaling.Status != "success" && autoscaling.Status != "" {
-// 		return nil, errors.New(autoscaling.Message)
-// 	}
+	var autoscaling CreateResponse
+	_, err := s.client.Do(req, &autoscaling)
+	if err != nil {
+		return nil, err
+	}
+	if autoscaling.Status != "success" && autoscaling.Status != "" {
+		return nil, errors.New(autoscaling.Message)
+	}
 
-// 	return &autoscaling, nil
-// }
+	return &autoscaling, nil
+}
 
-// func (s *AutoScalingService) ReadAutoScalingLoadbalancer(autoscalingId, loadbalancerId string) (*Loadbalancers, error) {
-// 	reqUrl := "autoscaling/" + autoscalingId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *AutoScalingService) ReadLoadbalancer(autoscalingId, loadbalancerId string) (*AutoScalingLoadbalancers, error) {
+	reqUrl := "autoscaling/" + autoscalingId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var autoscalings AutoScalings
-// 	_, err := s.client.Do(req, &autoscalings)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if autoscalings.Status != "success" && autoscalings.Status != "" {
-// 		return nil, errors.New(autoscalings.Message)
-// 	}
-// 	var loadbalancers Loadbalancers
-// 	for _, r := range autoscalings.Groups[0].LoadBalancers {
-// 		if r.ID == loadbalancerId {
-// 			loadbalancers = r
-// 		}
-// 	}
-// 	if len(loadbalancers.ID) == 0 {
-// 		return nil, errors.New("auto scaling loadbalancer not found")
-// 	}
+	var autoscalings AutoScalings
+	_, err := s.client.Do(req, &autoscalings)
+	if err != nil {
+		return nil, err
+	}
+	if autoscalings.Status != "success" && autoscalings.Status != "" {
+		return nil, errors.New(autoscalings.Message)
+	}
+	var loadbalancers AutoScalingLoadbalancers
+	for _, r := range autoscalings.Groups[0].Loadbalancers {
+		if r.ID == loadbalancerId {
+			loadbalancers = r
+		}
+	}
+	if len(loadbalancers.ID) == 0 {
+		return nil, errors.New("auto scaling loadbalancer not found")
+	}
 
-// 	return &loadbalancers, nil
-// }
+	return &loadbalancers, nil
+}
 
-// func (s *AutoScalingService) ListAutoScalingLoadbalancer(autoscalingId string) ([]Loadbalancers, error) {
-// 	reqUrl := "autoscaling/" + autoscalingId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *AutoScalingService) ListLoadbalancers(autoscalingId string) ([]AutoScalingLoadbalancers, error) {
+	reqUrl := "autoscaling/" + autoscalingId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var autoscalings AutoScalings
-// 	_, err := s.client.Do(req, &autoscalings)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if autoscalings.Status != "success" && autoscalings.Status != "" {
-// 		return nil, errors.New(autoscalings.Message)
-// 	}
+	var autoscalings AutoScalings
+	_, err := s.client.Do(req, &autoscalings)
+	if err != nil {
+		return nil, err
+	}
+	if autoscalings.Status != "success" && autoscalings.Status != "" {
+		return nil, errors.New(autoscalings.Message)
+	}
 
-// 	return autoscalings.Groups[0].Loadbalancers, nil
-// }
+	return autoscalings.Groups[0].Loadbalancers, nil
+}
 
-// type UpdateAutoScalingLoadbalancerParams struct {
-// 	AutoScalingeId            string
-// 	AutoScalingLoadbalancerId string
-// 	Name                      string `json:"name"`
-// 	Desiredsize               string `json:"desiredsize"`
-// 	Recurrence                string `json:"recurrence"`
-// 	StartDate                 string `json:"start_date"`
-// }
+func (s *AutoScalingService) DeleteLoadbalancer(autoScalingeId, autoScalingLoadbalancerId string) (*DeleteResponse, error) {
+	reqUrl := "autoscaling/" + autoScalingeId + "/loadbalancerpolicy/" + autoScalingLoadbalancerId
+	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
-// func (s *AutoScalingService) UpdateAutoScalingLoadbalancer(params UpdateAutoScalingLoadbalancerParams) (*UpdateResponse, error) {
-// 	reqUrl := "autoscaling/" + params.AutoScalingeId + "/loadbalancerpolicy/" + params.AutoScalingLoadbalancerId
-// 	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
+	var delResponse DeleteResponse
+	if _, err := s.client.Do(req, &delResponse); err != nil {
+		return nil, err
+	}
 
-// 	var autoscaling UpdateResponse
-// 	_, err := s.client.Do(req, &autoscaling)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if autoscaling.Status != "success" && autoscaling.Status != "" {
-// 		return nil, errors.New(autoscaling.Message)
-// 	}
+	return &delResponse, nil
+}
 
-// 	return &autoscaling, nil
-// }
-
-// func (s *AutoScalingService) DeleteAutoScalingLoadbalancer(autoScalingeId, autoScalingLoadbalancerId string) (*DeleteResponse, error) {
-// 	reqUrl := "autoscaling/" + autoScalingeId + "/loadbalancerpolicy/" + autoScalingLoadbalancerId
-// 	req, _ := s.client.NewRequest("DELETE", reqUrl)
-
-// 	var delResponse DeleteResponse
-// 	if _, err := s.client.Do(req, &delResponse); err != nil {
-// 		return nil, err
-// 	}
-
-// 	return &delResponse, nil
-// }
-
+// Auto Scaling Security Group
 type CreateAutoScalingSecurityGroupParams struct {
 	AutoScalingId              string
 	AutoScalingSecurityGroupId string
 }
 
-func (s *AutoScalingService) CreateAutoScalingSecurityGroup(params CreateAutoScalingSecurityGroupParams) (*CreateResponse, error) {
+func (s *AutoScalingService) CreateSecurityGroup(params CreateAutoScalingSecurityGroupParams) (*CreateResponse, error) {
 	reqUrl := "autoscaling/" + params.AutoScalingId + "/securitygroup/" + params.AutoScalingSecurityGroupId
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -558,7 +559,7 @@ func (s *AutoScalingService) CreateAutoScalingSecurityGroup(params CreateAutoSca
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) ReadAutoScalingSecurityGroup(autoscalingId, securitygroupId string) (*SecurityGroups, error) {
+func (s *AutoScalingService) ReadSecurityGroup(autoscalingId, securitygroupId string) (*SecurityGroup, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -570,7 +571,7 @@ func (s *AutoScalingService) ReadAutoScalingSecurityGroup(autoscalingId, securit
 	if autoscalings.Status != "success" && autoscalings.Status != "" {
 		return nil, errors.New(autoscalings.Message)
 	}
-	var securitygroups SecurityGroups
+	var securitygroups SecurityGroup
 	for _, r := range autoscalings.Groups[0].SecurityGroups {
 		if r.ID == securitygroupId {
 			securitygroups = r
@@ -583,7 +584,7 @@ func (s *AutoScalingService) ReadAutoScalingSecurityGroup(autoscalingId, securit
 	return &securitygroups, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingSecurityGroup(autoscalingId string) ([]SecurityGroups, error) {
+func (s *AutoScalingService) ListSecurityGroups(autoscalingId string) ([]SecurityGroup, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -599,7 +600,7 @@ func (s *AutoScalingService) ListAutoScalingSecurityGroup(autoscalingId string) 
 	return autoscalings.Groups[0].SecurityGroups, nil
 }
 
-func (s *AutoScalingService) DeleteAutoScalingSecurityGroup(autoScalingeId, autoScalingSecurityGroupId string) (*DeleteResponse, error) {
+func (s *AutoScalingService) DeleteSecurityGroup(autoScalingeId, autoScalingSecurityGroupId string) (*DeleteResponse, error) {
 	reqUrl := "autoscaling/" + autoScalingeId + "/securitygroup/" + autoScalingSecurityGroupId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -611,12 +612,13 @@ func (s *AutoScalingService) DeleteAutoScalingSecurityGroup(autoScalingeId, auto
 	return &delResponse, nil
 }
 
+// Auto Scaling Target group
 type CreateAutoScalingTargetgroupParams struct {
 	AutoScalingId            string
 	AutoScalingTargetgroupId string
 }
 
-func (s *AutoScalingService) CreateAutoScalingTargetgroup(params CreateAutoScalingTargetgroupParams) (*CreateResponse, error) {
+func (s *AutoScalingService) CreateTargetgroup(params CreateAutoScalingTargetgroupParams) (*CreateResponse, error) {
 	reqUrl := "autoscaling/" + params.AutoScalingId + "/targetgroup/" + params.AutoScalingTargetgroupId
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -632,7 +634,7 @@ func (s *AutoScalingService) CreateAutoScalingTargetgroup(params CreateAutoScali
 	return &autoscaling, nil
 }
 
-func (s *AutoScalingService) ReadAutoScalingTargetgroup(autoscalingId, targetgroupId string) (*AutoScalingTargetGroups, error) {
+func (s *AutoScalingService) ReadTargetgroup(autoscalingId, targetgroupId string) (*AutoScalingTargetGroup, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -644,7 +646,7 @@ func (s *AutoScalingService) ReadAutoScalingTargetgroup(autoscalingId, targetgro
 	if autoscalings.Status != "success" && autoscalings.Status != "" {
 		return nil, errors.New(autoscalings.Message)
 	}
-	var targetgroups AutoScalingTargetGroups
+	var targetgroups AutoScalingTargetGroup
 	for _, r := range autoscalings.Groups[0].TargetGroups {
 		if r.ID == targetgroupId {
 			targetgroups = r
@@ -657,7 +659,7 @@ func (s *AutoScalingService) ReadAutoScalingTargetgroup(autoscalingId, targetgro
 	return &targetgroups, nil
 }
 
-func (s *AutoScalingService) ListAutoScalingTargetgroup(autoscalingId string) ([]AutoScalingTargetGroups, error) {
+func (s *AutoScalingService) ListTargetgroups(autoscalingId string) ([]AutoScalingTargetGroup, error) {
 	reqUrl := "autoscaling/" + autoscalingId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
@@ -673,7 +675,7 @@ func (s *AutoScalingService) ListAutoScalingTargetgroup(autoscalingId string) ([
 	return autoscalings.Groups[0].TargetGroups, nil
 }
 
-func (s *AutoScalingService) DeleteAutoScalingTargetgroup(autoScalingeId, autoScalingTargetgroupId string) (*DeleteResponse, error) {
+func (s *AutoScalingService) DeleteTargetgroup(autoScalingeId, autoScalingTargetgroupId string) (*DeleteResponse, error) {
 	reqUrl := "autoscaling/" + autoScalingeId + "/targetgroup/" + autoScalingTargetgroupId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
