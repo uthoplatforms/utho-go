@@ -472,7 +472,7 @@ func TestCloudInstanceService_PowerOn_happyPath(t *testing.T) {
 func TestCloudInstanceService_PowerOn_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.CloudInstances().DisableBackup("instanceId")
+	_, err := client.CloudInstances().PowerOn("instanceId")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
