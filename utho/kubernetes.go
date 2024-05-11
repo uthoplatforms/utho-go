@@ -6,9 +6,52 @@ import (
 
 type KubernetesService service
 
-type Kubernetess struct {
+type Kubernetes struct {
+	K8s     []K8s  `json:"k8s"`
 	Status  string `json:"status"`
 	Message string `json:"message"`
+}
+type K8s struct {
+	Cloudid        string              `json:"cloudid"`
+	CreatedAt      string              `json:"created_at"`
+	Dcslug         string              `json:"dcslug"`
+	RefID          string              `json:"ref_id"`
+	Nodepool       string              `json:"nodepool"`
+	Hostname       string              `json:"hostname"`
+	RAM            string              `json:"ram"`
+	CPU            string              `json:"cpu"`
+	Disksize       string              `json:"disksize"`
+	AppStatus      string              `json:"app_status"`
+	IP             string              `json:"ip"`
+	ID             string              `json:"id"`
+	Powerstatus    string              `json:"powerstatus"`
+	Dclocation     K8sDclocation       `json:"dclocation"`
+	Status         string              `json:"status"`
+	WorkerCount    string              `json:"worker_count"`
+	LoadBalancers  []K8sLoadbalancers  `json:"load_balancers"`
+	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
+	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
+}
+type K8sDclocation struct {
+	Location string `json:"location"`
+	Country  string `json:"country"`
+	Dc       string `json:"dc"`
+	Dccc     string `json:"dccc"`
+}
+type K8sLoadbalancers struct {
+	ID   string `json:"lbid"`
+	Name string `json:"name"`
+	IP   string `json:"ip"`
+}
+type K8sTargetGroups struct {
+	ID       string `json:"id"`
+	Name     string `json:"name"`
+	Protocol any    `json:"protocol"`
+	Port     string `json:"port"`
+}
+type K8sSecurityGroups struct {
+	ID   string `json:"id"`
+	Name string `json:"name"`
 }
 
 type CreateKubernetesParams struct {
@@ -57,47 +100,46 @@ func (s *KubernetesService) Create(params CreateKubernetesParams) (*CreateRespon
 	return &kubernetes, nil
 }
 
-// func (s *KubernetesService) Read(certId string) (*Certificates, error) {
-// 	reqUrl := "certificates"
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) Read(clusterId string) (*K8s, error) {
+	reqUrl := "kubernetes"
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetes Kubernetess
-// 	_, err := s.client.Do(req, &kubernetes)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetes.Status != "success" && kubernetes.Status != "" {
-// 		return nil, errors.New(kubernetes.Message)
-// 	}
+	var kubernetes Kubernetes
+	_, err := s.client.Do(req, &kubernetes)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetes.Status != "success" && kubernetes.Status != "" {
+		return nil, errors.New(kubernetes.Message)
+	}
 
-// 	var cert Certificates
-// 	for _, r := range kubernetes.Certificates {
-// 		if r.ID == certId {
-// 			cert = r
-// 		}
-// 	}
-// 	if len(cert.ID) == 0 {
-// 		return nil, errors.New("certificate not found")
-// 	}
+	var k8s K8s
+	for _, r := range kubernetes.K8s {
+		if r.ID == clusterId {
+			k8s = r
+		}
+	}
+	if len(k8s.ID) == 0 {
+		return nil, errors.New("kubernetess loadbalancer not found")
+	}
+	return &k8s, nil
+}
 
-// 	return &cert, nil
-// }
+func (s *KubernetesService) List() ([]K8s, error) {
+	reqUrl := "kubernetes"
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// func (s *KubernetesService) List() ([]Certificates, error) {
-// 	reqUrl := "certificates"
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+	var kubernetes Kubernetes
+	_, err := s.client.Do(req, &kubernetes)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetes.Status != "success" && kubernetes.Status != "" {
+		return nil, errors.New(kubernetes.Message)
+	}
 
-// 	var kubernetes Kubernetess
-// 	_, err := s.client.Do(req, &kubernetes)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetes.Status != "success" && kubernetes.Status != "" {
-// 		return nil, errors.New(kubernetes.Message)
-// 	}
-
-// 	return kubernetes.Certificates, nil
-// }
+	return kubernetes.K8s, nil
+}
 
 type DeleteKubernetesParams struct {
 	ClusterId string
@@ -122,7 +164,7 @@ type CreateKubernetesLoadbalancerParams struct {
 	LoadbalancerId string
 }
 
-func (s *KubernetesService) CreateKubernetesLoadbalancer(params CreateKubernetesLoadbalancerParams) (*CreateResponse, error) {
+func (s *KubernetesService) CreateLoadbalancer(params CreateKubernetesLoadbalancerParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/loadbalancer/" + params.LoadbalancerId
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -138,49 +180,49 @@ func (s *KubernetesService) CreateKubernetesLoadbalancer(params CreateKubernetes
 	return &kubernetes, nil
 }
 
-// func (s *KubernetesService) ReadKubernetesLoadbalancer(kubernetesId, loadbalancerId string) (*Loadbalancers, error) {
-// 	reqUrl := "kubernetes/" + kubernetesId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) ReadLoadbalancer(kubernetesId, loadbalancerId string) (*K8sLoadbalancers, error) {
+	reqUrl := "kubernetes/" + kubernetesId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetess Kubernetess
-// 	_, err := s.client.Do(req, &kubernetess)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetess.Status != "success" && kubernetess.Status != "" {
-// 		return nil, errors.New(kubernetess.Message)
-// 	}
-// 	var loadbalancers Loadbalancers
-// 	for _, r := range kubernetess.Groups[0].LoadBalancers {
-// 		if r.ID == loadbalancerId {
-// 			loadbalancers = r
-// 		}
-// 	}
-// 	if len(loadbalancers.ID) == 0 {
-// 		return nil, errors.New("auto scaling loadbalancer not found")
-// 	}
+	var kubernetess Kubernetes
+	_, err := s.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
+	var loadbalancers K8sLoadbalancers
+	for _, r := range kubernetess.K8s[0].LoadBalancers {
+		if r.ID == loadbalancerId {
+			loadbalancers = r
+		}
+	}
+	if len(loadbalancers.ID) == 0 {
+		return nil, errors.New("kubernetess loadbalancer not found")
+	}
 
-// 	return &loadbalancers, nil
-// }
+	return &loadbalancers, nil
+}
 
-// func (s *KubernetesService) ListKubernetesLoadbalancer(kubernetesId string) ([]Loadbalancers, error) {
-// 	reqUrl := "kubernetes/" + kubernetesId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) ListLoadbalancers(kubernetesId string) ([]K8sLoadbalancers, error) {
+	reqUrl := "kubernetes/" + kubernetesId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetess Kubernetess
-// 	_, err := s.client.Do(req, &kubernetess)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetess.Status != "success" && kubernetess.Status != "" {
-// 		return nil, errors.New(kubernetess.Message)
-// 	}
+	var kubernetess Kubernetes
+	_, err := s.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
 
-// 	return kubernetess.Groups[0].Loadbalancers, nil
-// }
+	return kubernetess.K8s[0].LoadBalancers, nil
+}
 
-func (s *KubernetesService) DeleteKubernetesLoadbalancer(kuberneteseId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
-	reqUrl := "kubernetes/" + kuberneteseId + "/loadbalancerpolicy/" + kubernetesLoadbalancerId
+func (s *KubernetesService) DeleteLoadbalancer(kubernetesId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
+	reqUrl := "kubernetes/" + kubernetesId + "/loadbalancerpolicy/" + kubernetesLoadbalancerId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -196,7 +238,7 @@ type CreateKubernetesSecurityGroupParams struct {
 	KubernetesSecurityGroupId string
 }
 
-func (s *KubernetesService) CreateKubernetesSecurityGroup(params CreateKubernetesSecurityGroupParams) (*CreateResponse, error) {
+func (s *KubernetesService) CreateSecurityGroup(params CreateKubernetesSecurityGroupParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/securitygroup/" + params.KubernetesSecurityGroupId
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -212,48 +254,49 @@ func (s *KubernetesService) CreateKubernetesSecurityGroup(params CreateKubernete
 	return &kubernetes, nil
 }
 
-// func (s *KubernetesService) ReadKubernetesSecurityGroup(kubernetesId, securitygroupId string) (*SecurityGroups, error) {
-// 	reqUrl := "kubernetes/" + kubernetesId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) ReadSecurityGroup(kubernetesId, securitygroupId string) (*K8sSecurityGroups, error) {
+	reqUrl := "kubernetes/" + kubernetesId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetess Kubernetess
-// 	_, err := s.client.Do(req, &kubernetess)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetess.Status != "success" && kubernetess.Status != "" {
-// 		return nil, errors.New(kubernetess.Message)
-// 	}
-// 	var securitygroups SecurityGroups
-// 	for _, r := range kubernetess.Groups[0].SecurityGroups {
-// 		if r.ID == securitygroupId {
-// 			securitygroups = r
-// 		}
-// 	}
-// 	if len(securitygroups.ID) == 0 {
-// 		return nil, errors.New("auto scaling securitygroup not found")
-// 	}
+	var kubernetess Kubernetes
+	_, err := s.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
+	var securitygroups K8sSecurityGroups
+	for _, r := range kubernetess.K8s[0].SecurityGroups {
+		if r.ID == securitygroupId {
+			securitygroups = r
+		}
+	}
+	if len(securitygroups.ID) == 0 {
+		return nil, errors.New("kubernetess securitygroup not found")
+	}
 
-// 	return &securitygroups, nil
-// }
+	return &securitygroups, nil
+}
 
-// func (s *KubernetesService) ListKubernetesSecurityGroup(kubernetesId string) ([]SecurityGroups, error) {
-// 	reqUrl := "kubernetes/" + kubernetesId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) ListSecurityGroups(kubernetesId string) ([]K8sSecurityGroups, error) {
+	reqUrl := "kubernetes/" + kubernetesId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetess Kubernetess
-// 	_, err := s.client.Do(req, &kubernetess)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetess.Status != "success" && kubernetess.Status != "" {
-// 		return nil, errors.New(kubernetess.Message)
-// 	}
+	var kubernetess Kubernetes
+	_, err := s.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
+	
 
-// 	return kubernetess.Groups[0].SecurityGroups, nil
-// }
+	return kubernetess.K8s[0].SecurityGroups, nil
+}
 
-func (s *KubernetesService) DeleteKubernetesSecurityGroup(kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
+func (s *KubernetesService) DeleteSecurityGroup(kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + kuberneteseId + "/securitygroup/" + kubernetesSecurityGroupId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -270,7 +313,7 @@ type CreateKubernetesTargetgroupParams struct {
 	KubernetesTargetgroupId string
 }
 
-func (s *KubernetesService) CreateKubernetesTargetgroup(params CreateKubernetesTargetgroupParams) (*CreateResponse, error) {
+func (s *KubernetesService) CreateTargetgroup(params CreateKubernetesTargetgroupParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/targetgroup/" + params.KubernetesTargetgroupId
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
@@ -286,48 +329,48 @@ func (s *KubernetesService) CreateKubernetesTargetgroup(params CreateKubernetesT
 	return &kubernetes, nil
 }
 
-// func (s *KubernetesService) ReadKubernetesTargetgroup(kubernetesId, targetgroupId string) (*KubernetesTargetGroups, error) {
-// 	reqUrl := "kubernetes/" + kubernetesId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) (*K8sTargetGroups, error) {
+	reqUrl := "kubernetes/" + kubernetesId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetess Kubernetess
-// 	_, err := s.client.Do(req, &kubernetess)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetess.Status != "success" && kubernetess.Status != "" {
-// 		return nil, errors.New(kubernetess.Message)
-// 	}
-// 	var targetgroups KubernetesTargetGroups
-// 	for _, r := range kubernetess.Groups[0].TargetGroups {
-// 		if r.ID == targetgroupId {
-// 			targetgroups = r
-// 		}
-// 	}
-// 	if len(targetgroups.ID) == 0 {
-// 		return nil, errors.New("auto scaling targetgroup not found")
-// 	}
+	var kubernetess Kubernetes
+	_, err := s.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
+	var targetgroups K8sTargetGroups
+	for _, r := range kubernetess.K8s[0].TargetGroups {
+		if r.ID == targetgroupId {
+			targetgroups = r
+		}
+	}
+	if len(targetgroups.ID) == 0 {
+		return nil, errors.New("kubernetess targetgroup not found")
+	}
 
-// 	return &targetgroups, nil
-// }
+	return &targetgroups, nil
+}
 
-// func (s *KubernetesService) ListKubernetesTargetgroup(kubernetesId string) ([]KubernetesTargetGroups, error) {
-// 	reqUrl := "kubernetes/" + kubernetesId
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
+func (s *KubernetesService) ListTargetgroups(kubernetesId string) ([]K8sTargetGroups, error) {
+	reqUrl := "kubernetes/" + kubernetesId
+	req, _ := s.client.NewRequest("GET", reqUrl)
 
-// 	var kubernetess Kubernetess
-// 	_, err := s.client.Do(req, &kubernetess)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if kubernetess.Status != "success" && kubernetess.Status != "" {
-// 		return nil, errors.New(kubernetess.Message)
-// 	}
+	var kubernetess Kubernetes
+	_, err := s.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
 
-// 	return kubernetess.Groups[0].TargetGroups, nil
-// }
+	return kubernetess.K8s[0].TargetGroups, nil
+}
 
-func (s *KubernetesService) DeleteKubernetesTargetgroup(kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {
+func (s *KubernetesService) DeleteTargetgroup(kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + kuberneteseId + "/targetgroup/" + kubernetesTargetgroupId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
@@ -381,7 +424,7 @@ type UpdateKubernetesAutoscaleNodepool struct {
 	Policies     string `json:"policies"`
 }
 
-func (s *KubernetesService) UpdateKubernetesAutoscaleNodepool(params UpdateKubernetesAutoscaleNodepool) (*UpdateResponse, error) {
+func (s *KubernetesService) UpdateAutoscaleNodepool(params UpdateKubernetesAutoscaleNodepool) (*UpdateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodeId + "/update"
 	req, _ := s.client.NewRequest("POST", reqUrl)
 
@@ -406,7 +449,7 @@ type UpdateKubernetesStaticNodepool struct {
 	Size         string `json:"size"`
 }
 
-func (s *KubernetesService) UpdateKubernetesStaticNodepool(params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
+func (s *KubernetesService) UpdateStaticNodepool(params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodeId + "/update"
 	req, _ := s.client.NewRequest("POST", reqUrl)
 
