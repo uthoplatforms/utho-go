@@ -7,12 +7,13 @@ import (
 type VpcService service
 
 type Vpcs struct {
-	Vpcs    []Vpc  `json:"vpcs"`
+	Vpc     []Vpc  `json:"vpc"`
 	Status  string `json:"status"`
 	Message string `json:"message"`
 }
 
 type Vpc struct {
+	ID         string         `json:"id"`
 	Total      int            `json:"total"`
 	Available  int            `json:"available"`
 	Network    string         `json:"network"`
@@ -20,7 +21,7 @@ type Vpc struct {
 	Size       string         `json:"size"`
 	Dcslug     string         `json:"dcslug"`
 	Dclocation VpcDclocation  `json:"dclocation"`
-	IsDefault  any            `json:"is_default"`
+	IsDefault  string         `json:"is_default"`
 	Resources  []VpcResources `json:"resources"`
 	Status     string         `json:"status"`
 	Message    string         `json:"message"`
@@ -64,7 +65,30 @@ func (s *VpcService) Read(vpcId string) (*Vpc, error) {
 	reqUrl := "vpc"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
+	var vpcs Vpcs
+	_, err := s.client.Do(req, &vpcs)
+	if err != nil {
+		return nil, err
+	}
+	if vpcs.Status != "success" && vpcs.Status != "" {
+		return nil, errors.New(vpcs.Message)
+	}
+
 	var vpc Vpc
+	for _, r := range vpcs.Vpc {
+		if r.ID == vpcId {
+			vpc = r
+		}
+	}
+
+	return &vpc, nil
+}
+
+func (s *VpcService) List() ([]Vpc, error) {
+	reqUrl := "vpc"
+	req, _ := s.client.NewRequest("GET", reqUrl)
+
+	var vpc Vpcs
 	_, err := s.client.Do(req, &vpc)
 	if err != nil {
 		return nil, err
@@ -73,24 +97,8 @@ func (s *VpcService) Read(vpcId string) (*Vpc, error) {
 		return nil, errors.New(vpc.Message)
 	}
 
-	return &vpc, nil
+	return vpc.Vpc, nil
 }
-
-// func (s *VpcService) List() ([]Vpc, error) {
-// 	reqUrl := "vpc"
-// 	req, _ := s.client.NewRequest("GET", reqUrl)
-
-// 	var vpc Vpcs
-// 	_, err := s.client.Do(req, &vpc)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	if vpc.Status != "success" && vpc.Status != "" {
-// 		return nil, errors.New(vpc.Message)
-// 	}
-
-// 	return vpc.Vpcs, nil
-// }
 
 func (s *VpcService) Delete(vpcId string) (*DeleteResponse, error) {
 	reqUrl := "vpc/" + vpcId + "/destroy"
