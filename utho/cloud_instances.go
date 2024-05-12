@@ -96,7 +96,15 @@ type Private struct {
 	V4 []V4Private `json:"v4"`
 }
 type V4Private struct {
-	Noip int `json:"noip"`
+	Noip      int    `json:"noip"`
+	IPAddress string `json:"ip_address"`
+	VpcName   string `json:"vpc_name"`
+	Network   string `json:"network"`
+	VpcID     string `json:"vpc_id"`
+	Netmask   string `json:"netmask"`
+	Gateway   string `json:"gateway"`
+	Type      string `json:"type"`
+	Primary   string `json:"primary"`
 }
 type Storages struct {
 	ID        string `json:"id"`
