@@ -155,6 +155,9 @@ func (s *KubernetesService) Delete(params DeleteKubernetesParams) (*DeleteRespon
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -228,6 +231,9 @@ func (s *KubernetesService) DeleteLoadbalancer(kubernetesId, kubernetesLoadbalan
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil
@@ -303,6 +309,9 @@ func (s *KubernetesService) DeleteSecurityGroup(kuberneteseId, kubernetesSecurit
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -376,6 +385,9 @@ func (s *KubernetesService) DeleteTargetgroup(kuberneteseId, kubernetesTargetgro
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil

@@ -162,6 +162,9 @@ func (s *ObjectStorageService) DeleteBucket(dcslug, bucketName string) (*DeleteR
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -313,6 +316,9 @@ func (s *ObjectStorageService) DeleteDirectroy(dcslug, bucketName, directoryName
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil

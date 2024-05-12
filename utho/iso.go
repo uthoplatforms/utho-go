@@ -72,6 +72,9 @@ func (s *ISOService) Delete(isoId string) (*DeleteResponse, error) {
 	if err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }

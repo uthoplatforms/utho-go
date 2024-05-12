@@ -167,6 +167,9 @@ func (s *LoadbalancersService) Delete(loadbalancerId string) (*DeleteResponse, e
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -241,6 +244,9 @@ func (s *LoadbalancersService) DeleteACL(loadbalancerId, loadbalancerACLId strin
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil
@@ -320,6 +326,9 @@ func (s *LoadbalancersService) DeleteFrontend(loadbalancerId, loadbalancerFronte
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -393,6 +402,9 @@ func (s *LoadbalancersService) DeleteBackend(loadbalancerId, loadbalancerBackend
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil
@@ -468,6 +480,9 @@ func (s *LoadbalancersService) DeleteRoute(loadbalancerId, loadbalancerRouteId s
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil

@@ -90,6 +90,9 @@ func (s *FirewallService) Delete(firewallId string) (*DeleteResponse, error) {
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -169,6 +172,9 @@ func (s *FirewallService) DeleteFirewallRule(firewallId, firewallRuleId string) 
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -201,6 +207,9 @@ func (s *FirewallService) DeleteCloudInsanceFromFirewall(firewallId, firewallRul
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil

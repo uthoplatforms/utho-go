@@ -246,6 +246,9 @@ func (s *AutoScalingService) Delete(autoscalingId, autoscalingName string) (*Del
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -355,6 +358,9 @@ func (s *AutoScalingService) DeletePolicy(autoScalingPolicyId string) (*DeleteRe
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -458,6 +464,9 @@ func (s *AutoScalingService) DeleteSchedule(autoScalingeId, autoScalingScheduleI
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -532,6 +541,9 @@ func (s *AutoScalingService) DeleteLoadbalancer(autoScalingeId, autoScalingLoadb
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil
@@ -608,6 +620,9 @@ func (s *AutoScalingService) DeleteSecurityGroup(autoScalingeId, autoScalingSecu
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
 
 	return &delResponse, nil
 }
@@ -682,6 +697,9 @@ func (s *AutoScalingService) DeleteTargetgroup(autoScalingeId, autoScalingTarget
 	var delResponse DeleteResponse
 	if _, err := s.client.Do(req, &delResponse); err != nil {
 		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
 	}
 
 	return &delResponse, nil
