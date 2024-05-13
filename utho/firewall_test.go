@@ -20,13 +20,13 @@ func TestFirewallService_Create_happyPath(t *testing.T) {
 	mux.HandleFunc("/firewall/create", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateResponseJson)
+		fmt.Fprint(w, dummyCreateFirewallResponseJson)
 	})
 
 	got, err := client.Firewall().Create(payload)
 
-	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
+	var want CreateFirewallResponse
+	_ = json.Unmarshal([]byte(dummyCreateFirewallResponseJson), &want)
 
 	assert.Nil(t, err)
 	assert.Equal(t, want, *got)
@@ -294,6 +294,12 @@ func TestFirewallService_DeleteFirewallRule_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
+
+const dummyCreateFirewallResponseJson = `{
+	"id":"11111",
+    "status": "success",
+    "message": "success"
+}`
 
 const dummyReadFirewallRes = `{
 	"id": "23432613",

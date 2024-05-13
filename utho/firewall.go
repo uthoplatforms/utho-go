@@ -33,12 +33,17 @@ type FirewallRule struct {
 type CreateFirewallParams struct {
 	Name string `json:"name"`
 }
+type CreateFirewallResponse struct {
+	ID      string `json:"firewallid"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
 
-func (s *FirewallService) Create(params CreateFirewallParams) (*CreateResponse, error) {
+func (s *FirewallService) Create(params CreateFirewallParams) (*CreateFirewallResponse, error) {
 	reqUrl := "firewall/create"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var firewall CreateResponse
+	var firewall CreateFirewallResponse
 	_, err := s.client.Do(req, &firewall)
 	if err != nil {
 		return nil, err
