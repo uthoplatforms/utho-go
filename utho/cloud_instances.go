@@ -112,7 +112,7 @@ type Storages struct {
 	DiskUsed  string `json:"disk_used"`
 	DiskFree  string `json:"disk_free"`
 	DiskUsedp string `json:"disk_usedp"`
-	CreatedAt any    `json:"created_at"`
+	CreatedAt string `json:"created_at"`
 	Bus       string `json:"bus"`
 	Type      string `json:"type"`
 }
@@ -122,7 +122,7 @@ type Storage struct {
 	DiskUsed  string `json:"disk_used"`
 	DiskFree  string `json:"disk_free"`
 	DiskUsedp string `json:"disk_usedp"`
-	CreatedAt any    `json:"created_at"`
+	CreatedAt string `json:"created_at"`
 	Bus       string `json:"bus"`
 	Type      string `json:"type"`
 }
@@ -130,7 +130,7 @@ type Snapshot struct {
 	ID        string `json:"id"`
 	Size      string `json:"size"`
 	CreatedAt string `json:"created_at"`
-	Note      any    `json:"note"`
+	Note      string `json:"note"`
 	Name      string `json:"name"`
 }
 type CloudInstanceFirewall struct {
@@ -162,7 +162,7 @@ type OsImages struct {
 	Message  string    `json:"message,omitempty"`
 }
 type OsImage struct {
-	Distro       any    `json:"distro"`
+	Distro       string `json:"distro"`
 	Distribution string `json:"distribution"`
 	Version      string `json:"version"`
 	Image        string `json:"image"`
