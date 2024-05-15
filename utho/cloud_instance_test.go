@@ -47,11 +47,11 @@ func TestCloudInstanceService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	cloudId := "someId"
+	ID := "someId"
 	expectedResponse := dummyReadCloudInstanceRes
 	serverResponse := dummyReadCloudInstanceServerRes
 
-	mux.HandleFunc("/cloud/"+cloudId, func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/cloud/"+ID, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -60,7 +60,7 @@ func TestCloudInstanceService_Read_happyPath(t *testing.T) {
 	var want CloudInstance
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.CloudInstances().Read(cloudId)
+	got, _ := client.CloudInstances().Read(ID)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}

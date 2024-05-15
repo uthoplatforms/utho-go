@@ -13,7 +13,7 @@ type CloudInstances struct {
 	Message       string          `json:"message,omitempty"`
 }
 type CloudInstance struct {
-	Cloudid           string                   `json:"cloudid"`
+	ID                string                   `json:"cloudid"`
 	Hostname          string                   `json:"hostname"`
 	CPU               string                   `json:"cpu"`
 	RAM               string                   `json:"ram"`
@@ -209,7 +209,7 @@ type CloudHostname struct {
 }
 
 type CreateCloudInstanceResponse struct {
-	Cloudid  string `json:"cloudid"`
+	ID       string `json:"cloudid"`
 	Password string `json:"password"`
 	Ipv4     string `json:"ipv4"`
 	Status   string `json:"status"`
