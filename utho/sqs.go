@@ -24,7 +24,6 @@ type Sqs struct {
 
 type CreateSqsParams struct {
 	Dcslug string `json:"dcslug"`
-	Dczone string `json:"dczone"`
 	Planid string `json:"planid"`
 	Name   string `json:"name"`
 }
