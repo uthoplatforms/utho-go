@@ -166,11 +166,17 @@ type CreateSchedulesParams struct {
 	SelectedDate string    `json:"selectedDate"`
 }
 
-func (s *AutoScalingService) Create(params CreateAutoScalingParams) (*CreateResponse, error) {
+type CreateAutoScalingResponse struct {
+	ID      int    `json:"id"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+func (s *AutoScalingService) Create(params CreateAutoScalingParams) (*CreateAutoScalingResponse, error) {
 	reqUrl := "autoscaling"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var autoscaling CreateResponse
+	var autoscaling CreateAutoScalingResponse
 	_, err := s.client.Do(req, &autoscaling)
 	if err != nil {
 		return nil, err
