@@ -144,8 +144,7 @@ type CreateAutoScalingParams struct {
 	SecurityGroups     string                  `json:"security_groups"`
 	Policies           []CreatePoliciesParams  `json:"policies"`
 	Schedules          []CreateSchedulesParams `json:"schedules"`
-	Stack              string                  `json:"stack"`
-	Stackid            string                  `json:"stackid"`
+	Stackid            string                  `json:"stack"`
 	Stackimage         string                  `json:"stackimage"`
 	TargetGroups       string                  `json:"target_groups"`
 }
