@@ -22,13 +22,13 @@ func TestAutoScalingService_Create_happyPath(t *testing.T) {
 	mux.HandleFunc("/autoscaling", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateResponseJson)
+		fmt.Fprint(w, dummyCreateAutoScalingResponse)
 	})
 
 	got, err := client.AutoScaling().Create(payload)
 
-	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
+	var want CreateAutoScalingResponse
+	_ = json.Unmarshal([]byte(dummyCreateAutoScalingResponse), &want)
 
 	assert.Nil(t, err)
 	assert.Equal(t, want, *got)

@@ -34,10 +34,15 @@ const dummyCreateAutoScaling = `{
             "selectedDate": "2024-05-11"
         }
     ],
-    "stack": "123456789",
     "stackid": "6669341",
     "stackimage": "ubuntu-22.04-x86_64",
     "target_groups": "234567"
+}`
+
+const dummyCreateAutoScalingResponse = `{
+	"id": 11111,
+    "status": "success",
+    "message": "success"
 }`
 
 const dummyReadAutoScalingRes = `{
