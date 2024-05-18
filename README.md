@@ -24,7 +24,7 @@ for non Go modules usage or latest version.
 ## Usage
 
 ```go
-import "github.com/uthoplatforms/utho-go"
+import "github.com/uthoplatforms/utho-go/utho"
 ```
 
 Create a new Utho client, then use the exposed services to
@@ -41,12 +41,10 @@ You can then use your token to create a new client:
 ```go
 package main
 
-import (
-    "github.com/uthoplatforms/utho-go"
-)
+import "github.com/uthoplatforms/utho-go/utho"
 
 func main() {
-    client := utho.NewClient("your-api-token")
+    client, err := utho.NewClient("your-api-token")
 }
 ```
 
@@ -56,11 +54,23 @@ func main() {
 To create a new Cloud Instance:
 
 ```go
-client := utho.NewClient("your-api-token")
+package main
 
-instanceName := "example-name"
+import (
+	"fmt"
 
-createRequest := utho.CreateCloudInstanceParams{
+	"github.com/uthoplatforms/utho-go/utho"
+)
+
+func main() {
+	client, err := utho.NewClient("your-api-token")
+	if err != nil {
+		fmt.Printf("Something gone wrong: %s\n\n", err)
+	}
+
+	instanceName := "example-name"
+
+	createRequest := utho.CreateCloudInstanceParams{
 		Dcslug:       "innoida",
 		Image:        "ubuntu-18.10-x86_64",
 		Planid:       "10045",
@@ -68,11 +78,12 @@ createRequest := utho.CreateCloudInstanceParams{
 		Cloud:        []utho.CloudHostname{utho.CloudHostname{Hostname: instanceName}},
 	}
 
-newInstance, err := client.CloudInstances().CreateCloudInstance(createRequest)
+	newInstance, err := client.CloudInstances().Create(createRequest)
+	if err != nil {
+		fmt.Printf("Something gone wrong: %s\n\n", err)
+	}
 
-if err != nil {
-    fmt.Printf("Something gone wrong: %s\n\n", err)
-    return err
+	fmt.Println(newInstance.ID)
 }
 ```
 
