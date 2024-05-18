@@ -10,16 +10,8 @@ You can view Utho API V2 docs here: [https://utho.com/api-docs](https://utho.com
 
 ## Install
 ```sh
-go get github.com/uthoplatforms/utho-go@vX.Y.Z
-```
-
-where X.Y.Z is the [version](https://github.com/uthoplatforms/utho-go/releases) you need.
-
-or
-```sh
 go get github.com/uthoplatforms/utho-go
 ```
-for non Go modules usage or latest version.
 
 ## Usage
 
