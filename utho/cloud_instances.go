@@ -244,6 +244,9 @@ func (s *CloudInstancesService) Read(instanceId string) (*CloudInstance, error) 
 	if cloudInstances.Status != "success" && cloudInstances.Status != "" {
 		return nil, errors.New(cloudInstances.Message)
 	}
+	if len(cloudInstances.CloudInstance) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &cloudInstances.CloudInstance[0], nil
 }

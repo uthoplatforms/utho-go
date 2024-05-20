@@ -67,6 +67,9 @@ func (s *FirewallService) Read(firewallId string) (*Firewall, error) {
 	if firewall.Status != "success" && firewall.Status != "" {
 		return nil, errors.New(firewall.Message)
 	}
+	if len(firewall.Firewalls) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &firewall.Firewalls[0], nil
 }

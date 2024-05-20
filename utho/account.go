@@ -79,6 +79,9 @@ func (s *AccountService) Read() (*User, error) {
 	if account.Status != "success" && account.Status != "" {
 		return nil, errors.New(account.Message)
 	}
+	if len(account.User.ID) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &account.User, nil
 }

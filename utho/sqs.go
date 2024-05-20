@@ -56,6 +56,9 @@ func (s *SqsService) Read(sqsId string) (*Sqs, error) {
 	if sqs.Status != "success" && sqs.Status != "" {
 		return nil, errors.New(sqs.Message)
 	}
+	if len(sqs.Sqs) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &sqs.Sqs[0], nil
 }

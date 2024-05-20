@@ -80,6 +80,9 @@ func (s *VpcService) Read(vpcId string) (*Vpc, error) {
 			vpc = r
 		}
 	}
+	if len(vpc.ID) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &vpc, nil
 }

@@ -199,6 +199,9 @@ func (s *AutoScalingService) Read(autoscalingId string) (*Groups, error) {
 	if autoscalings.Status != "success" && autoscalings.Status != "" {
 		return nil, errors.New(autoscalings.Message)
 	}
+	if len(autoscalings.Groups) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &autoscalings.Groups[0], nil
 }

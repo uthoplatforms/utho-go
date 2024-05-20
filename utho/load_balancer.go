@@ -139,6 +139,9 @@ func (s *LoadbalancersService) Read(loadbalancerId string) (*Loadbalancer, error
 	if loadbalancer.Status != "success" && loadbalancer.Status != "" {
 		return nil, errors.New(loadbalancer.Message)
 	}
+	if len(loadbalancer.Loadbalancers) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	return &loadbalancer.Loadbalancers[0], nil
 }
