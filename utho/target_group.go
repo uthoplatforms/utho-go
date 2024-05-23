@@ -215,7 +215,7 @@ func (s *TargetGroupService) ReadTarget(targetGroupId, targetId string) (*Target
 	return &target, nil
 }
 
-func (s *TargetGroupService) ListTarget(targetGroupId string) ([]Target, error) {
+func (s *TargetGroupService) ListTargets(targetGroupId string) ([]Target, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 

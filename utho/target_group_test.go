@@ -289,7 +289,7 @@ func TestTargetGroupService_ListTarget_happyPath(t *testing.T) {
 	var want []Target
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.TargetGroup().ListTarget(targetgroupId)
+	got, _ := client.TargetGroup().ListTargets(targetgroupId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d targetgroup to be returned, instead got %d", len(want), len(got))
 	}
@@ -302,7 +302,7 @@ func TestTargetGroupService_ListTarget_happyPath(t *testing.T) {
 func TestTargetGroupService_ListTarget_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	targetgroup, err := client.TargetGroup().ListTarget("id")
+	targetgroup, err := client.TargetGroup().ListTargets("id")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
