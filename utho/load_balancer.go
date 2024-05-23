@@ -106,9 +106,9 @@ type CreateLoadbalancerParams struct {
 	Name   string `json:"name"`
 }
 type CreateLoadbalancerResponse struct {
-	Status         string `json:"status"`
-	Loadbalancerid string `json:"loadbalancerid"`
-	Message        string `json:"message"`
+	Status  string `json:"status"`
+	ID      string `json:"loadbalancerid"`
+	Message string `json:"message"`
 }
 
 func (s *LoadbalancersService) Create(params CreateLoadbalancerParams) (*CreateLoadbalancerResponse, error) {
