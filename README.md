@@ -26,7 +26,7 @@ access different parts of the Utho API.
 
 Currently, Personal Access Token (PAT) is the only method of
 authenticating with the API. You can manage your tokens
-at the Utho Control Panel [Applications Page](https://console.utho.com/api).
+at the Utho Control Panel [Applications Page](https://console.utho.com/switch/api).
 
 You can then use your token to create a new client:
 

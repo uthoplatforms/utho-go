@@ -120,7 +120,7 @@ func (s *KubernetesService) Read(clusterId string) (*K8s, error) {
 		}
 	}
 	if len(k8s.ID) == 0 {
-		return nil, errors.New("kubernetess loadbalancer not found")
+		return nil, errors.New("kubernetess not found")
 	}
 	return &k8s, nil
 }
