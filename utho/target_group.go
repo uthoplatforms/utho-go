@@ -12,7 +12,7 @@ type TargetGroups struct {
 	Targetgroups []TargetGroup `json:"targetgroups"`
 }
 type TargetGroup struct {
-	ID                  string   `json:"id"`
+	ID                  int64   `json:"id"`
 	Name                string   `json:"name"`
 	Port                string   `json:"port"`
 	Protocol            string   `json:"protocol"`
