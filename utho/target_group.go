@@ -12,7 +12,7 @@ type TargetGroups struct {
 	Targetgroups []TargetGroup `json:"targetgroups"`
 }
 type TargetGroup struct {
-	ID                  int64   `json:"id"`
+	ID                  string   `json:"id"`
 	Name                string   `json:"name"`
 	Port                string   `json:"port"`
 	Protocol            string   `json:"protocol"`
@@ -52,11 +52,17 @@ type CreateTargetGroupParams struct {
 	UnhealthyThreshold  string `json:"unhealthy_threshold"`
 }
 
-func (s *TargetGroupService) Create(params CreateTargetGroupParams) (*CreateResponse, error) {
+type CreateTargetGroupResponse struct {
+	ID      int    `json:"id"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+func (s *TargetGroupService) Create(params CreateTargetGroupParams) (*CreateTargetGroupResponse, error) {
 	reqUrl := "targetgroup"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var targetgroup CreateResponse
+	var targetgroup CreateTargetGroupResponse
 	_, err := s.client.Do(req, &targetgroup)
 	if err != nil {
 		return nil, err

@@ -30,13 +30,13 @@ func TestTargetGroupService_Create_happyPath(t *testing.T) {
 	mux.HandleFunc("/targetgroup", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateResponseJson)
+		fmt.Fprint(w, dummyCreateTargetGroupResponseJson)
 	})
 
 	got, err := client.TargetGroup().Create(payload)
 
 	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
+	_ = json.Unmarshal([]byte(dummyCreateTargetGroupResponseJson), &want)
 
 	assert.Nil(t, err)
 	assert.Equal(t, want, *got)
@@ -344,6 +344,12 @@ func TestTargetGroupService_DeleteTarget_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
+
+const dummyCreateTargetGroupResponseJson = `{
+	"id": 11111,
+    "status": "success",
+    "message": "success"
+}`
 
 const dummyReadTargetGroupRes = `{
 	"id": "11111",
