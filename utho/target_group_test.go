@@ -35,7 +35,7 @@ func TestTargetGroupService_Create_happyPath(t *testing.T) {
 
 	got, err := client.TargetGroup().Create(payload)
 
-	var want CreateResponse
+	var want CreateTargetGroupResponse
 	_ = json.Unmarshal([]byte(dummyCreateTargetGroupResponseJson), &want)
 
 	assert.Nil(t, err)
