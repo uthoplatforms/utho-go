@@ -260,9 +260,9 @@ type CreateLoadbalancerFrontendParams struct {
 	Name           string `json:"name"`
 	Proto          string `json:"proto"`
 	Port           string `json:"port"`
-	CertificateID  string `json:"certificate_id"`
+	CertificateID  string `json:"certificate_id,omitempty"`
 	Algorithm      string `json:"algorithm"`
-	Redirecthttps  string `json:"redirecthttps"`
+	Redirecthttps  string `json:"redirecthttps,omitempty"`
 	Cookie         string `json:"cookie"`
 }
 
