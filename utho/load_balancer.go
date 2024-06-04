@@ -107,7 +107,7 @@ type CreateLoadbalancerParams struct {
 }
 type CreateLoadbalancerResponse struct {
 	Status  string `json:"status"`
-	ID      string `json:"lbid"`
+	ID      string `json:"loadbalancerid"`
 	Message string `json:"message"`
 }
 
