@@ -107,7 +107,7 @@ type CreateLoadbalancerParams struct {
 }
 type CreateLoadbalancerResponse struct {
 	Status  string `json:"status"`
-	ID      string `json:"loadbalancerid"`
+	ID      string `json:"lbid"`
 	Message string `json:"message"`
 }
 
@@ -266,6 +266,17 @@ type CreateLoadbalancerFrontendParams struct {
 	Cookie         string `json:"cookie"`
 }
 
+type UpdateLoadbalancerFrontendParams struct {
+	LoadbalancerId string
+	Name           string `json:"name"`
+	Proto          string `json:"proto"`
+	Port           string `json:"port"`
+	CertificateID  string `json:"certificate_id,omitempty"`
+	Algorithm      string `json:"algorithm"`
+	Redirecthttps  string `json:"redirecthttps,omitempty"`
+	Cookie         string `json:"cookie"`
+}
+
 func (s *LoadbalancersService) CreateFrontend(params CreateLoadbalancerFrontendParams) (*CreateResponse, error) {
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/frontend"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
@@ -282,6 +293,20 @@ func (s *LoadbalancersService) CreateFrontend(params CreateLoadbalancerFrontendP
 	return &loadbalancerFrontend, nil
 }
 
+func (s *LoadbalancersService) UpdateFrontend(params UpdateLoadbalancerFrontendParams, loadbalancerId, loadbalancerFrontendId string) (*UpdateResponse, error) {
+	reqUrl := "loadbalancer/" + loadbalancerId + "/frontend/" + loadbalancerFrontendId
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
+
+	var frontend UpdateResponse
+	if _, err := s.client.Do(req, &frontend); err != nil {
+		return nil, err
+	}
+
+	if frontend.Status != "success" && frontend.Status != "" {
+		return nil, errors.New(frontend.Message)
+	}
+	return &frontend, nil
+}
 func (s *LoadbalancersService) ReadFrontend(loadbalancerId, loadbalancerFrontendId string) (*Frontends, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
