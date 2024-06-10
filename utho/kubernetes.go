@@ -338,7 +338,7 @@ func (s *KubernetesService) CreateTargetgroup(params CreateKubernetesTargetgroup
 }
 
 func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) (*K8sTargetGroups, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+	reqUrl := "kubernetes/"
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
 	var kubernetess Kubernetes
@@ -349,11 +349,24 @@ func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) 
 	if kubernetess.Status != "success" && kubernetess.Status != "" {
 		return nil, errors.New(kubernetess.Message)
 	}
+
+	if len(kubernetess.K8s) == 0 {
+		return nil, errors.New("No Cluster Found")
+	}
 	var targetgroups K8sTargetGroups
-	for _, r := range kubernetess.K8s[0].TargetGroups {
-		if r.ID == targetgroupId {
-			targetgroups = r
+	var k8 K8s
+	for _, cluster := range kubernetess.K8s {
+		if cluster.ID == kubernetesId {
+			k8 = cluster
+			for _, tg := range cluster.TargetGroups {
+				if tg.ID == targetgroupId {
+					targetgroups = tg
+				}
+			}
 		}
+	}
+	if k8.ID == "" {
+		return nil, errors.New("kubernetes Cluster not found")
 	}
 	if len(targetgroups.ID) == 0 {
 		return nil, errors.New("kubernetess targetgroup not found")
