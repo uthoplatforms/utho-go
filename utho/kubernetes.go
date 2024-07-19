@@ -32,6 +32,92 @@ type K8s struct {
 	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
 	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
 }
+
+type KubernetesCluster struct {
+	Info struct {
+		Cluster struct {
+			ID              string `json:"id"`
+			Version         string `json:"version"`
+			Label           string `json:"label"`
+			Endpoint        string `json:"endpoint"`
+			Dcslug          string `json:"dcslug"`
+			AutoUpgrade     string `json:"auto_upgrade"`
+			SurgeUpgrade    string `json:"surge_upgrade"`
+			Ipv4            string `json:"ipv4"`
+			ClusterSubnet   string `json:"cluster_subnet"`
+			ServiceSubnet   string `json:"service_subnet"`
+			Tags            string `json:"tags"`
+			CreatedAt       string `json:"created_at"`
+			UpdatedAt       string `json:"updated_at"`
+			DeletedAt       string `json:"deleted_at"`
+			Status          string `json:"status"`
+			Nodepools       string `json:"nodepools"`
+			Vpc             string `json:"vpc"`
+			PublicIpEnabled string `json:"public_ip_enabled"`
+			LoadBalancers   string `json:"load_balancers"`
+			SecurityGroups  string `json:"security_groups"`
+			TargetGroups    string `json:"target_groups"`
+			Userid          string `json:"userid"`
+			Powerstatus     string `json:"powerstatus"`
+			Dclocation      struct {
+				Location string `json:"location"`
+				Country  string `json:"country"`
+				Dc       string `json:"dc"`
+				Dccc     string `json:"dccc"`
+			} `json:"dclocation"`
+		} `json:"cluster"`
+		Master struct {
+			Cloudid        string `json:"cloudid"`
+			Hostname       string `json:"hostname"`
+			Ram            string `json:"ram"`
+			Cpu            string `json:"cpu"`
+			Cost           string `json:"cost"`
+			Disksize       string `json:"disksize"`
+			AppStatus      string `json:"app_status"`
+			Dcslug         string `json:"dcslug"`
+			Planid         string `json:"planid"`
+			Ip             string `json:"ip"`
+			PrivateNetwork struct {
+				Ip         string `json:"ip"`
+				Vpc        string `json:"vpc"`
+				VpcNetwork string `json:"vpc_network"`
+			} `json:"private_network"`
+		} `json:"master"`
+	} `json:"info"`
+	Vpc []struct {
+		ID         string `json:"id"`
+		VpcNetwork string `json:"vpc_network"`
+	} `json:"vpc"`
+	Nodepools map[string]struct {
+		Size     string        `json:"size"`
+		Cost     int           `json:"cost"`
+		Planid   string        `json:"planid"`
+		Count    string        `json:"count"`
+		Policies []interface{} `json:"policies"`
+		Workers  []struct {
+			Cloudid        string `json:"cloudid"`
+			Nodepool       string `json:"nodepool"`
+			Hostname       string `json:"hostname"`
+			Ram            string `json:"ram"`
+			Cost           string `json:"cost"`
+			Cpu            string `json:"cpu"`
+			Disksize       string `json:"disksize"`
+			AppStatus      string `json:"app_status"`
+			Ip             string `json:"ip"`
+			Planid         string `json:"planid"`
+			Status         string `json:"status"`
+			PrivateNetwork struct {
+				Ip         string `json:"ip"`
+				Vpc        string `json:"vpc"`
+				VpcNetwork string `json:"vpc_network"`
+			} `json:"private_network"`
+		} `json:"workers"`
+	} `json:"nodepools"`
+	LoadBalancers  []K8sLoadbalancers  `json:"load_balancers"`
+	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
+	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
+	Rcode          string              `json:"rcode"`
+}
 type K8sDclocation struct {
 	Location string `json:"location"`
 	Country  string `json:"country"`
@@ -100,29 +186,20 @@ func (s *KubernetesService) Create(params CreateKubernetesParams) (*CreateRespon
 	return &kubernetes, nil
 }
 
-func (s *KubernetesService) Read(clusterId string) (*K8s, error) {
-	reqUrl := "kubernetes"
+func (s *KubernetesService) Read(clusterId string) (*KubernetesCluster, error) {
+	reqUrl := "kubernetes/" + clusterId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetes Kubernetes
+	var kubernetes KubernetesCluster
 	_, err := s.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
-	if kubernetes.Status != "success" && kubernetes.Status != "" {
-		return nil, errors.New(kubernetes.Message)
+	if kubernetes.Rcode != "success" {
+		return nil, errors.New("Sorry we unable to find this cluster or you dont have access!")
 	}
 
-	var k8s K8s
-	for _, r := range kubernetes.K8s {
-		if r.ID == clusterId {
-			k8s = r
-		}
-	}
-	if len(k8s.ID) == 0 {
-		return nil, errors.New("kubernetess not found")
-	}
-	return &k8s, nil
+	return &kubernetes, nil
 }
 
 func (s *KubernetesService) List() ([]K8s, error) {
