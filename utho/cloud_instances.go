@@ -191,6 +191,7 @@ type CreateCloudInstanceParams struct {
 	Dcslug       string          `json:"dcslug"`
 	Image        string          `json:"image"`
 	Planid       string          `json:"planid"`
+	Vpcid        string          `json:"vpc"`
 	Auth         string          `json:"auth,omitempty"`
 	RootPassword string          `json:"root_password,omitempty"`
 	Firewall     string          `json:"firewall"`
