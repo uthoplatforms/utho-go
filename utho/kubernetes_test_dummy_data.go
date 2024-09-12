@@ -221,8 +221,48 @@ const dummyKubernetesServerRes = `{
   "rcode": "0"
 }`
 
-const dummyListKubernetesRes = `[` + dummyReadKubernetesRes + `]`
-
+const dummyListKubernetesRes = `{
+    "k8s": [
+        {
+            "cloudid": "11111",
+            "created_at": "2024-05-29 01:07:21",
+            "dcslug": "innoida",
+            "ref_id": "1234",
+            "nodepool": "",
+            "hostname": "MyK8S-ppU142vF-eqwdj",
+            "ram": "4096",
+            "cpu": "2",
+            "disksize": "80",
+            "app_status": "Pending",
+            "ip": "111.127.111.000",
+            "id": "11111",
+            "powerstatus": "online",
+            "dclocation": {
+                "location": "Delhi (Noida)",
+                "country": "India",
+                "dc": "innoida",
+                "dccc": "in"
+            },
+            "status": "Active",
+            "worker_count": "4",
+            "load_balancers": [
+              {
+                "lbid": "22222",
+                "name": "hgfd",
+                "ip": "103.11.11.11"
+              }
+            ],
+            "target_groups": [],
+            "security_groups": [
+              {
+                "id": "44444",
+                "name": "new-server"
+              }
+            ],
+        }
+    ],
+    "rcode": "success"
+}`
 const dummyReadKubernetesLoadbalancerRes = `{
     "lbid": "22222",
     "name": "hgfd",

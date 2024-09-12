@@ -117,6 +117,8 @@ type KubernetesCluster struct {
 	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
 	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
 	Rcode          string              `json:"rcode"`
+	Status         string              `json:"status"`
+	Message        string              `json:"message"`
 }
 type K8sDclocation struct {
 	Location string `json:"location"`
@@ -264,16 +266,16 @@ func (s *KubernetesService) ReadLoadbalancer(kubernetesId, loadbalancerId string
 	reqUrl := "kubernetes/" + kubernetesId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetess Kubernetes
+	var kubernetess KubernetesCluster
 	_, err := s.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
-	if kubernetess.Status != "success" && kubernetess.Status != "" {
+	if kubernetess.Info.Cluster.Status != "Active" && kubernetess.Info.Cluster.Status != "" {
 		return nil, errors.New(kubernetess.Message)
 	}
 	var loadbalancers K8sLoadbalancers
-	for _, r := range kubernetess.K8s[0].LoadBalancers {
+	for _, r := range kubernetess.LoadBalancers {
 		if r.ID == loadbalancerId {
 			loadbalancers = r
 		}
@@ -289,7 +291,7 @@ func (s *KubernetesService) ListLoadbalancers(kubernetesId string) ([]K8sLoadbal
 	reqUrl := "kubernetes/" + kubernetesId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetess Kubernetes
+	var kubernetess KubernetesCluster
 	_, err := s.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -298,7 +300,7 @@ func (s *KubernetesService) ListLoadbalancers(kubernetesId string) ([]K8sLoadbal
 		return nil, errors.New(kubernetess.Message)
 	}
 
-	return kubernetess.K8s[0].LoadBalancers, nil
+	return kubernetess.LoadBalancers, nil
 }
 
 func (s *KubernetesService) DeleteLoadbalancer(kubernetesId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
@@ -341,7 +343,7 @@ func (s *KubernetesService) ReadSecurityGroup(kubernetesId, securitygroupId stri
 	reqUrl := "kubernetes/" + kubernetesId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetess Kubernetes
+	var kubernetess KubernetesCluster
 	_, err := s.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -350,7 +352,7 @@ func (s *KubernetesService) ReadSecurityGroup(kubernetesId, securitygroupId stri
 		return nil, errors.New(kubernetess.Message)
 	}
 	var securitygroups K8sSecurityGroups
-	for _, r := range kubernetess.K8s[0].SecurityGroups {
+	for _, r := range kubernetess.SecurityGroups {
 		if r.ID == securitygroupId {
 			securitygroups = r
 		}
@@ -366,7 +368,7 @@ func (s *KubernetesService) ListSecurityGroups(kubernetesId string) ([]K8sSecuri
 	reqUrl := "kubernetes/" + kubernetesId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetess Kubernetes
+	var kubernetess KubernetesCluster
 	_, err := s.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -375,7 +377,7 @@ func (s *KubernetesService) ListSecurityGroups(kubernetesId string) ([]K8sSecuri
 		return nil, errors.New(kubernetess.Message)
 	}
 
-	return kubernetess.K8s[0].SecurityGroups, nil
+	return kubernetess.SecurityGroups, nil
 }
 
 func (s *KubernetesService) DeleteSecurityGroup(kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
@@ -415,10 +417,10 @@ func (s *KubernetesService) CreateTargetgroup(params CreateKubernetesTargetgroup
 }
 
 func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) (*K8sTargetGroups, error) {
-	reqUrl := "kubernetes/"
+	reqUrl := "kubernetes/" + kubernetesId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetess Kubernetes
+	var kubernetess KubernetesCluster
 	_, err := s.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -427,23 +429,14 @@ func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) 
 		return nil, errors.New(kubernetess.Message)
 	}
 
-	if len(kubernetess.K8s) == 0 {
-		return nil, errors.New("No Cluster Found")
+	if len(kubernetess.Info.Cluster.ID) == 0 {
+		return nil, errors.New("no Cluster Found")
 	}
 	var targetgroups K8sTargetGroups
-	var k8 K8s
-	for _, cluster := range kubernetess.K8s {
-		if cluster.ID == kubernetesId {
-			k8 = cluster
-			for _, tg := range cluster.TargetGroups {
-				if tg.ID == targetgroupId {
-					targetgroups = tg
-				}
-			}
+	for _, tg := range kubernetess.TargetGroups {
+		if tg.ID == targetgroupId {
+			targetgroups = tg
 		}
-	}
-	if k8.ID == "" {
-		return nil, errors.New("kubernetes Cluster not found")
 	}
 	if len(targetgroups.ID) == 0 {
 		return nil, errors.New("kubernetess targetgroup not found")
@@ -456,7 +449,7 @@ func (s *KubernetesService) ListTargetgroups(kubernetesId string) ([]K8sTargetGr
 	reqUrl := "kubernetes/" + kubernetesId
 	req, _ := s.client.NewRequest("GET", reqUrl)
 
-	var kubernetess Kubernetes
+	var kubernetess KubernetesCluster
 	_, err := s.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -465,7 +458,7 @@ func (s *KubernetesService) ListTargetgroups(kubernetesId string) ([]K8sTargetGr
 		return nil, errors.New(kubernetess.Message)
 	}
 
-	return kubernetess.K8s[0].TargetGroups, nil
+	return kubernetess.TargetGroups, nil
 }
 
 func (s *KubernetesService) DeleteTargetgroup(kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {
