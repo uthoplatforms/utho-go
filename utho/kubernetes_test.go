@@ -63,13 +63,13 @@ func TestKubernetesService_Read_happyPath(t *testing.T) {
 	expectedResponse := dummyReadKubernetesRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes", func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/kubernetes/"+clusterId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
 	})
 
-	var want K8s
+	var want KubernetesCluster
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	got, _ := client.Kubernetes().Read(clusterId)
