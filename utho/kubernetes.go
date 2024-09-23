@@ -198,7 +198,7 @@ func (s *KubernetesService) Read(clusterId string) (*KubernetesCluster, error) {
 		return nil, err
 	}
 	if kubernetes.Info.Cluster.ID != clusterId {
-		return nil, errors.New("Sorry we unable to find this cluster or you dont have access!")
+		return nil, errors.New("sorry we unable to find this cluster or you dont have access")
 	}
 
 	return &kubernetes, nil

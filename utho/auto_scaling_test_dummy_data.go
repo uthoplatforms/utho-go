@@ -248,8 +248,6 @@ const dummyReadAutoScalingPolicyRes = `{
 	"minsize": "0"
 }`
 
-const dummyListAutoScalingPolicyRes = `[` + dummyReadAutoScalingPolicyRes + `]`
-
 // Auto Scaling Schedule
 const dummyCreateAutoScalingSchedule = `{
     "name": "wqf",
@@ -269,8 +267,6 @@ const dummyReadAutoScalingScheduleRes = `{
 	"timezone": "IST"
 }`
 
-const dummyListAutoScalingScheduleRes = `[` + dummyReadAutoScalingScheduleRes + `]`
-
 // Auto Scaling Loadbalancer
 const dummyReadAutoScalingLoadbalancerRes = `{
 	"lbid": "44444",
@@ -278,15 +274,11 @@ const dummyReadAutoScalingLoadbalancerRes = `{
 	"ip": "103.111.111.111"
 }`
 
-const dummyListAutoScalingLoadbalancerRes = `[` + dummyReadAutoScalingLoadbalancerRes + `]`
-
 // Auto Scaling SecurityGroup
 const dummyReadAutoScalingSecurityGroupRes = `{
 	"id": "55555",
 	"name": "new-server"
 }`
-
-const dummyListAutoScalingSecurityGroupRes = `[` + dummyReadAutoScalingSecurityGroupRes + `]`
 
 // Auto Scaling Targetgroup
 const dummyReadAutoScalingTargetgroupRes = `{
@@ -295,5 +287,3 @@ const dummyReadAutoScalingTargetgroupRes = `{
 	"protocol": null,
 	"port": "12"
 }`
-
-const dummyListAutoScalingTargetgroupRes = `[` + dummyReadAutoScalingTargetgroupRes + `]`
