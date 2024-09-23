@@ -364,9 +364,11 @@ func (s *LoadbalancersService) DeleteFrontend(loadbalancerId, loadbalancerFronte
 
 type CreateLoadbalancerBackendParams struct {
 	LoadbalancerId string
+	Type           string `json:"type"`
 	FrontendID     string `json:"frontend_id"`
 	BackendPort    string `json:"backend_port"`
-	Cloudid        string `json:"cloudid"`
+	Cloudid        string `json:"cloudid,omitempty"`
+	IP             string `json:"ip,omitempty"`
 }
 
 func (s *LoadbalancersService) CreateBackend(params CreateLoadbalancerBackendParams) (*CreateResponse, error) {
