@@ -36,6 +36,7 @@ type Client interface {
 	Vpc() *VpcService
 	AutoScaling() *AutoScalingService
 	Kubernetes() *KubernetesService
+	Ebs() *EBService
 }
 
 type service struct {
@@ -64,6 +65,7 @@ type client struct {
 	vpc            *VpcService
 	autoscaling    *AutoScalingService
 	kubernetes     *KubernetesService
+	ebs            *EBService
 }
 
 // NewClient creates a new Utho client.
@@ -109,6 +111,7 @@ func NewClient(token string, options ...UthoOption) (Client, error) {
 	client.vpc = (*VpcService)(commonService)
 	client.autoscaling = (*AutoScalingService)(commonService)
 	client.kubernetes = (*KubernetesService)(commonService)
+	client.ebs = (*EBService)(commonService)
 
 	return client, nil
 }
@@ -271,4 +274,8 @@ func (c *client) AutoScaling() *AutoScalingService {
 
 func (c *client) Kubernetes() *KubernetesService {
 	return c.kubernetes
+}
+
+func (c *client) Ebs() *EBService {
+	return c.ebs
 }
