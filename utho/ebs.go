@@ -13,7 +13,7 @@ type EBSs struct {
 }
 
 type Ebs struct {
-	Did        string   `json:"did"`
+	ID         string   `json:"did"`
 	Cloudid    string   `json:"cloudid"`
 	Primaryd   string   `json:"primaryd"`
 	Size       string   `json:"size"`
