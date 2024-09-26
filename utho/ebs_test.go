@@ -124,7 +124,6 @@ func TestEbsService_List_invalidServer(t *testing.T) {
 func TestEbsService_Delete_happyPath(t *testing.T) {
 	token := "token"
 	ebsId := "someEbsId"
-	ebsname := "someEbsname"
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -137,7 +136,7 @@ func TestEbsService_Delete_happyPath(t *testing.T) {
 
 	want := DeleteResponse{Status: "success", Message: "success"}
 
-	got, _ := client.Ebs().Delete(ebsId, ebsname)
+	got, _ := client.Ebs().Delete(ebsId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -146,7 +145,7 @@ func TestEbsService_Delete_happyPath(t *testing.T) {
 func TestEbsService_Delete_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	delResponse, err := client.Ebs().Delete("someEbsId", "ebsname")
+	delResponse, err := client.Ebs().Delete("someEbsId")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}

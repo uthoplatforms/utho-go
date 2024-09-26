@@ -95,8 +95,8 @@ func (s *EBService) List() ([]Ebs, error) {
 	return ebs.Ebs, nil
 }
 
-func (s *EBService) Delete(ebsId, ebsName string) (*DeleteResponse, error) {
-	reqUrl := "ebs/" + ebsId + "/destroy?confirm=" + ebsName
+func (s *EBService) Delete(ebsId string) (*DeleteResponse, error) {
+	reqUrl := "ebs/" + ebsId + "/destroy"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
