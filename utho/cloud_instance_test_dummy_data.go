@@ -5,6 +5,8 @@ const dummyCreateCloudInstanceRequestJson = `{
     "image": "ubuntu-18.10-x86_64",
     "planid": "10045",
     "billingcycle": "hourly",
+    enable_publicip: "true"
+    cpumodel: "intel"
     "cloud": [
         {
             "hostname": "cloudserver-example-name"

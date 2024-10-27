@@ -101,9 +101,12 @@ type FrontendRoutes struct {
 }
 
 type CreateLoadbalancerParams struct {
-	Dcslug string `json:"dcslug"`
-	Type   string `json:"type"`
-	Name   string `json:"name"`
+	Name     string `json:"name"`
+	Dcslug   string `json:"dcslug"`
+	Type     string `json:"type"`
+	Cpumodel string `json:"cpumodel"`
+	Vpc      string `json:"vpc"`
+	Firewall string `json:"firewall"`
 }
 type CreateLoadbalancerResponse struct {
 	Status  string `json:"status"`

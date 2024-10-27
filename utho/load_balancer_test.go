@@ -13,9 +13,12 @@ import (
 func TestLoadbalancerService_Create_happyPath(t *testing.T) {
 	token := "token"
 	payload := CreateLoadbalancerParams{
-		Dcslug: "innoida",
-		Name:   "example",
-		Type:   "application",
+		Dcslug:   "innoida",
+		Name:     "example",
+		Type:     "application",
+		Cpumodel: "amd",
+		Vpc:      "02298558-fb98-4a29-af8a-fbabf9093609",
+		Firewall: "23433480",
 	}
 
 	client, mux, _, teardown := setup(token)

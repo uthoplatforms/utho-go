@@ -188,21 +188,23 @@ type Plan struct {
 }
 
 type CreateCloudInstanceParams struct {
-	Dcslug       string          `json:"dcslug"`
-	Image        string          `json:"image"`
-	Planid       string          `json:"planid"`
-	Vpcid        string          `json:"vpc"`
-	Auth         string          `json:"auth,omitempty"`
-	RootPassword string          `json:"root_password,omitempty"`
-	Firewall     string          `json:"firewall"`
-	Enablebackup string          `json:"enablebackup,omitempty"`
-	Support      string          `json:"support,omitempty"`
-	Management   string          `json:"management,omitempty"`
-	Billingcycle string          `json:"billingcycle,omitempty"`
-	Backupid     string          `json:"backupid,omitempty"`
-	Snapshotid   string          `json:"snapshotid,omitempty"`
-	Sshkeys      string          `json:"sshkeys,omitempty"`
-	Cloud        []CloudHostname `json:"cloud"`
+	Dcslug         string          `json:"dcslug"`
+	Image          string          `json:"image"`
+	Planid         string          `json:"planid"`
+	Vpcid          string          `json:"vpc"`
+	EnablePublicip string          `json:"enable_publicip"`
+	Cpumodel       string          `json:"cpumodel"`
+	Auth           string          `json:"auth,omitempty"`
+	RootPassword   string          `json:"root_password,omitempty"`
+	Firewall       string          `json:"firewall"`
+	Enablebackup   string          `json:"enablebackup,omitempty"`
+	Support        string          `json:"support,omitempty"`
+	Management     string          `json:"management,omitempty"`
+	Billingcycle   string          `json:"billingcycle,omitempty"`
+	Backupid       string          `json:"backupid,omitempty"`
+	Snapshotid     string          `json:"snapshotid,omitempty"`
+	Sshkeys        string          `json:"sshkeys,omitempty"`
+	Cloud          []CloudHostname `json:"cloud"`
 }
 
 type CloudHostname struct {

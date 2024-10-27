@@ -149,6 +149,9 @@ type CreateKubernetesParams struct {
 	Nodepools      []CreateNodepoolsParams `json:"nodepools"`
 	Auth           string                  `json:"auth"`
 	Vpc            string                  `json:"vpc"`
+	NetworkType    string                  `json:"network_type"`
+	Firewall       string                  `json:"firewall"`
+	Cpumodel       string                  `json:"cpumodel"`
 	SecurityGroups string                  `json:"security_groups"`
 }
 type CreateNodepoolsParams struct {

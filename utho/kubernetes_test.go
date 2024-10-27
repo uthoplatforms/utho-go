@@ -25,6 +25,9 @@ func TestKubernetesService_Create_happyPath(t *testing.T) {
 		ClusterVersion: "1.27.0",
 		Vpc:            "f1dd58f1-1bfa-46ef-8b94-f69f312c0245",
 		SecurityGroups: "23432613,23432615",
+		NetworkType:    "both",
+		Firewall:       "23433480",
+		Cpumodel:       "intel",
 		Nodepools:      []CreateNodepoolsParams{createNodepoolsParams},
 	}
 
