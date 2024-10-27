@@ -18,3 +18,17 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           token: ${{ secrets.GH_TOKEN }}
+
+      - name: Get tag name
+        id: get_tag
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            tag=${GITHUB_REF#refs/tags/}
+            echo "tag=$tag" >> $GITHUB_ENV
+          else
+            echo "This run was not triggered by a tag."
+            exit 1
+          fi
+
+      - name: Update pkg.go
+        run: GOPROXY=proxy.golang.org go list -m github.com/uthoplatforms/utho-go@${{ env.tag }}
