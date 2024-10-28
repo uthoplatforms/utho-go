@@ -90,7 +90,7 @@ type KubernetesCluster struct {
 	} `json:"vpc"`
 	Nodepools map[string]struct {
 		Size     string        `json:"size"`
-		Cost     int           `json:"cost"`
+		Cost     float64       `json:"cost"`
 		Planid   string        `json:"planid"`
 		Count    string        `json:"count"`
 		Policies []interface{} `json:"policies"`
