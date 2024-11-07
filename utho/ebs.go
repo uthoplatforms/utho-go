@@ -117,7 +117,7 @@ type AttachEBSParams struct {
 }
 
 func (s *EBService) Attach(params AttachEBSParams) (*CreateResponse, error) {
-	reqUrl := "ebs" + params.EBSId + "/attach"
+	reqUrl := "ebs/" + params.EBSId + "/attach"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
 	var ebs CreateResponse
@@ -133,7 +133,7 @@ func (s *EBService) Attach(params AttachEBSParams) (*CreateResponse, error) {
 }
 
 func (s *EBService) Dettach(params AttachEBSParams) (*CreateResponse, error) {
-	reqUrl := "ebs" + params.EBSId + "/dettach"
+	reqUrl := "ebs/" + params.EBSId + "/dettach"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
 	var ebs CreateResponse
