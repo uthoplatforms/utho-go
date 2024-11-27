@@ -32,93 +32,90 @@ type K8s struct {
 	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
 	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
 }
-
 type KubernetesCluster struct {
-	Info struct {
-		Cluster struct {
-			ID              string `json:"id"`
-			Version         string `json:"version"`
-			Label           string `json:"label"`
-			Endpoint        string `json:"endpoint"`
-			Dcslug          string `json:"dcslug"`
-			AutoUpgrade     string `json:"auto_upgrade"`
-			SurgeUpgrade    string `json:"surge_upgrade"`
-			Ipv4            string `json:"ipv4"`
-			ClusterSubnet   string `json:"cluster_subnet"`
-			ServiceSubnet   string `json:"service_subnet"`
-			Tags            string `json:"tags"`
-			CreatedAt       string `json:"created_at"`
-			UpdatedAt       string `json:"updated_at"`
-			DeletedAt       string `json:"deleted_at"`
-			Status          string `json:"status"`
-			Nodepools       string `json:"nodepools"`
-			Vpc             string `json:"vpc"`
-			PublicIpEnabled string `json:"public_ip_enabled"`
-			LoadBalancers   string `json:"load_balancers"`
-			SecurityGroups  string `json:"security_groups"`
-			TargetGroups    string `json:"target_groups"`
-			Userid          string `json:"userid"`
-			Powerstatus     string `json:"powerstatus"`
-			Dclocation      struct {
-				Location string `json:"location"`
-				Country  string `json:"country"`
-				Dc       string `json:"dc"`
-				Dccc     string `json:"dccc"`
-			} `json:"dclocation"`
-		} `json:"cluster"`
-		Master struct {
-			Cloudid        string `json:"cloudid"`
-			Hostname       string `json:"hostname"`
-			Ram            string `json:"ram"`
-			Cpu            string `json:"cpu"`
-			Cost           string `json:"cost"`
-			Disksize       string `json:"disksize"`
-			AppStatus      string `json:"app_status"`
-			Dcslug         string `json:"dcslug"`
-			Planid         string `json:"planid"`
-			Ip             string `json:"ip"`
-			PrivateNetwork struct {
-				Ip         string `json:"ip"`
-				Vpc        string `json:"vpc"`
-				VpcNetwork string `json:"vpc_network"`
-			} `json:"private_network"`
-		} `json:"master"`
-	} `json:"info"`
-	Vpc []struct {
-		ID         string `json:"id"`
-		VpcNetwork string `json:"vpc_network"`
-	} `json:"vpc"`
-	Nodepools map[string]struct {
-		Size     string        `json:"size"`
-		Cost     float64       `json:"cost"`
-		Planid   string        `json:"planid"`
-		Count    string        `json:"count"`
-		Policies []interface{} `json:"policies"`
-		Workers  []struct {
-			Cloudid        string `json:"cloudid"`
-			Nodepool       string `json:"nodepool"`
-			Hostname       string `json:"hostname"`
-			Ram            string `json:"ram"`
-			Cost           string `json:"cost"`
-			Cpu            string `json:"cpu"`
-			Disksize       string `json:"disksize"`
-			AppStatus      string `json:"app_status"`
-			Ip             string `json:"ip"`
-			Planid         string `json:"planid"`
-			Status         string `json:"status"`
-			PrivateNetwork struct {
-				Ip         string `json:"ip"`
-				Vpc        string `json:"vpc"`
-				VpcNetwork string `json:"vpc_network"`
-			} `json:"private_network"`
-		} `json:"workers"`
-	} `json:"nodepools"`
-	LoadBalancers  []K8sLoadbalancers  `json:"load_balancers"`
-	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
-	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
-	Rcode          string              `json:"rcode"`
-	Status         string              `json:"status"`
-	Message        string              `json:"message"`
+	Info           KubernetesClusterInfo      `json:"info"`
+	Vpc            []VpcDetails               `json:"vpc"`
+	Nodepools      map[string]NodepoolDetails `json:"nodepools"`
+	LoadBalancers  []K8sLoadbalancers         `json:"load_balancers"`
+	TargetGroups   []K8sTargetGroups          `json:"target_groups"`
+	SecurityGroups []K8sSecurityGroups        `json:"security_groups"`
+	Rcode          string                     `json:"rcode"`
+	Status         string                     `json:"status"`
+	Message        string                     `json:"message"`
+}
+type KubernetesClusterInfo struct {
+	Cluster KubernetesClusterMetadata `json:"cluster"`
+	Master  MasterNodeDetails         `json:"master"`
+}
+type KubernetesClusterMetadata struct {
+	ID              string        `json:"id"`
+	Version         string        `json:"version"`
+	Label           string        `json:"label"`
+	Endpoint        string        `json:"endpoint"`
+	Dcslug          string        `json:"dcslug"`
+	AutoUpgrade     string        `json:"auto_upgrade"`
+	SurgeUpgrade    string        `json:"surge_upgrade"`
+	Ipv4            string        `json:"ipv4"`
+	ClusterSubnet   string        `json:"cluster_subnet"`
+	ServiceSubnet   string        `json:"service_subnet"`
+	Tags            string        `json:"tags"`
+	CreatedAt       string        `json:"created_at"`
+	UpdatedAt       string        `json:"updated_at"`
+	DeletedAt       string        `json:"deleted_at"`
+	Status          string        `json:"status"`
+	Nodepools       string        `json:"nodepools"`
+	Vpc             string        `json:"vpc"`
+	PublicIpEnabled string        `json:"public_ip_enabled"`
+	LoadBalancers   string        `json:"load_balancers"`
+	SecurityGroups  string        `json:"security_groups"`
+	TargetGroups    string        `json:"target_groups"`
+	Userid          string        `json:"userid"`
+	Powerstatus     string        `json:"powerstatus"`
+	Dclocation      K8sDclocation `json:"dclocation"`
+}
+type MasterNodeDetails struct {
+	Cloudid        string         `json:"cloudid"`
+	Hostname       string         `json:"hostname"`
+	Ram            string         `json:"ram"`
+	Cpu            string         `json:"cpu"`
+	Cost           string         `json:"cost"`
+	Disksize       string         `json:"disksize"`
+	AppStatus      string         `json:"app_status"`
+	Dcslug         string         `json:"dcslug"`
+	Planid         string         `json:"planid"`
+	Ip             string         `json:"ip"`
+	PrivateNetwork PrivateNetwork `json:"private_network"`
+}
+type NodepoolDetails struct {
+	Size     string        `json:"size"`
+	Cost     float64       `json:"cost"`
+	Planid   string        `json:"planid"`
+	Count    string        `json:"count"`
+	Policies []interface{} `json:"policies"`
+	Workers  []WorkerNode  `json:"workers"`
+}
+type WorkerNode struct {
+	Cloudid        string         `json:"cloudid"`
+	Nodepool       string         `json:"nodepool"`
+	Hostname       string         `json:"hostname"`
+	Ram            string         `json:"ram"`
+	Cost           string         `json:"cost"`
+	Cpu            string         `json:"cpu"`
+	Disksize       string         `json:"disksize"`
+	AppStatus      string         `json:"app_status"`
+	Ip             string         `json:"ip"`
+	Planid         string         `json:"planid"`
+	Status         string         `json:"status"`
+	PrivateNetwork PrivateNetwork `json:"private_network"`
+}
+type VpcDetails struct {
+	ID         string `json:"id"`
+	VpcNetwork string `json:"vpc_network"`
+}
+type PrivateNetwork struct {
+	Ip         string `json:"ip"`
+	Vpc        string `json:"vpc"`
+	VpcNetwork string `json:"vpc_network"`
 }
 type K8sDclocation struct {
 	Location string `json:"location"`
