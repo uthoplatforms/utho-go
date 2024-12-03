@@ -192,16 +192,16 @@ func (s *LoadbalancersService) CreateACL(params CreateLoadbalancerACLParams) (*C
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/acl"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var loadbalancerACL CreateResponse
-	_, err := s.client.Do(req, &loadbalancerACL)
+	var res CreateResponse
+	_, err := s.client.Do(req, &res)
 	if err != nil {
 		return nil, err
 	}
-	if loadbalancerACL.Status != "success" && loadbalancerACL.Status != "" {
-		return nil, errors.New(loadbalancerACL.Message)
+	if res.Status != "success" && res.Status != "" {
+		return nil, errors.New(res.Message)
 	}
 
-	return &loadbalancerACL, nil
+	return &res, nil
 }
 
 func (s *LoadbalancersService) ReadACL(loadbalancerId, loadbalancerACLId string) (*ACLs, error) {
@@ -273,16 +273,16 @@ func (s *LoadbalancersService) CreateFrontend(params CreateLoadbalancerFrontendP
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/frontend"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var loadbalancerFrontend CreateResponse
-	_, err := s.client.Do(req, &loadbalancerFrontend)
+	var res CreateResponse
+	_, err := s.client.Do(req, &res)
 	if err != nil {
 		return nil, err
 	}
-	if loadbalancerFrontend.Status != "success" && loadbalancerFrontend.Status != "" {
-		return nil, errors.New(loadbalancerFrontend.Message)
+	if res.Status != "success" && res.Status != "" {
+		return nil, errors.New(res.Message)
 	}
 
-	return &loadbalancerFrontend, nil
+	return &res, nil
 }
 
 type UpdateLoadbalancerFrontendParams struct {
@@ -456,16 +456,16 @@ func (s *LoadbalancersService) CreateRoute(params CreateLoadbalancerRouteParams)
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/route"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var loadbalancerRoute CreateResponse
-	_, err := s.client.Do(req, &loadbalancerRoute)
+	var res CreateResponse
+	_, err := s.client.Do(req, &res)
 	if err != nil {
 		return nil, err
 	}
-	if loadbalancerRoute.Status != "success" && loadbalancerRoute.Status != "" {
-		return nil, errors.New(loadbalancerRoute.Message)
+	if res.Status != "success" && res.Status != "" {
+		return nil, errors.New(res.Message)
 	}
 
-	return &loadbalancerRoute, nil
+	return &res, nil
 }
 
 func (s *LoadbalancersService) ReadRoute(loadbalancerId, loadbalancerRouteId string) (*Routes, error) {
