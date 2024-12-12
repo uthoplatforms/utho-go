@@ -373,6 +373,7 @@ type CreateLoadbalancerBackendParams struct {
 	BackendPort    string `json:"backend_port"`
 	Cloudid        string `json:"cloudid,omitempty"`
 	IP             string `json:"ip,omitempty"`
+	PoolName       string `json:"pool_name"`
 }
 
 func (s *LoadbalancersService) CreateBackend(params CreateLoadbalancerBackendParams) (*CreateResponse, error) {
