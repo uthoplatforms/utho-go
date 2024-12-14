@@ -1,3 +1,4 @@
+# make publish tag=0.1.30
 .PHONY: publish
 publish: tidy
 	git tag v$(tag)

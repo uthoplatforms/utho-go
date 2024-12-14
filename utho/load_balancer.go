@@ -2,6 +2,17 @@ package utho
 
 import (
 	"errors"
+	"fmt"
+	"net/http"
+	"strings"
+	"time"
+)
+
+type AppStatus string
+
+const (
+	Pending   AppStatus = "Pending"
+	Installed AppStatus = "Installed"
 )
 
 type LoadbalancersService service
@@ -193,11 +204,13 @@ func (s *LoadbalancersService) CreateACL(params CreateLoadbalancerACLParams) (*C
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/acl"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var res CreateResponse
-	_, err := s.client.Do(req, &res)
+	maxRetries := 5
+	sleepDuration := 45 * time.Second
+	res, err := s.retryUntilReady(req, maxRetries, sleepDuration)
 	if err != nil {
 		return nil, err
 	}
+
 	if res.Status != "success" && res.Status != "" {
 		return nil, errors.New(res.Message)
 	}
@@ -274,11 +287,13 @@ func (s *LoadbalancersService) CreateFrontend(params CreateLoadbalancerFrontendP
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/frontend"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var res CreateResponse
-	_, err := s.client.Do(req, &res)
+	maxRetries := 5
+	sleepDuration := 45 * time.Second
+	res, err := s.retryUntilReady(req, maxRetries, sleepDuration)
 	if err != nil {
 		return nil, err
 	}
+
 	if res.Status != "success" && res.Status != "" {
 		return nil, errors.New(res.Message)
 	}
@@ -380,16 +395,18 @@ func (s *LoadbalancersService) CreateBackend(params CreateLoadbalancerBackendPar
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/backend"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var loadbalancerBackend CreateResponse
-	_, err := s.client.Do(req, &loadbalancerBackend)
+	maxRetries := 5
+	sleepDuration := 45 * time.Second
+	res, err := s.retryUntilReady(req, maxRetries, sleepDuration)
 	if err != nil {
 		return nil, err
 	}
-	if loadbalancerBackend.Status != "success" && loadbalancerBackend.Status != "" {
-		return nil, errors.New(loadbalancerBackend.Message)
+
+	if res.Status != "success" && res.Status != "" {
+		return nil, errors.New(res.Message)
 	}
 
-	return &loadbalancerBackend, nil
+	return &res, nil
 }
 
 func (s *LoadbalancersService) ReadBackend(loadbalancerId, loadbalancerBackendId string) (*Backends, error) {
@@ -458,11 +475,13 @@ func (s *LoadbalancersService) CreateRoute(params CreateLoadbalancerRouteParams)
 	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/route"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
-	var res CreateResponse
-	_, err := s.client.Do(req, &res)
+	maxRetries := 5
+	sleepDuration := 45 * time.Second
+	res, err := s.retryUntilReady(req, maxRetries, sleepDuration)
 	if err != nil {
 		return nil, err
 	}
+
 	if res.Status != "success" && res.Status != "" {
 		return nil, errors.New(res.Message)
 	}
@@ -522,4 +541,25 @@ func (s *LoadbalancersService) DeleteRoute(loadbalancerId, loadbalancerRouteId s
 	}
 
 	return &delResponse, nil
+}
+
+// Retry up to a configurable number of times if AppStatus is not "Installed"
+func (s *LoadbalancersService) retryUntilReady(req *http.Request, maxRetries int, sleepDuration time.Duration) (CreateResponse, error) {
+	var res CreateResponse
+
+	for i := 0; i < maxRetries; i++ {
+		_, err := s.client.Do(req, &res)
+		if err != nil {
+			return CreateResponse{}, err
+		}
+
+		if strings.EqualFold(res.AppStatus, string(Installed)) {
+			return res, nil
+		}
+
+		fmt.Printf("Attempt %d/%d - LB status: %s\n", i+1, maxRetries, res.AppStatus)
+		time.Sleep(sleepDuration)
+	}
+
+	return CreateResponse{}, fmt.Errorf("AppStatus did not become 'Installed' after %d retries. Last status: %s", maxRetries, res.AppStatus)
 }

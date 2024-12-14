@@ -6,9 +6,10 @@ type BasicResponse struct {
 }
 
 type CreateResponse struct {
-	ID      string `json:"id"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	ID        string `json:"id"`
+	AppStatus string `json:"app_status,omitempty"`
+	Status    string `json:"status"`
+	Message   string `json:"message"`
 }
 
 type CreateBasicResponse struct {
