@@ -39,6 +39,7 @@ type Loadbalancer struct {
 	Backendcount  string      `json:"backendcount"`
 	CreatedAt     string      `json:"created_at"`
 	Status        string      `json:"status"`
+	AppStatus     string      `json:"app_status"`
 	Backends      []Backends  `json:"backends"`
 	Rules         []Rules     `json:"rules"`
 	Acls          []ACLs      `json:"acls"`
