@@ -554,7 +554,11 @@ func (s *LoadbalancersService) retryUntilReady(req *http.Request, maxRetries int
 			return CreateResponse{}, err
 		}
 
-		if strings.EqualFold(res.AppStatus, string(Installed)) {
+		if strings.EqualFold(res.Status, "error") {
+			return CreateResponse{}, fmt.Errorf(res.Message)
+		}
+
+		if strings.EqualFold(res.AppStatus, string(Installed)) || strings.EqualFold(res.Status, "success") {
 			return res, nil
 		}
 
