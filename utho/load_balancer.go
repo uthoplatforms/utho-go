@@ -113,13 +113,14 @@ type FrontendRoutes struct {
 }
 
 type CreateLoadbalancerParams struct {
-	Name           string `json:"name"`
-	Dcslug         string `json:"dcslug"`
-	Type           string `json:"type"`
-	Cpumodel       string `json:"cpumodel"`
-	Vpc            string `json:"vpc"`
-	Firewall       string `json:"firewall"`
-	EnablePublicip string `json:"enable_publicip"`
+	Name                string `json:"name"`
+	Dcslug              string `json:"dcslug"`
+	Type                string `json:"type"`
+	Cpumodel            string `json:"cpumodel"`
+	Vpc                 string `json:"vpc"`
+	Firewall            string `json:"firewall"`
+	EnablePublicip      string `json:"enable_publicip"`
+	KubernetesClusterid string `json:"kubernetes_clusterid"`
 }
 type CreateLoadbalancerResponse struct {
 	Status  string `json:"status"`
@@ -555,7 +556,7 @@ func (s *LoadbalancersService) retryUntilReady(req *http.Request, maxRetries int
 		}
 
 		if strings.EqualFold(res.Status, "error") {
-			return CreateResponse{}, fmt.Errorf(res.Message)
+			return CreateResponse{}, fmt.Errorf("%s", res.Message)
 		}
 
 		if strings.EqualFold(res.AppStatus, string(Installed)) || strings.EqualFold(res.Status, "success") {
