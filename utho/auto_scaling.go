@@ -81,7 +81,7 @@ type SecurityGroup struct {
 	Name string `json:"name"`
 }
 type Instances struct {
-	Cloudid   string `json:"cloudid"`
+	ID        string `json:"cloudid"`
 	Hostname  string `json:"hostname"`
 	CreatedAt string `json:"created_at"`
 	IP        string `json:"ip"`

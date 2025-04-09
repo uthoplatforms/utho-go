@@ -12,7 +12,7 @@ type Kubernetes struct {
 	Message string `json:"message"`
 }
 type K8s struct {
-	Cloudid        string              `json:"cloudid"`
+	ID             string              `json:"id"`
 	CreatedAt      string              `json:"created_at"`
 	Dcslug         string              `json:"dcslug"`
 	RefID          string              `json:"ref_id"`
@@ -23,7 +23,7 @@ type K8s struct {
 	Disksize       string              `json:"disksize"`
 	AppStatus      string              `json:"app_status"`
 	IP             string              `json:"ip"`
-	ID             string              `json:"id"`
+	Cloudid        string              `json:"cloudid"`
 	Powerstatus    string              `json:"powerstatus"`
 	Dclocation     K8sDclocation       `json:"dclocation"`
 	Status         string              `json:"status"`
@@ -87,12 +87,16 @@ type MasterNodeDetails struct {
 	PrivateNetwork PrivateNetwork `json:"private_network"`
 }
 type NodepoolDetails struct {
-	Size     string        `json:"size"`
-	Cost     float64       `json:"cost"`
-	Planid   string        `json:"planid"`
-	Count    string        `json:"count"`
-	Policies []interface{} `json:"policies"`
-	Workers  []WorkerNode  `json:"workers"`
+	Id        string        `json:"id"`
+	Size      string        `json:"size"`
+	Cost      float64       `json:"cost"`
+	Planid    string        `json:"planid"`
+	Count     string        `json:"count"`
+	AutoScale bool          `json:"auto_scale"`
+	MinNodes  int           `json:"min_nodes"`
+	MaxNodes  int           `json:"max_nodes"`
+	Policies  []interface{} `json:"policies"`
+	Workers   []WorkerNode  `json:"workers"`
 }
 type WorkerNode struct {
 	Cloudid        string         `json:"cloudid"`
