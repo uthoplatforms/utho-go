@@ -99,7 +99,7 @@ type NodepoolDetails struct {
 	Workers   []WorkerNode  `json:"workers"`
 }
 type WorkerNode struct {
-	Cloudid        string         `json:"cloudid"`
+	ID             string         `json:"cloudid"`
 	Nodepool       string         `json:"nodepool"`
 	Hostname       string         `json:"hostname"`
 	Ram            string         `json:"ram"`
@@ -514,16 +514,18 @@ func (s *KubernetesService) PowerOn(kubernetesId string) (*BasicResponse, error)
 
 type UpdateKubernetesAutoscaleNodepool struct {
 	KubernetesId string
-	NodeId       string
+	NodePoolId   string
 	Count        string `json:"count"`
 	Label        string `json:"label"`
 	PoolType     string `json:"pool_type"`
 	Size         string `json:"size"`
 	Policies     string `json:"policies"`
+	MinNodes     int    `json:"min_nodes"`
+	MaxNodes     int    `json:"max_nodes"`
 }
 
 func (s *KubernetesService) UpdateAutoscaleNodepool(params UpdateKubernetesAutoscaleNodepool) (*UpdateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodeId + "/update"
+	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodePoolId + "/update"
 	req, _ := s.client.NewRequest("POST", reqUrl)
 
 	var kubernetes UpdateResponse
@@ -540,7 +542,7 @@ func (s *KubernetesService) UpdateAutoscaleNodepool(params UpdateKubernetesAutos
 
 type UpdateKubernetesStaticNodepool struct {
 	KubernetesId string
-	NodeId       string
+	NodePoolId   string
 	Count        string `json:"count"`
 	Label        string `json:"label"`
 	PoolType     string `json:"pool_type"`
@@ -548,7 +550,7 @@ type UpdateKubernetesStaticNodepool struct {
 }
 
 func (s *KubernetesService) UpdateStaticNodepool(params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodeId + "/update"
+	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodePoolId + "/update"
 	req, _ := s.client.NewRequest("POST", reqUrl)
 
 	var kubernetes UpdateResponse
