@@ -87,7 +87,7 @@ type MasterNodeDetails struct {
 	PrivateNetwork PrivateNetwork `json:"private_network"`
 }
 type NodepoolDetails struct {
-	Id        string        `json:"id"`
+	ID        string        `json:"id"`
 	Size      string        `json:"size"`
 	Cost      float64       `json:"cost"`
 	Planid    string        `json:"planid"`
