@@ -1,6 +1,7 @@
 package utho
 
 import (
+	"context"
 	"errors"
 )
 
@@ -191,12 +192,12 @@ type CreateNodePoolEbs struct {
 	Type string `json:"type"`
 }
 
-func (s *KubernetesService) Create(params CreateKubernetesParams) (*CreateResponse, error) {
+func (k *KubernetesService) Create(ctx context.Context, params CreateKubernetesParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/deploy"
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -207,12 +208,12 @@ func (s *KubernetesService) Create(params CreateKubernetesParams) (*CreateRespon
 	return &kubernetes, nil
 }
 
-func (s *KubernetesService) Read(clusterId string) (*KubernetesCluster, error) {
+func (k *KubernetesService) Read(ctx context.Context, clusterId string) (*KubernetesCluster, error) {
 	reqUrl := "kubernetes/" + clusterId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetes KubernetesCluster
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -223,12 +224,12 @@ func (s *KubernetesService) Read(clusterId string) (*KubernetesCluster, error) {
 	return &kubernetes, nil
 }
 
-func (s *KubernetesService) List() ([]K8s, error) {
+func (k *KubernetesService) List(ctx context.Context) ([]K8s, error) {
 	reqUrl := "kubernetes"
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetes Kubernetes
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -245,12 +246,12 @@ type DeleteKubernetesParams struct {
 	Confirm string `json:"confirm"`
 }
 
-func (s *KubernetesService) Delete(params DeleteKubernetesParams) (*DeleteResponse, error) {
+func (k *KubernetesService) Delete(ctx context.Context, params DeleteKubernetesParams) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + params.ClusterId + "/destroy"
-	req, _ := s.client.NewRequest("DELETE", reqUrl)
+	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
-	if _, err := s.client.Do(req, &delResponse); err != nil {
+	if _, err := k.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
 	if delResponse.Status != "success" && delResponse.Status != "" {
@@ -265,12 +266,12 @@ type CreateKubernetesLoadbalancerParams struct {
 	LoadbalancerId string
 }
 
-func (s *KubernetesService) CreateLoadbalancer(params CreateKubernetesLoadbalancerParams) (*CreateResponse, error) {
+func (k *KubernetesService) CreateLoadbalancer(ctx context.Context, params CreateKubernetesLoadbalancerParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/loadbalancer/" + params.LoadbalancerId
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -281,12 +282,12 @@ func (s *KubernetesService) CreateLoadbalancer(params CreateKubernetesLoadbalanc
 	return &kubernetes, nil
 }
 
-func (s *KubernetesService) ReadLoadbalancer(kubernetesId, loadbalancerId string) (*K8sLoadbalancers, error) {
+func (k *KubernetesService) ReadLoadbalancer(ctx context.Context, kubernetesId, loadbalancerId string) (*K8sLoadbalancers, error) {
 	reqUrl := "kubernetes/" + kubernetesId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
-	_, err := s.client.Do(req, &kubernetess)
+	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
@@ -306,12 +307,12 @@ func (s *KubernetesService) ReadLoadbalancer(kubernetesId, loadbalancerId string
 	return &loadbalancers, nil
 }
 
-func (s *KubernetesService) ListLoadbalancers(kubernetesId string) ([]K8sLoadbalancers, error) {
+func (k *KubernetesService) ListLoadbalancers(ctx context.Context, kubernetesId string) ([]K8sLoadbalancers, error) {
 	reqUrl := "kubernetes/" + kubernetesId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
-	_, err := s.client.Do(req, &kubernetess)
+	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
@@ -322,12 +323,12 @@ func (s *KubernetesService) ListLoadbalancers(kubernetesId string) ([]K8sLoadbal
 	return kubernetess.LoadBalancers, nil
 }
 
-func (s *KubernetesService) DeleteLoadbalancer(kubernetesId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
+func (k *KubernetesService) DeleteLoadbalancer(ctx context.Context, kubernetesId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + kubernetesId + "/loadbalancerpolicy/" + kubernetesLoadbalancerId
-	req, _ := s.client.NewRequest("DELETE", reqUrl)
+	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
-	if _, err := s.client.Do(req, &delResponse); err != nil {
+	if _, err := k.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
 	if delResponse.Status != "success" && delResponse.Status != "" {
@@ -342,12 +343,12 @@ type CreateKubernetesSecurityGroupParams struct {
 	KubernetesSecurityGroupId string
 }
 
-func (s *KubernetesService) CreateSecurityGroup(params CreateKubernetesSecurityGroupParams) (*CreateResponse, error) {
+func (k *KubernetesService) CreateSecurityGroup(ctx context.Context, params CreateKubernetesSecurityGroupParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/securitygroup/" + params.KubernetesSecurityGroupId
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -358,12 +359,12 @@ func (s *KubernetesService) CreateSecurityGroup(params CreateKubernetesSecurityG
 	return &kubernetes, nil
 }
 
-func (s *KubernetesService) ReadSecurityGroup(kubernetesId, securitygroupId string) (*K8sSecurityGroups, error) {
+func (k *KubernetesService) ReadSecurityGroup(ctx context.Context, kubernetesId, securitygroupId string) (*K8sSecurityGroups, error) {
 	reqUrl := "kubernetes/" + kubernetesId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
-	_, err := s.client.Do(req, &kubernetess)
+	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
@@ -383,12 +384,12 @@ func (s *KubernetesService) ReadSecurityGroup(kubernetesId, securitygroupId stri
 	return &securitygroups, nil
 }
 
-func (s *KubernetesService) ListSecurityGroups(kubernetesId string) ([]K8sSecurityGroups, error) {
+func (k *KubernetesService) ListSecurityGroups(ctx context.Context, kubernetesId string) ([]K8sSecurityGroups, error) {
 	reqUrl := "kubernetes/" + kubernetesId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
-	_, err := s.client.Do(req, &kubernetess)
+	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
@@ -399,12 +400,12 @@ func (s *KubernetesService) ListSecurityGroups(kubernetesId string) ([]K8sSecuri
 	return kubernetess.SecurityGroups, nil
 }
 
-func (s *KubernetesService) DeleteSecurityGroup(kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
+func (k *KubernetesService) DeleteSecurityGroup(ctx context.Context, kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + kuberneteseId + "/securitygroup/" + kubernetesSecurityGroupId
-	req, _ := s.client.NewRequest("DELETE", reqUrl)
+	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
-	if _, err := s.client.Do(req, &delResponse); err != nil {
+	if _, err := k.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
 	if delResponse.Status != "success" && delResponse.Status != "" {
@@ -419,12 +420,12 @@ type CreateKubernetesTargetgroupParams struct {
 	KubernetesTargetgroupId string
 }
 
-func (s *KubernetesService) CreateTargetgroup(params CreateKubernetesTargetgroupParams) (*CreateResponse, error) {
+func (k *KubernetesService) CreateTargetgroup(ctx context.Context, params CreateKubernetesTargetgroupParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/targetgroup/" + params.KubernetesTargetgroupId
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -435,12 +436,12 @@ func (s *KubernetesService) CreateTargetgroup(params CreateKubernetesTargetgroup
 	return &kubernetes, nil
 }
 
-func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) (*K8sTargetGroups, error) {
+func (k *KubernetesService) ReadTargetgroup(ctx context.Context, kubernetesId, targetgroupId string) (*K8sTargetGroups, error) {
 	reqUrl := "kubernetes/" + kubernetesId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
-	_, err := s.client.Do(req, &kubernetess)
+	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
@@ -464,12 +465,12 @@ func (s *KubernetesService) ReadTargetgroup(kubernetesId, targetgroupId string) 
 	return &targetgroups, nil
 }
 
-func (s *KubernetesService) ListTargetgroups(kubernetesId string) ([]K8sTargetGroups, error) {
+func (k *KubernetesService) ListTargetgroups(ctx context.Context, kubernetesId string) ([]K8sTargetGroups, error) {
 	reqUrl := "kubernetes/" + kubernetesId
-	req, _ := s.client.NewRequest("GET", reqUrl)
+	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
-	_, err := s.client.Do(req, &kubernetess)
+	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
 	}
@@ -480,12 +481,12 @@ func (s *KubernetesService) ListTargetgroups(kubernetesId string) ([]K8sTargetGr
 	return kubernetess.TargetGroups, nil
 }
 
-func (s *KubernetesService) DeleteTargetgroup(kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {
+func (k *KubernetesService) DeleteTargetgroup(ctx context.Context, kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {
 	reqUrl := "kubernetes/" + kuberneteseId + "/targetgroup/" + kubernetesTargetgroupId
-	req, _ := s.client.NewRequest("DELETE", reqUrl)
+	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
-	if _, err := s.client.Do(req, &delResponse); err != nil {
+	if _, err := k.client.Do(req, &delResponse); err != nil {
 		return nil, err
 	}
 	if delResponse.Status != "success" && delResponse.Status != "" {
@@ -495,12 +496,12 @@ func (s *KubernetesService) DeleteTargetgroup(kuberneteseId, kubernetesTargetgro
 	return &delResponse, nil
 }
 
-func (s *KubernetesService) PowerOff(kubernetesId string) (*BasicResponse, error) {
+func (k *KubernetesService) PowerOff(ctx context.Context, kubernetesId string) (*BasicResponse, error) {
 	reqUrl := "kubernetes/" + kubernetesId + "/stop"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var basicResponse BasicResponse
-	_, err := s.client.Do(req, &basicResponse)
+	_, err := k.client.Do(req, &basicResponse)
 	if err != nil {
 		return nil, err
 	}
@@ -511,12 +512,12 @@ func (s *KubernetesService) PowerOff(kubernetesId string) (*BasicResponse, error
 	return &basicResponse, nil
 }
 
-func (s *KubernetesService) PowerOn(kubernetesId string) (*BasicResponse, error) {
+func (k *KubernetesService) PowerOn(ctx context.Context, kubernetesId string) (*BasicResponse, error) {
 	reqUrl := "kubernetes/" + kubernetesId + "/start"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var basicResponse BasicResponse
-	_, err := s.client.Do(req, &basicResponse)
+	_, err := k.client.Do(req, &basicResponse)
 	if err != nil {
 		return nil, err
 	}
@@ -527,12 +528,12 @@ func (s *KubernetesService) PowerOn(kubernetesId string) (*BasicResponse, error)
 	return &basicResponse, nil
 }
 
-func (s *KubernetesService) CreateNodePool(params CreateKubernetesNodePoolParams) (*CreateResponse, error) {
+func (k *KubernetesService) CreateNodePool(ctx context.Context, params CreateKubernetesNodePoolParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/add"
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -555,12 +556,12 @@ type UpdateKubernetesAutoscaleNodepool struct {
 	MaxNodes     int    `json:"max_nodes"`
 }
 
-func (s *KubernetesService) UpdateAutoscaleNodepool(params UpdateKubernetesAutoscaleNodepool) (*UpdateResponse, error) {
+func (k *KubernetesService) UpdateAutoscaleNodepool(ctx context.Context, params UpdateKubernetesAutoscaleNodepool) (*UpdateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodePoolId + "/update"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var kubernetes UpdateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}
@@ -580,12 +581,12 @@ type UpdateKubernetesStaticNodepool struct {
 	Size         string `json:"size"`
 }
 
-func (s *KubernetesService) UpdateStaticNodepool(params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
+func (k *KubernetesService) UpdateStaticNodepool(ctx context.Context, params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
 	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodePoolId + "/update"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var kubernetes UpdateResponse
-	_, err := s.client.Do(req, &kubernetes)
+	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
 	}

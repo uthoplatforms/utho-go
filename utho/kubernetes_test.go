@@ -1,6 +1,7 @@
 package utho
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -40,7 +41,8 @@ func TestKubernetesService_Create_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateResponseJson)
 	})
 
-	got, err := client.Kubernetes().Create(payload)
+	ctx := context.Background()
+	got, err := client.Kubernetes().Create(ctx, payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
@@ -52,7 +54,8 @@ func TestKubernetesService_Create_happyPath(t *testing.T) {
 func TestKubernetesService_Create_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.Kubernetes().Create(CreateKubernetesParams{})
+	ctx := context.Background()
+	_, err := client.Kubernetes().Create(ctx, CreateKubernetesParams{})
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -75,7 +78,8 @@ func TestKubernetesService_Read_happyPath(t *testing.T) {
 	var want KubernetesCluster
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().Read(clusterId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().Read(ctx, clusterId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -84,7 +88,8 @@ func TestKubernetesService_Read_happyPath(t *testing.T) {
 func TestKubernetesService_Read_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	apikey, err := client.Kubernetes().Read("someId")
+	ctx := context.Background()
+	apikey, err := client.Kubernetes().Read(ctx, "someId")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -109,7 +114,8 @@ func TestKubernetesService_List_happyPath(t *testing.T) {
 	var want []K8s
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().List()
+	ctx := context.Background()
+	got, _ := client.Kubernetes().List(ctx)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d stacks to be returned, instead got %d", len(want), len(got))
 	}
@@ -122,7 +128,8 @@ func TestKubernetesService_List_happyPath(t *testing.T) {
 func TestKubernetesService_List_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	stacks, err := client.Kubernetes().List()
+	ctx := context.Background()
+	stacks, err := client.Kubernetes().List(ctx)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -149,7 +156,8 @@ func TestKubernetesService_Delete_happyPath(t *testing.T) {
 
 	want := DeleteResponse{Status: "success", Message: "success"}
 
-	got, _ := client.Kubernetes().Delete(payload)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().Delete(ctx, payload)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -158,7 +166,8 @@ func TestKubernetesService_Delete_happyPath(t *testing.T) {
 func TestKubernetesService_Delete_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	delResponse, err := client.Kubernetes().Delete(DeleteKubernetesParams{})
+	ctx := context.Background()
+	delResponse, err := client.Kubernetes().Delete(ctx, DeleteKubernetesParams{})
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -185,7 +194,8 @@ func TestKubernetesServices_CreateLoadbalancer_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
-	got, err := client.Kubernetes().CreateLoadbalancer(payload)
+	ctx := context.Background()
+	got, err := client.Kubernetes().CreateLoadbalancer(ctx, payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -197,7 +207,8 @@ func TestKubernetesServices_CreateLoadbalancer_happyPath(t *testing.T) {
 func TestKubernetesServices_CreateLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.Kubernetes().CreateLoadbalancer(CreateKubernetesLoadbalancerParams{})
+	ctx := context.Background()
+	_, err := client.Kubernetes().CreateLoadbalancer(ctx, CreateKubernetesLoadbalancerParams{})
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -221,7 +232,8 @@ func TestKubernetesServices_ReadLoadbalancer_happyPath(t *testing.T) {
 	var want K8sLoadbalancers
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().ReadLoadbalancer(kubernetesId, loadbalancerID)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().ReadLoadbalancer(ctx, kubernetesId, loadbalancerID)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -230,7 +242,8 @@ func TestKubernetesServices_ReadLoadbalancer_happyPath(t *testing.T) {
 func TestKubernetesServices_ReadLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	apikey, err := client.Kubernetes().ReadLoadbalancer("11111", "122134")
+	ctx := context.Background()
+	apikey, err := client.Kubernetes().ReadLoadbalancer(ctx, "11111", "122134")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -256,7 +269,8 @@ func TestKubernetesServices_ListLoadbalancer_happyPath(t *testing.T) {
 	var want []K8sLoadbalancers
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().ListLoadbalancers(kubernetesId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().ListLoadbalancers(ctx, kubernetesId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d kubernetes loadbalancer to be returned, instead got %d", len(want), len(got))
 	}
@@ -269,7 +283,8 @@ func TestKubernetesServices_ListLoadbalancer_happyPath(t *testing.T) {
 func TestKubernetesServices_ListLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	loadbalancer, err := client.Kubernetes().ListLoadbalancers("11111")
+	ctx := context.Background()
+	loadbalancer, err := client.Kubernetes().ListLoadbalancers(ctx, "11111")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -294,7 +309,8 @@ func TestKubernetesServices_DeleteLoadbalancer_happyPath(t *testing.T) {
 
 	want := DeleteResponse{Status: "success", Message: "success"}
 
-	got, _ := client.Kubernetes().DeleteLoadbalancer(kubernetesId, loadbalancerId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().DeleteLoadbalancer(ctx, kubernetesId, loadbalancerId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -303,7 +319,8 @@ func TestKubernetesServices_DeleteLoadbalancer_happyPath(t *testing.T) {
 func TestKubernetesServices_DeleteLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	delResponse, err := client.Kubernetes().DeleteLoadbalancer("someLoadbalancerName", "123543")
+	ctx := context.Background()
+	delResponse, err := client.Kubernetes().DeleteLoadbalancer(ctx, "someLoadbalancerName", "123543")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -330,7 +347,8 @@ func TestKubernetesServices_CreateSecurityGroup_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
-	got, err := client.Kubernetes().CreateSecurityGroup(payload)
+	ctx := context.Background()
+	got, err := client.Kubernetes().CreateSecurityGroup(ctx, payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -342,7 +360,8 @@ func TestKubernetesServices_CreateSecurityGroup_happyPath(t *testing.T) {
 func TestKubernetesServices_CreateSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.Kubernetes().CreateSecurityGroup(CreateKubernetesSecurityGroupParams{})
+	ctx := context.Background()
+	_, err := client.Kubernetes().CreateSecurityGroup(ctx, CreateKubernetesSecurityGroupParams{})
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -366,7 +385,8 @@ func TestKubernetesServices_ReadSecurityGroup_happyPath(t *testing.T) {
 	var want K8sSecurityGroups
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().ReadSecurityGroup(kubernetesId, securityGroupId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().ReadSecurityGroup(ctx, kubernetesId, securityGroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -375,7 +395,8 @@ func TestKubernetesServices_ReadSecurityGroup_happyPath(t *testing.T) {
 func TestKubernetesServices_ReadSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	apikey, err := client.Kubernetes().ReadSecurityGroup("11111", "122134")
+	ctx := context.Background()
+	apikey, err := client.Kubernetes().ReadSecurityGroup(ctx, "11111", "122134")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -401,7 +422,8 @@ func TestKubernetesServices_ListSecurityGroup_happyPath(t *testing.T) {
 	var want []K8sSecurityGroups
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().ListSecurityGroups(kubernetesId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().ListSecurityGroups(ctx, kubernetesId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d kubernetes securitygroup to be returned, instead got %d", len(want), len(got))
 	}
@@ -414,7 +436,8 @@ func TestKubernetesServices_ListSecurityGroup_happyPath(t *testing.T) {
 func TestKubernetesServices_ListSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	securitygroup, err := client.Kubernetes().ListSecurityGroups("11111")
+	ctx := context.Background()
+	securitygroup, err := client.Kubernetes().ListSecurityGroups(ctx, "11111")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -439,7 +462,8 @@ func TestKubernetesServices_DeleteSecurityGroup_happyPath(t *testing.T) {
 
 	want := DeleteResponse{Status: "success", Message: "success"}
 
-	got, _ := client.Kubernetes().DeleteSecurityGroup(kubernetesId, securityGroupId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().DeleteSecurityGroup(ctx, kubernetesId, securityGroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -448,7 +472,8 @@ func TestKubernetesServices_DeleteSecurityGroup_happyPath(t *testing.T) {
 func TestKubernetesServices_DeleteSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	delResponse, err := client.Kubernetes().DeleteSecurityGroup("someSecurityGroupName", "123543")
+	ctx := context.Background()
+	delResponse, err := client.Kubernetes().DeleteSecurityGroup(ctx, "someSecurityGroupName", "123543")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -475,7 +500,8 @@ func TestKubernetesServices_CreateTargetgroup_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
-	got, err := client.Kubernetes().CreateTargetgroup(payload)
+	ctx := context.Background()
+	got, err := client.Kubernetes().CreateTargetgroup(ctx, payload)
 
 	var want CreateResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -487,7 +513,8 @@ func TestKubernetesServices_CreateTargetgroup_happyPath(t *testing.T) {
 func TestKubernetesServices_CreateTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.Kubernetes().CreateTargetgroup(CreateKubernetesTargetgroupParams{})
+	ctx := context.Background()
+	_, err := client.Kubernetes().CreateTargetgroup(ctx, CreateKubernetesTargetgroupParams{})
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -511,7 +538,8 @@ func TestKubernetesServices_ReadTargetgroup_happyPath(t *testing.T) {
 	var want K8sTargetGroups
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().ReadTargetgroup(kubernetesId, targetgroupId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().ReadTargetgroup(ctx, kubernetesId, targetgroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -520,7 +548,8 @@ func TestKubernetesServices_ReadTargetgroup_happyPath(t *testing.T) {
 func TestKubernetesServices_ReadTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	apikey, err := client.Kubernetes().ReadTargetgroup("11111", "122134")
+	ctx := context.Background()
+	apikey, err := client.Kubernetes().ReadTargetgroup(ctx, "11111", "122134")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -546,7 +575,8 @@ func TestKubernetesServices_ListTargetgroup_happyPath(t *testing.T) {
 	var want []K8sTargetGroups
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.Kubernetes().ListTargetgroups(kubernetesId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().ListTargetgroups(ctx, kubernetesId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d kubernetes targetgroup to be returned, instead got %d", len(want), len(got))
 	}
@@ -559,7 +589,8 @@ func TestKubernetesServices_ListTargetgroup_happyPath(t *testing.T) {
 func TestKubernetesServices_ListTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	targetgroup, err := client.Kubernetes().ListTargetgroups("11111")
+	ctx := context.Background()
+	targetgroup, err := client.Kubernetes().ListTargetgroups(ctx, "11111")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -584,7 +615,8 @@ func TestKubernetesServices_DeleteTargetgroup_happyPath(t *testing.T) {
 
 	want := DeleteResponse{Status: "success", Message: "success"}
 
-	got, _ := client.Kubernetes().DeleteTargetgroup(kubernetesId, targetgroupId)
+	ctx := context.Background()
+	got, _ := client.Kubernetes().DeleteTargetgroup(ctx, kubernetesId, targetgroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -593,7 +625,8 @@ func TestKubernetesServices_DeleteTargetgroup_happyPath(t *testing.T) {
 func TestKubernetesServices_DeleteTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	delResponse, err := client.Kubernetes().DeleteTargetgroup("someTargetgroupName", "123543")
+	ctx := context.Background()
+	delResponse, err := client.Kubernetes().DeleteTargetgroup(ctx, "someTargetgroupName", "123543")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -615,7 +648,8 @@ func TestKubernetesService_PowerOn_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
-	got, err := client.Kubernetes().PowerOn(kubernetesId)
+	ctx := context.Background()
+	got, err := client.Kubernetes().PowerOn(ctx, kubernetesId)
 
 	var want BasicResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -627,7 +661,8 @@ func TestKubernetesService_PowerOn_happyPath(t *testing.T) {
 func TestKubernetesService_PowerOn_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.Kubernetes().PowerOn("kubernetesId")
+	ctx := context.Background()
+	_, err := client.Kubernetes().PowerOn(ctx, "kubernetesId")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -646,7 +681,8 @@ func TestKubernetesService_PowerOff_happyPath(t *testing.T) {
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
-	got, err := client.Kubernetes().PowerOff(kubernetesId)
+	ctx := context.Background()
+	got, err := client.Kubernetes().PowerOff(ctx, kubernetesId)
 
 	var want BasicResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -658,7 +694,8 @@ func TestKubernetesService_PowerOff_happyPath(t *testing.T) {
 func TestKubernetesService_PowerOff_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.Kubernetes().PowerOff("kubernetesId")
+	ctx := context.Background()
+	_, err := client.Kubernetes().PowerOff(ctx, "kubernetesId")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
