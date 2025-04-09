@@ -176,6 +176,21 @@ type CreateKubernetesPoliciesParams struct {
 	Minsize  string `json:"minsize"`
 }
 
+type CreateKubernetesNodePoolParams struct {
+	KubernetesId string
+	Nodepools    []CreateNodepoolsDetails `json:"nodepools"`
+}
+type CreateNodepoolsDetails struct {
+	Label string              `json:"label"`
+	Size  string              `json:"size"`
+	Count string              `json:"count"`
+	Ebs   []CreateNodePoolEbs `json:"ebs"`
+}
+type CreateNodePoolEbs struct {
+	Disk string `json:"disk"`
+	Type string `json:"type"`
+}
+
 func (s *KubernetesService) Create(params CreateKubernetesParams) (*CreateResponse, error) {
 	reqUrl := "kubernetes/deploy"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
@@ -510,6 +525,22 @@ func (s *KubernetesService) PowerOn(kubernetesId string) (*BasicResponse, error)
 	}
 
 	return &basicResponse, nil
+}
+
+func (s *KubernetesService) CreateNodePool(params CreateKubernetesNodePoolParams) (*CreateResponse, error) {
+	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/add"
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+
+	var kubernetes CreateResponse
+	_, err := s.client.Do(req, &kubernetes)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetes.Status != "success" && kubernetes.Status != "" {
+		return nil, errors.New(kubernetes.Message)
+	}
+
+	return &kubernetes, nil
 }
 
 type UpdateKubernetesAutoscaleNodepool struct {
