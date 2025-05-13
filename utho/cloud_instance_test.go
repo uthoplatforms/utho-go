@@ -60,10 +60,9 @@ func TestCloudInstanceService_Read_happyPath(t *testing.T) {
 	var want CloudInstance
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.CloudInstances().Read(ID)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
-	}
+	got, err := client.CloudInstances().Read(ID)
+	assert.Nil(t, err)
+	assert.Equal(t, want, *got)
 }
 
 func TestCloudInstanceService_Read_invalidServer(t *testing.T) {
@@ -94,14 +93,9 @@ func TestCloudInstanceService_List_happyPath(t *testing.T) {
 	var want []CloudInstance
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
-	got, _ := client.CloudInstances().List()
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d cloudinstance to be returned, instead got %d", len(want), len(got))
-	}
-
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
-	}
+	got, err := client.CloudInstances().List()
+	assert.Nil(t, err)
+	assert.Equal(t, want, got)
 }
 
 func TestCloudInstanceService_List_invalidServer(t *testing.T) {

@@ -1,6 +1,7 @@
 package utho
 
 import (
+	"encoding/json"
 	"errors"
 )
 
@@ -81,17 +82,18 @@ type Networks struct {
 	Private Private `json:"private"`
 }
 type Public struct {
-	V4 []V4Public `json:"v4"`
+	V4 V4PublicArray `json:"v4"`
 }
 type V4Public struct {
-	IPAddress string `json:"ip_address"`
-	Netmask   string `json:"netmask"`
-	Gateway   string `json:"gateway"`
-	Type      string `json:"type"`
-	Nat       bool   `json:"nat"`
-	Primary   string `json:"primary"`
-	Rdns      string `json:"rdns"`
+	IPAddress string `json:"ip_address,omitempty"`
+	Netmask   string `json:"netmask,omitempty"`
+	Gateway   string `json:"gateway,omitempty"`
+	Type      string `json:"type,omitempty"`
+	Nat       bool   `json:"nat,omitempty"`
+	Primary   string `json:"primary,omitempty"`
+	Rdns      string `json:"rdns,omitempty"`
 }
+
 type Private struct {
 	V4 []V4Private `json:"v4"`
 }
@@ -529,4 +531,28 @@ func (s *CloudInstancesService) RestoreSnapshot(instanceId, snapshotId string) (
 	}
 
 	return &basicResponse, nil
+}
+
+// Custom type to handle unmarshaling of V4Public
+type V4PublicArray []V4Public
+
+func (v *V4PublicArray) UnmarshalJSON(data []byte) error {
+	var single []V4Public
+	var nested [][]V4Public
+
+	// Try unmarshaling as a single array
+	if err := json.Unmarshal(data, &single); err == nil {
+		*v = single
+		return nil
+	}
+
+	// Try unmarshaling as a nested array
+	if err := json.Unmarshal(data, &nested); err == nil {
+		for _, inner := range nested {
+			*v = append(*v, inner...)
+		}
+		return nil
+	}
+
+	return errors.New("invalid format for V4PublicArray")
 }
