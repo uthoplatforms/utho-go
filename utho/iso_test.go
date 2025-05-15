@@ -7,30 +7,35 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestIsoService_Create_happyPath(t *testing.T) {
 	token := "token"
 	var payload CreateISOParams
-	_ = json.Unmarshal([]byte(dummyCreateIsoRequestJson), &payload)
+	_ = faker.FakeData(&payload)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var dummyResponse CreateResponse
+	_ = faker.FakeData(&dummyResponse)
+	dummyResponse.Status = "success"
+
+	serverResponse, _ := json.Marshal(dummyResponse)
+
 	mux.HandleFunc("/iso/add", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateResponseJson)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
 	got, err := client.ISO().Create(payload)
 
-	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
-
 	assert.Nil(t, err)
-	assert.Equal(t, want, *got)
+	assert.Equal(t, dummyResponse, *got)
 }
 
 func TestIsoService_Create_invalidServer(t *testing.T) {
@@ -46,24 +51,32 @@ func TestIsoService_ListAll_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyIsoRes
+	var dummyIsoList []ISO
+	for i := 0; i < 3; i++ { // Generate a list of 3 dummy ISOs
+		var iso ISO
+		_ = faker.FakeData(&iso)
+		dummyIsoList = append(dummyIsoList, iso)
+	}
+
+	serverResponse, _ := json.Marshal(ISOs{
+		ISOs:    dummyIsoList,
+		Status:  "success",
+		Message: "success",
+	})
 
 	mux.HandleFunc("/iso", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, dummyIsoReq)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want []ISO
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	got, _ := client.ISO().List()
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d iso to be returned, instead got %d", len(want), len(got))
+	if len(got) != len(dummyIsoList) {
+		t.Errorf("Was expecting %d ISOs to be returned, instead got %d", len(dummyIsoList), len(got))
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
+	if !reflect.DeepEqual(got, dummyIsoList) {
+		t.Errorf("Response = %v, want %v", got, dummyIsoList)
 	}
 }
 
@@ -111,42 +124,3 @@ func TestIsoService_Delete_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
-
-const dummyIsoReq = `{
-    "isos": [
-        {
-            "name": "qwdwqqs",
-            "file": "SYNiH-197456.iso",
-            "size": 6140.98,
-            "added_at": "2024-05-05 14:33:36",
-            "download": "100",
-            "dc": "inmumbaizone2",
-            "dclocation": {
-                "dccc": "in",
-                "location": "Mumbai"
-            }
-        }
-    ]
-}`
-
-const dummyIsoRes = `[
-        {
-            "name": "qwdwqqs",
-            "file": "SYNiH-197456.iso",
-            "size": 6140.98,
-            "added_at": "2024-05-05 14:33:36",
-            "download": "100",
-            "dc": "inmumbaizone2",
-            "dclocation": {
-                "dccc": "in",
-                "location": "Mumbai"
-            }
-        }
-    ]
-`
-
-const dummyCreateIsoRequestJson = `{
-    "dcslug": "innoida",
-    "url": "https://software.download.prss.microsoft.com/dbazure/Win10_22H2_English_x64v1.iso?t=d7dc55e3-3b50-4d99-a510-32723166ab49&P1=1715194710&P2=601&P3=2&P4=CHCbHgRCO7kWiaI%2blqxfj67KjzaJqo7V4FogqdZ9jikjPtP1QHJGENuQLTXC6FxE3wTPuxFguvHZcmJWGjHiIEyvPptOXi2GTANoggReg%2bABWyFJXQp%2fncY2SHMzz7%2beLEJ7gnTEoY9cu3LnFIr9YcFEwKityfZEJVPzlosk6UbH0sb44W4a54YDjFxyHZmHXvzs13Xq3y7SLoCG7xX9Os8jpcbHv1Q%2bPxLVAnZYBUZgFrqcyW6WzyAuqtGa%2fLLfFs64%2f2TsYDTp9xfHTmcIWIVofMPeO17I1csqq8X2DIHXbSURZNBAP%2b9G%2fAujttaT1LgYCfzJNT93ZLLgA4DumA%3d%3d",
-    "name": "dqwd"
-}`
