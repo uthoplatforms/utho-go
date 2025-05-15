@@ -7,36 +7,36 @@ import (
 type FirewallService service
 
 type Firewalls struct {
-	Firewalls []Firewall `json:"firewalls"`
-	Status    string     `json:"status"`
-	Message   string     `json:"message"`
+	Firewalls []Firewall `json:"firewalls" faker:"-"`
+	Status    string     `json:"status" faker:"oneof: success, failure"`
+	Message   string     `json:"message" faker:"sentence"`
 }
 
 type Firewall struct {
-	ID           string         `json:"id"`
-	Name         string         `json:"name"`
-	CreatedAt    string         `json:"created_at"`
-	Rulecount    string         `json:"rulecount"`
-	Serverscount string         `json:"serverscount"`
-	Rules        []FirewallRule `json:"rules"`
+	ID           string         `json:"id" faker:"uuid_digit"`
+	Name         string         `json:"name" faker:"name"`
+	CreatedAt    string         `json:"created_at" faker:"timestamp"`
+	Rulecount    string         `json:"rulecount" faker:"oneof: 0, 5, 10"`
+	Serverscount string         `json:"serverscount" faker:"oneof: 0, 1, 50"`
+	Rules        []FirewallRule `json:"rules" faker:"-"`
 }
 type FirewallRule struct {
-	ID         string `json:"id"`
-	Firewallid string `json:"firewallid"`
-	Type       string `json:"type"`
-	Service    string `json:"service"`
-	Protocol   string `json:"protocol"`
-	Port       string `json:"port"`
-	Addresses  string `json:"addresses"`
+	ID         string `json:"id" faker:"uuid_digit"`
+	Firewallid string `json:"firewallid" faker:"uuid_digit"`
+	Type       string `json:"type" faker:"oneof: incoming, outgoing"`
+	Service    string `json:"service" faker:"word"`
+	Protocol   string `json:"protocol" faker:"oneof: TCP, UDP, ICMP"`
+	Port       string `json:"port" faker:"oneof: 22, 80, 443"`
+	Addresses  string `json:"addresses" faker:"ipv4"`
 }
 
 type CreateFirewallParams struct {
-	Name string `json:"name"`
+	Name string `json:"name" faker:"name"`
 }
 type CreateFirewallResponse struct {
-	ID      string `json:"firewallid"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	ID      string `json:"firewallid" faker:"uuid_digit"`
+	Status  string `json:"status" faker:"oneof: success, failure"`
+	Message string `json:"message" faker:"sentence"`
 }
 
 func (s *FirewallService) Create(params CreateFirewallParams) (*CreateFirewallResponse, error) {
@@ -142,6 +142,9 @@ func (s *FirewallService) ReadFirewallRule(firewallId, firewallRuleId string) (*
 	if firewall.Status != "success" && firewall.Status != "" {
 		return nil, errors.New(firewall.Message)
 	}
+	if len(firewall.Firewalls) == 0 {
+		return nil, errors.New("NotFound")
+	}
 
 	var rule FirewallRule
 	for _, r := range firewall.Firewalls[0].Rules {
@@ -167,6 +170,9 @@ func (s *FirewallService) ListFirewallRules(firewallId string) ([]FirewallRule, 
 	}
 	if firewall.Status != "success" && firewall.Status != "" {
 		return nil, errors.New(firewall.Message)
+	}
+	if len(firewall.Firewalls) == 0 {
+		return []FirewallRule{}, nil
 	}
 
 	return firewall.Firewalls[0].Rules, nil

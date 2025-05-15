@@ -7,29 +7,33 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestFirewallService_Create_happyPath(t *testing.T) {
 	token := "token"
-	payload := CreateFirewallParams{Name: "example"}
+	payload := CreateFirewallParams{}
+	_ = faker.FakeData(&payload)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var dummyResponse CreateFirewallResponse
+	_ = faker.FakeData(&dummyResponse)
+
+	serverResponse, _ := json.Marshal(dummyResponse)
+
 	mux.HandleFunc("/firewall/create", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateFirewallResponseJson)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
 	got, err := client.Firewall().Create(payload)
 
-	var want CreateFirewallResponse
-	_ = json.Unmarshal([]byte(dummyCreateFirewallResponseJson), &want)
-
 	assert.Nil(t, err)
-	assert.Equal(t, want, *got)
+	assert.Equal(t, dummyResponse, *got)
 }
 
 func TestFirewallService_Create_invalidServer(t *testing.T) {
@@ -45,22 +49,24 @@ func TestFirewallService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	firewallId := "11111"
-	expectedResponse := dummyReadFirewallRes
-	serverResponse := dummyReadFirewallServerRes
+	firewallId := faker.UUIDDigit()
+	var dummyFirewall Firewall
+	_ = faker.FakeData(&dummyFirewall)
+
+	serverResponse, _ := json.Marshal(Firewalls{
+		Firewalls: []Firewall{dummyFirewall},
+		Status:    "success",
+	})
 
 	mux.HandleFunc("/firewall/"+firewallId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want Firewall
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	got, _ := client.Firewall().Read(firewallId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
+	if !reflect.DeepEqual(*got, dummyFirewall) {
+		t.Errorf("Response = %v, want %v", *got, dummyFirewall)
 	}
 }
 
@@ -80,25 +86,31 @@ func TestFirewallService_List_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyReadFirewallRes
-	serverResponse := dummyListFirewallServerRes
+	var dummyFirewallList []Firewall
+	for i := 0; i < 3; i++ { // Generate a list of 3 dummy firewalls
+		var firewall Firewall
+		_ = faker.FakeData(&firewall)
+		dummyFirewallList = append(dummyFirewallList, firewall)
+	}
+
+	serverResponse, _ := json.Marshal(Firewalls{
+		Firewalls: dummyFirewallList,
+		Status:    "success",
+	})
 
 	mux.HandleFunc("/firewall", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want []Firewall
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	got, _ := client.Firewall().List()
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d firewall to be returned, instead got %d", len(want), len(got))
+	if len(got) != len(dummyFirewallList) {
+		t.Errorf("Was expecting %d firewalls to be returned, instead got %d", len(dummyFirewallList), len(got))
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
+	if !reflect.DeepEqual(got, dummyFirewallList) {
+		t.Errorf("Response = %v, want %v", got, dummyFirewallList)
 	}
 }
 
@@ -190,23 +202,33 @@ func TestFirewallService_ReadFirewallRule_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	firewallId := "23432613"
-	firewallRuleID := "42344749"
-	expectedResponse := dummyReadFirewallRuleRes
-	serverResponse := dummyReadFirewallServerRes
+	firewallId := faker.UUIDDigit()
+	firewallRuleId := faker.UUIDDigit()
+	var dummyFirewall Firewall
+	_ = faker.FakeData(&dummyFirewall)
+
+	serverResponse, _ := json.Marshal(Firewalls{
+		Firewalls: []Firewall{dummyFirewall},
+		Status:    "success",
+	})
 
 	mux.HandleFunc("/firewall/"+firewallId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want FirewallRule
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	var expectedRule FirewallRule
+	for _, rule := range dummyFirewall.Rules {
+		if rule.ID == firewallRuleId {
+			expectedRule = rule
+			break
+		}
+	}
 
-	got, _ := client.Firewall().ReadFirewallRule(firewallId, firewallRuleID)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
+	got, _ := client.Firewall().ReadFirewallRule(firewallId, firewallRuleId)
+	if !reflect.DeepEqual(*got, expectedRule) {
+		t.Errorf("Response = %v, want %v", *got, expectedRule)
 	}
 }
 
@@ -226,26 +248,37 @@ func TestFirewallService_ListFirewallRule_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	firewallId := "11111"
-	expectedResponse := dummyReadFirewallRuleRes
-	serverResponse := dummyListFirewallServerRes
+	firewallId := faker.UUIDDigit()
+	var dummyFirewall Firewall
+	_ = faker.FakeData(&dummyFirewall)
+
+	// Ensure the dummy firewall has rules for testing
+	if len(dummyFirewall.Rules) == 0 {
+		for i := 0; i < 3; i++ { // Add 3 dummy rules
+			var rule FirewallRule
+			_ = faker.FakeData(&rule)
+			dummyFirewall.Rules = append(dummyFirewall.Rules, rule)
+		}
+	}
+
+	serverResponse, _ := json.Marshal(Firewalls{
+		Firewalls: []Firewall{dummyFirewall},
+		Status:    "success",
+	})
 
 	mux.HandleFunc("/firewall/"+firewallId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want []FirewallRule
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	got, _ := client.Firewall().ListFirewallRules(firewallId)
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d firewallrule to be returned, instead got %d", len(want), len(got))
+	if len(got) != len(dummyFirewall.Rules) {
+		t.Errorf("Was expecting %d firewall rules to be returned, instead got %d", len(dummyFirewall.Rules), len(got))
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
+	if !reflect.DeepEqual(got, dummyFirewall.Rules) {
+		t.Errorf("Response = %v, want %v", got, dummyFirewall.Rules)
 	}
 }
 
@@ -294,238 +327,3 @@ func TestFirewallService_DeleteFirewallRule_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
-
-const dummyCreateFirewallResponseJson = `{
-	"id":"11111",
-    "status": "success",
-    "message": "success"
-}`
-
-const dummyReadFirewallRes = `{
-	"id": "23432613",
-	"name": "",
-	"created_at": "2024-04-24 21:11:32",
-	"rulecount": "5",
-	"serverscount": "0",
-	"servers": [],
-	"rules": [
-		{
-			"id": "42344749",
-			"firewallid": "23432613",
-			"type": "incoming",
-			"service": "SSH",
-			"protocol": "TCP",
-			"port": "22",
-			"addresses": "0",
-			"note": null
-		},
-		{
-			"id": "42344750",
-			"firewallid": "23432613",
-			"type": "outgoing",
-			"service": "PING",
-			"protocol": "ICMP",
-			"port": "ICMP",
-			"addresses": "0",
-			"note": null
-		}
-	],
-	"rule": {
-		"id": "42344997",
-		"firewallid": "23432613",
-		"type": "incoming",
-		"service": "CUSTOM",
-		"protocol": "TCP",
-		"port": "23",
-		"addresses": "0",
-		"note": null
-	},
-	"scaling_groups": []
-}
-`
-
-const dummyReadFirewallServerRes = `{
-    "firewalls": [
-        {
-            "id": "23432613",
-            "name": "",
-            "created_at": "2024-04-24 21:11:32",
-            "rulecount": "5",
-            "serverscount": "0",
-            "servers": [],
-            "rules": [
-                {
-                    "id": "42344749",
-                    "firewallid": "23432613",
-                    "type": "incoming",
-                    "service": "SSH",
-                    "protocol": "TCP",
-                    "port": "22",
-                    "addresses": "0",
-                    "note": null
-                },
-                {
-                    "id": "42344750",
-                    "firewallid": "23432613",
-                    "type": "outgoing",
-                    "service": "PING",
-                    "protocol": "ICMP",
-                    "port": "ICMP",
-                    "addresses": "0",
-                    "note": null
-                }
-            ],
-            "rule": {
-                "id": "42344997",
-                "firewallid": "23432613",
-                "type": "incoming",
-                "service": "CUSTOM",
-                "protocol": "TCP",
-                "port": "23",
-                "addresses": "0",
-                "note": null
-            },
-            "scaling_groups": []
-        },
-        {
-            "id": "23432614",
-            "name": "testq",
-            "created_at": "2024-04-24 21:22:44",
-            "rulecount": "4",
-            "serverscount": "50",
-            "servers": [
-                {
-                    "id": null,
-                    "firewallid": null,
-                    "cloudid": "1277094",
-                    "ip": null,
-                    "name": "cloudserver-VBl82tPl.mhc",
-                    "country": "India",
-                    "cc": "in",
-                    "city": "Bangalore"
-                }
-            ],
-            "server": {
-                "id": null,
-                "firewallid": null,
-                "cloudid": "1277220",
-                "ip": "103.146.242.55",
-                "name": "cloudserver-VBl82tPl.mhc",
-                "country": "India",
-                "cc": "in",
-                "city": "Bangalore"
-            },
-            "rules": [
-                {
-                    "id": "42344753",
-                    "firewallid": "23432614",
-                    "type": "incoming",
-                    "service": "SSH",
-                    "protocol": "TCP",
-                    "port": "22",
-                    "addresses": "0",
-                    "note": null
-                }
-            ],
-            "rule": {
-                "id": "42344756",
-                "firewallid": "23432614",
-                "type": "outgoing",
-                "service": "ALL UDP",
-                "protocol": "UDP",
-                "port": "ALL",
-                "addresses": "0",
-                "note": null
-            },
-            "scaling_groups": [
-                {
-                    "id": "23492452",
-                    "name": "Auto-scaling-Ve6zUYjs.uthoq"
-                },
-                {
-                    "id": "23492453",
-                    "name": "qwedc"
-                }
-            ]
-        }
-    ]
-}
-`
-
-const dummyListFirewallServerRes = `[
-	{
-		"firewall": "examqweple.com",
-		"nspoint": "NO",
-		"created_at": "2024-05-03 21:29:23",
-		"firewallrule_count": "2",
-		"records": [
-			{
-				"id": "25244",
-				"hostname": "example22.com.examqweple.com",
-				"type": "A",
-				"value": "1.1.1.1",
-				"ttl": "65444",
-				"priority": "10"
-			},
-			{
-				"id": "25245",
-				"hostname": "example.examqweple.com",
-				"type": "A",
-				"value": "1.1.12.1",
-				"ttl": "65444",
-				"priority": "10"
-			}
-		],
-		"record": {
-			"id": "25245",
-			"hostname": "example.examqweple.com",
-			"type": "A",
-			"value": "1.1.12.1",
-			"ttl": "65444",
-			"priority": "10"
-		}
-	},{
-		"firewall": "example2.com",
-		"nspoint": "NO",
-		"created_at": "2024-05-03 21:29:23",
-		"firewallrule_count": "2",
-		"records": [
-			{
-				"id": "25244",
-				"hostname": "example.example2.com",
-				"type": "A",
-				"value": "1.1.1.1",
-				"ttl": "65444",
-				"priority": "10"
-			},
-			{
-				"id": "25245",
-				"hostname": "example.example2.com",
-				"type": "A",
-				"value": "1.1.12.1",
-				"ttl": "65444",
-				"priority": "10"
-			}
-		],
-		"record": {
-			"id": "25245",
-			"hostname": "example22.com.examqweple.com",
-			"type": "A",
-			"value": "1.1.12.1",
-			"ttl": "65444",
-			"priority": "10"
-		}
-	}
-]`
-
-const dummyReadFirewallRuleRes = `{
-	"id": "42344749",
-	"firewallid": "23432613",
-	"type": "incoming",
-	"service": "SSH",
-	"protocol": "TCP",
-	"port": "22",
-	"addresses": "0",
-	"note": null
-}
-`
