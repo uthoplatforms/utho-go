@@ -18,14 +18,16 @@ type CloudInstance struct {
 	Hostname          string                   `json:"hostname" faker:"hostname"`
 	CPU               string                   `json:"cpu" faker:"oneof:1,2,4,8,16"`
 	RAM               string                   `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
-	ManagedOs         string                   `json:"managed_os,omitempty" faker:"oneof:,Ubuntu,CentOS,Windows"`
-	ManagedFull       string                   `json:"managed_full,omitempty" faker:"oneof:,yes,no"`
-	ManagedOnetime    string                   `json:"managed_onetime,omitempty" faker:"oneof:,yes,no"`
+	DiscountType      string                   `json:"discount_type" faker:"oneof:Percentage,Flat"`
+	DiscountValue     string                   `json:"discount_value" faker:"oneof:,10,20,30"`
+	ManagedOs         string                   `json:"managed_os,omitempty"`
+	ManagedFull       string                   `json:"managed_full,omitempty"`
+	ManagedOnetime    string                   `json:"managed_onetime,omitempty"`
 	PlanDisksize      int                      `json:"plan_disksize" faker:"boundary_start=20,boundary_end=500"`
 	Disksize          int                      `json:"disksize" faker:"boundary_start=20,boundary_end=500"`
 	Ha                string                   `json:"ha" faker:"oneof:0,1"`
 	Status            string                   `json:"status" faker:"oneof:Active,Stopped,Pending"`
-	Iso               string                   `json:"iso,omitempty" faker:"oneof:,ubuntu.iso,centos.iso,windows.iso"`
+	Iso               string                   `json:"iso,omitempty"`
 	IP                string                   `json:"ip" faker:"ipv4"`
 	Billingcycle      string                   `json:"billingcycle" faker:"oneof:hourly,monthly"`
 	Cost              float64                  `json:"cost" faker:"amount"`
@@ -39,13 +41,13 @@ type CloudInstance struct {
 	Creditrequired    float64                  `json:"creditrequired" faker:"amount"`
 	Creditreserved    int                      `json:"creditreserved" faker:"boundary_start=0,boundary_end=10"`
 	Nextinvoiceamount float64                  `json:"nextinvoiceamount" faker:"amount"`
-	Nextinvoicehours  string                   `json:"nextinvoicehours" faker:"oneof:1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24"`
+	Nextinvoicehours  string                   `json:"nextinvoicehours" faker:"oneof:1,2,3,4,5,6,7,8,9,10"`
 	Consolepassword   string                   `json:"consolepassword" faker:"password"`
 	Powerstatus       string                   `json:"powerstatus" faker:"oneof:Running,Stopped"`
 	CreatedAt         string                   `json:"created_at" faker:"date"`
 	UpdatedAt         string                   `json:"updated_at" faker:"date"`
 	Nextduedate       string                   `json:"nextduedate" faker:"date"`
-	Bandwidth         string                   `json:"bandwidth" faker:"oneof:100,500,1000,2000,5000"`
+	Bandwidth         string                   `json:"bandwidth" faker:"oneof:100,500,1000,2000"`
 	BandwidthUsed     int                      `json:"bandwidth_used" faker:"boundary_start=0,boundary_end=1000"`
 	BandwidthFree     int                      `json:"bandwidth_free" faker:"boundary_start=0,boundary_end=1000"`
 	Features          Features                 `json:"features"`
@@ -64,8 +66,7 @@ type CloudInstance struct {
 	Firewalls         []CloudInstanceFirewalls `json:"firewalls,omitempty" faker:"slice_len=1"`
 	GpuAvailable      string                   `json:"gpu_available,omitempty" faker:"oneof:0,1"`
 	Gpus              []any                    `json:"gpus,omitempty"`
-	Snapshot          Snapshot                 `json:"snapshot,omitempty"`
-	Firewall          Firewall                 `json:"firewall,omitempty"`
+	Rescue            int                      `json:"rescue" faker:"boundary_start=0,boundary_end=1"`
 }
 type Features struct {
 	Backups string `json:"backups" faker:"oneof:0,1"`
@@ -92,21 +93,24 @@ type V4Public struct {
 	Nat       bool   `json:"nat,omitempty" faker:"bool"`
 	Primary   string `json:"primary,omitempty" faker:"oneof:1,0"`
 	Rdns      string `json:"rdns,omitempty" faker:"domain_name"`
+	Mac       string `json:"mac,omitempty"`
 }
 
 type Private struct {
 	V4 []V4Private `json:"v4" faker:"slice_len=1"`
 }
 type V4Private struct {
-	Noip      int    `json:"noip" faker:"boundary_start=0,boundary_end=10"`
-	IPAddress string `json:"ip_address" faker:"ipv4"`
-	VpcName   string `json:"vpc_name" faker:"word"`
-	Network   string `json:"network" faker:"ipv4"`
-	VpcID     string `json:"vpc_id" faker:"boundary_start=100000,boundary_end=999999"`
-	Netmask   string `json:"netmask" faker:"ipv4_netmask"`
-	Gateway   string `json:"gateway" faker:"ipv4"`
-	Type      string `json:"type" faker:"oneof:private"`
-	Primary   string `json:"primary" faker:"oneof:1,0"`
+	Noip        int    `json:"noip" faker:"boundary_start=0,boundary_end=10"`
+	IPAddress   string `json:"ip_address,omitempty" faker:"ipv4"`
+	NatPublicIP string `json:"nat_publicip,omitempty" faker:"ipv4"`
+	VpcName     string `json:"vpc_name,omitempty" faker:"word"`
+	Network     string `json:"network,omitempty" faker:"ipv4"`
+	VpcID       string `json:"vpc_id,omitempty" faker:"uuid_digit"`
+	Netmask     string `json:"netmask,omitempty" faker:"ipv4_netmask"`
+	Gateway     string `json:"gateway,omitempty" faker:"ipv4"`
+	Type        string `json:"type,omitempty" faker:"oneof:private"`
+	Mac         string `json:"mac,omitempty"`
+	Primary     string `json:"primary,omitempty" faker:"oneof:1,0"`
 }
 type Storages struct {
 	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
@@ -193,8 +197,9 @@ type CreateCloudInstanceParams struct {
 	Dcslug         string          `json:"dcslug"`
 	Image          string          `json:"image"`
 	Planid         string          `json:"planid"`
-	Vpcid          string          `json:"vpc"`
+	VpcId          string          `json:"vpc"`
 	EnablePublicip string          `json:"enable_publicip"`
+	SubnetRequired string          `json:"subnetRequired"`
 	Cpumodel       string          `json:"cpumodel"`
 	Auth           string          `json:"auth,omitempty"`
 	RootPassword   string          `json:"root_password,omitempty"`
@@ -217,8 +222,8 @@ type CreateCloudInstanceResponse struct {
 	ID       string `json:"cloudid" faker:"boundary_start=100000,boundary_end=999999"`
 	Password string `json:"password" faker:"password"`
 	Ipv4     string `json:"ipv4" faker:"ipv4"`
-	Status   string `json:"status" faker:"oneof:success,error"`
-	Message  string `json:"message" faker:"sentence"`
+	Status   string `json:"status,omitempty" faker:"oneof:success,error"`
+	Message  string `json:"message,omitempty" faker:"sentence"`
 }
 
 func (s *CloudInstancesService) Create(params CreateCloudInstanceParams) (*CreateCloudInstanceResponse, error) {
@@ -325,9 +330,13 @@ func (s *CloudInstancesService) ListResizePlans(instanceId string) ([]Plan, erro
 	return plans.Plans, nil
 }
 
-func (s *CloudInstancesService) CreateSnapshot(instanceId string) (*CreateBasicResponse, error) {
+type CreateSnapshotParams struct {
+	Name string `json:"name"`
+}
+
+func (s *CloudInstancesService) CreateSnapshot(instanceId string, params CreateSnapshotParams) (*CreateBasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/snapshot/create"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
 	var snapshot CreateBasicResponse
 	_, err := s.client.Do(req, &snapshot)
@@ -358,7 +367,7 @@ func (s *CloudInstancesService) DeleteSnapshot(cloudInstanceId, snapshotId strin
 
 func (s *CloudInstancesService) EnableBackup(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/backups/enable"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
@@ -374,7 +383,27 @@ func (s *CloudInstancesService) EnableBackup(instanceId string) (*BasicResponse,
 
 func (s *CloudInstancesService) DisableBackup(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/backups/disable"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+type UpdateBillingCycleParams struct {
+	Billingcycle string `json:"billingcycle"`
+}
+
+func (s *CloudInstancesService) UpdateBillingCycle(cloudid string, params UpdateBillingCycleParams) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/billingcycle"
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
@@ -390,7 +419,7 @@ func (s *CloudInstancesService) DisableBackup(instanceId string) (*BasicResponse
 
 func (s *CloudInstancesService) HardReboot(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/hardreboot"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
@@ -406,7 +435,7 @@ func (s *CloudInstancesService) HardReboot(instanceId string) (*BasicResponse, e
 
 func (s *CloudInstancesService) PowerCycle(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/powercycle"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
@@ -422,7 +451,7 @@ func (s *CloudInstancesService) PowerCycle(instanceId string) (*BasicResponse, e
 
 func (s *CloudInstancesService) PowerOff(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/poweroff"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
@@ -438,7 +467,7 @@ func (s *CloudInstancesService) PowerOff(instanceId string) (*BasicResponse, err
 
 func (s *CloudInstancesService) PowerOn(instanceId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/poweron"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
@@ -482,7 +511,7 @@ type ResetPasswordResponse struct {
 
 func (s *CloudInstancesService) ResetPassword(instanceId string) (*ResetPasswordResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/resetpassword"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var resetPasswordResponse ResetPasswordResponse
 	_, err := s.client.Do(req, &resetPasswordResponse)
@@ -498,7 +527,7 @@ func (s *CloudInstancesService) ResetPassword(instanceId string) (*ResetPassword
 
 type ResizeCloudInstanceParams struct {
 	Type string `json:"type"`
-	Plan int    `json:"plan"`
+	Plan string `json:"plan"`
 }
 
 func (s *CloudInstancesService) Resize(instanceId string, resizeCloudInstanceParams ResizeCloudInstanceParams) (*BasicResponse, error) {
@@ -519,7 +548,132 @@ func (s *CloudInstancesService) Resize(instanceId string, resizeCloudInstancePar
 
 func (s *CloudInstancesService) RestoreSnapshot(instanceId, snapshotId string) (*BasicResponse, error) {
 	reqUrl := "cloud/" + instanceId + "/snapshot/" + snapshotId + "/restore"
-	req, _ := s.client.NewRequest("POST", reqUrl)
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+type UpdateStorageParams struct {
+	Bus  string `json:"bus"`
+	Type string `json:"type"`
+}
+
+func (s *CloudInstancesService) UpdateStorage(cloudid, storageid string, params UpdateStorageParams) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/storage/" + storageid + "/update"
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+func (s *CloudInstancesService) AssignPublicIP(cloudid string) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/assignpublicip"
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+type UpdateRDNSParams struct {
+	Rdns string `json:"rdns"`
+}
+
+func (s *CloudInstancesService) UpdateRDNS(cloudId, ipAddress string, params UpdateRDNSParams) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudId + "/updaterdns/" + ipAddress
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+func (s *CloudInstancesService) EnableRescue(cloudid string) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/enablerescue"
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+func (s *CloudInstancesService) DisableRescue(cloudid string) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/disablerescue"
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+type MountISOParams struct {
+	Iso string `json:"iso"`
+}
+
+func (s *CloudInstancesService) MountISO(cloudid string, params MountISOParams) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/mountiso"
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+
+	var basicResponse BasicResponse
+	_, err := s.client.Do(req, &basicResponse)
+	if err != nil {
+		return nil, err
+	}
+	if basicResponse.Status != "success" && basicResponse.Status != "" {
+		return nil, errors.New(basicResponse.Message)
+	}
+
+	return &basicResponse, nil
+}
+
+func (s *CloudInstancesService) UnmountISO(cloudid string) (*BasicResponse, error) {
+	reqUrl := "cloud/" + cloudid + "/umountiso"
+	req, _ := s.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := s.client.Do(req, &basicResponse)
