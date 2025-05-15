@@ -227,8 +227,8 @@ func TestFirewallService_ListFirewallRule_happyPath(t *testing.T) {
 	defer teardown()
 
 	firewallId := "11111"
-	expectedResponse := dummyReadDomainRes
-	serverResponse := dummyListDomainServerRes
+	expectedResponse := dummyReadFirewallRuleRes
+	serverResponse := dummyListFirewallServerRes
 
 	mux.HandleFunc("/firewall/"+firewallId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
