@@ -62,7 +62,7 @@ type User struct {
 
 	// Partner and Reseller Information
 	IsPartner  string `json:"is_partner,omitempty" faker:"oneof: 0, 1"`
-	Partnerid  string `json:"partnerid,omitempty" faker:"uuid_digit"`
+	Partnerid  string `json:"partnerid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
 	IsReseller string `json:"is_reseller,omitempty" faker:"oneof: 0, 1"`
 
 	// Cloud and Resource Information
@@ -73,16 +73,16 @@ type User struct {
 
 	// Billing Information
 	Singleinvoice      string `json:"singleinvoice,omitempty" faker:"oneof: 0, 1"`
-	RazorpayCustomerid string `json:"razorpay_customerid,omitempty" faker:"uuid_digit"`
-	RazorpayOrderid    string `json:"razorpay_orderid,omitempty" faker:"uuid_digit"`
+	RazorpayCustomerid string `json:"razorpay_customerid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
+	RazorpayOrderid    string `json:"razorpay_orderid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
 	RazorpaySub        string `json:"razorpay_sub,omitempty" faker:"oneof: 0, 1"`
-	StripeCustomer     string `json:"stripe_customer,omitempty" faker:"uuid_digit"`
+	StripeCustomer     string `json:"stripe_customer,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
 
 	// Miscellaneous
 	Permissions      string `json:"permissions,omitempty" faker:"oneof: admin, user, full"`
 	Rvn              string `json:"rvn,omitempty" faker:"amount"`
 	CAdded           string `json:"c_added,omitempty" faker:"oneof: yes, no"`
-	AffiliateLoginid string `json:"affiliate_loginid,omitempty" faker:"uuid_digit"`
+	AffiliateLoginid string `json:"affiliate_loginid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
 }
 
 type Resources struct {
