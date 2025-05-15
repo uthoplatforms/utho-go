@@ -6,152 +6,80 @@ import (
 	"net/http"
 	"reflect"
 	"testing"
+
+	"github.com/go-faker/faker/v4"
 )
 
 func TestAccountService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyReadAccountRes
-	serverResponse := dummyReadAccountServerRes
+	var fakeUser User
+	_ = faker.FakeData(&fakeUser)
+
+	if fakeUser.ID == "" {
+		if ints, err := faker.RandomInt(100000, 999999); err == nil && len(ints) > 0 {
+			fakeUser.ID = fmt.Sprintf("%d", ints[0])
+		} else {
+			fakeUser.ID = "1234567"
+		}
+	}
+
+	serverResponse, _ := json.Marshal(Account{
+		User:    fakeUser,
+		Status:  "success",
+		Message: "",
+	})
+
+	expectedResponse, _ := json.Marshal(fakeUser)
 
 	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
 	var want User
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	_ = json.Unmarshal(expectedResponse, &want)
 
-	got, _ := client.Account().Read()
+	got, err := client.Account().Read()
+	if err != nil {
+		t.Fatalf("Unexpected error: %v", err)
+	}
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
 }
 
 func TestAccountService_Read_invalidServer(t *testing.T) {
-	client, _ := NewClient("token")
+	client, mux, _, teardown := setup("token")
+	defer teardown()
 
-	apikey, err := client.Account().Read()
-	if err == nil {
-		t.Errorf("Expected error to be returned")
-	}
-	if apikey != nil {
-		t.Errorf("Was not expecting any apikey to be returned, instead got %v", apikey)
+	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, "GET")
+		testHeader(t, req, "Authorization", "Bearer token")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprint(w, `{"status":"error","message":"Internal Server Error"}`)
+	})
+
+	_, err := client.Account().Read()
+	if err == nil || err.Error() != "account service error: Internal Server Error" {
+		t.Errorf("Expected error 'account service error: Internal Server Error', got %v", err)
 	}
 }
 
-const dummyReadAccountServerRes = `{
-    "user": {
-        "id": "32154",
-        "type": "Individual",
-        "fullname": "Utho Terraform",
-        "company": "",
-        "email": "terraform@utho.com",
-        "address": "Noida",
-        "city": "Noida",
-        "state": "Uttar Pradesh",
-        "country": "IN",
-        "postcode": "201301",
-        "mobile": "1204840000",
-        "mobilecc": "+91",
-        "gstnumber": null,
-        "supportneed_title": "",
-        "supportneed_usecase": "",
-        "supportneed_businesstype": "",
-        "supportneed_monthlyspend": "",
-        "supportneed_employeesize": "",
-        "support_fields_required": "No",
-        "twofa_settings": "none",
-        "currencyprefix": "$",
-        "currencyrate": "0.01333",
-        "currency": "USD",
-        "credit": 0,
-        "availablecredit": 11,
-        "freecredit": 323.112,
-        "currentusages": 59.6,
-        "kyc": "0",
-        "sms_verified": "1",
-        "verify": "1",
-        "is_partner": "0",
-        "partnerid": "0",
-        "twofa": "Completed",
-        "kyc_data": [],
-        "email_verified": "0",
-        "cloudlimit": "25",
-        "k8s_limit": "0",
-        "is_reseller": "0",
-        "singleinvoice": "0",
-        "razorpay_customerid": "cust_Ofrr4fd2K3v",
-        "razorpay_orderid": null,
-        "stripe_customer": null,
-        "total_cloudservers": "3",
-        "resources": [
-            {
-                "product": "cloud",
-                "count": "3"
-            }
-        ],
-        "rvn": "100.00",
-        "c_added": "no",
-        "razorpay_sub": "0",
-        "affiliate_loginid": "0"
-    }
-}`
+func TestAccountService_Read_userNotFound(t *testing.T) {
+	client, mux, _, teardown := setup("token")
+	defer teardown()
 
-const dummyReadAccountRes = `{
-	"id": "32154",
-	"type": "Individual",
-	"fullname": "Utho Terraform",
-	"company": "",
-	"email": "terraform@utho.com",
-	"address": "Noida",
-	"city": "Noida",
-	"state": "Uttar Pradesh",
-	"country": "IN",
-	"postcode": "201301",
-	"mobile": "1204840000",
-	"mobilecc": "+91",
-	"gstnumber": null,
-	"supportneed_title": "",
-	"supportneed_usecase": "",
-	"supportneed_businesstype": "",
-	"supportneed_monthlyspend": "",
-	"supportneed_employeesize": "",
-	"support_fields_required": "No",
-	"twofa_settings": "none",
-	"currencyprefix": "$",
-	"currencyrate": "0.01333",
-	"currency": "USD",
-	"credit": 0,
-	"availablecredit": 11,
-	"freecredit": 323.112,
-	"currentusages": 59.6,
-	"kyc": "0",
-	"sms_verified": "1",
-	"verify": "1",
-	"is_partner": "0",
-	"partnerid": "0",
-	"twofa": "Completed",
-	"kyc_data": [],
-	"email_verified": "0",
-	"cloudlimit": "25",
-	"k8s_limit": "0",
-	"is_reseller": "0",
-	"singleinvoice": "0",
-	"razorpay_customerid": "cust_Ofrr4fd2K3v",
-	"razorpay_orderid": null,
-	"stripe_customer": null,
-	"total_cloudservers": "3",
-	"resources": [
-		{
-			"product": "cloud",
-			"count": "3"
-		}
-	],
-	"rvn": "100.00",
-	"c_added": "no",
-	"razorpay_sub": "0",
-	"affiliate_loginid": "0"
-}`
+	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, "GET")
+		testHeader(t, req, "Authorization", "Bearer token")
+		fmt.Fprint(w, `{"status":"success","user":{"id":""}}`)
+	})
+
+	_, err := client.Account().Read()
+	if err == nil || err.Error() != "user not found in account information" {
+		t.Errorf("Expected error 'user not found in account information', got %v", err)
+	}
+}
