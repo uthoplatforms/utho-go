@@ -25,18 +25,11 @@ func TestAccountService_Read_happyPath(t *testing.T) {
 		}
 	}
 
-	serverResponse, _ := json.Marshal(Account{
-		User:    fakeUser,
-		Status:  "success",
-		Message: "",
-	})
-
 	expectedResponse, _ := json.Marshal(fakeUser)
 
 	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, string(serverResponse))
 	})
 
 	var want User
@@ -59,7 +52,6 @@ func TestAccountService_Read_invalidServer(t *testing.T) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		w.WriteHeader(http.StatusInternalServerError)
-		fmt.Fprint(w, `{"status":"error","message":"Internal Server Error"}`)
 	})
 
 	_, err := client.Account().Read()
@@ -75,7 +67,6 @@ func TestAccountService_Read_userNotFound(t *testing.T) {
 	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, `{"status":"success","user":{"id":""}}`)
 	})
 
 	_, err := client.Account().Read()

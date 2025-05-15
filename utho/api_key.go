@@ -11,11 +11,12 @@ type ApiKeys struct {
 	Message string   `json:"message,omitempty"`
 	API     []ApiKey `json:"api"`
 }
+
 type ApiKey struct {
-	ID        string `json:"id"`
-	Name      string `json:"name"`
-	Write     string `json:"write"`
-	CreatedAt string `json:"created_at"`
+	ID        string `json:"id" faker:"oneof:176300,176302,176303,176304,176305,176306,176507,176508,177492,177499,245495"`
+	Name      string `json:"name" faker:"oneof:name,nam122e,name22,testkey,,testq,test-key,PostMan"`
+	Write     string `json:"write" faker:"oneof:0,1"`
+	CreatedAt string `json:"created_at" faker:"date"`
 }
 
 type CreateApiKeyParams struct {
