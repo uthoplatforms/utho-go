@@ -7,30 +7,33 @@ import (
 type DomainService service
 
 type DnsDomains struct {
-	Domains []Domain `json:"domains"`
-	Status  string   `json:"status,omitempty"`
-	Message string   `json:"message,omitempty"`
+	Domains []Domain `json:"domains" faker:"v4slice"`
+	Status  string   `json:"status,omitempty" faker:"status"`
+	Message string   `json:"message,omitempty" faker:"message"`
 }
 type Domain struct {
-	Domain         string      `json:"domain"`
-	Status         string      `json:"status"`
-	Message        string      `json:"message"`
-	Nspoint        string      `json:"nspoint"`
-	CreatedAt      string      `json:"created_at"`
-	DnsrecordCount string      `json:"dnsrecord_count"`
-	Records        []DnsRecord `json:"records"`
+	Domain         string      `json:"domain" faker:"domain_name"`
+	Status         string      `json:"status" faker:"status"`
+	Message        string      `json:"message" faker:"message"`
+	Nspoint        string      `json:"nspoint" faker:"word"`
+	CreatedAt      string      `json:"created_at" faker:"date_time"`
+	DnsrecordCount string      `json:"dnsrecord_count" faker:"digit"`
+	Records        []DnsRecord `json:"records" faker:"v4slice"`
 }
 type DnsRecord struct {
-	ID       string `json:"id"`
-	Hostname string `json:"hostname"`
-	Type     string `json:"type"`
-	Value    string `json:"value"`
-	TTL      string `json:"ttl"`
-	Priority string `json:"priority"`
+	ID       string `json:"id" faker:"uuid_digit"`
+	Hostname string `json:"hostname" faker:"domain_name"`
+	Type     string `json:"type" faker:"dns_type"`
+	Value    string `json:"value" faker:"ipv4"`
+	TTL      string `json:"ttl" faker:"digit"`
+	Priority string `json:"priority" faker:"digit"`
+	Porttype string `json:"porttype"`
+	Port     string `json:"port"`
+	Weight   string `json:"weight"`
 }
 
 type CreateDomainParams struct {
-	Domain string `json:"domain"`
+	Domain string `json:"domain" faker:"domain_name"`
 }
 
 func (s *DomainService) CreateDomain(params CreateDomainParams) (*BasicResponse, error) {
@@ -60,6 +63,9 @@ func (s *DomainService) ReadDomain(domainName string) (*Domain, error) {
 	}
 	if domain.Status != "success" && domain.Status != "" {
 		return nil, errors.New(domain.Message)
+	}
+	if len(domain.Domains) == 0 {
+		return nil, errors.New("domain not found")
 	}
 
 	return &domain.Domains[0], nil
@@ -105,7 +111,7 @@ type CreateDnsRecordParams struct {
 	Porttype string `json:"porttype"`
 	Port     string `json:"port"`
 	Priority string `json:"priority"`
-	Wight    string `json:"wight"`
+	Weight   string `json:"weight"`
 }
 
 func (s *DomainService) CreateDnsRecord(params CreateDnsRecordParams) (*CreateResponse, error) {
@@ -136,13 +142,22 @@ func (s *DomainService) ReadDnsRecord(domainName, dnsRecordID string) (*DnsRecor
 	if domain.Status != "success" && domain.Status != "" {
 		return nil, errors.New(domain.Message)
 	}
+	if len(domain.Domains) == 0 {
+		return nil, errors.New("domain not found")
+	}
 
 	var record DnsRecord
+	found := false
 	for _, dnsRecord := range domain.Domains[0].Records {
 		if dnsRecord.ID == dnsRecordID {
 			record = dnsRecord
+			found = true
+			break
 		}
+	}
 
+	if !found {
+		return nil, errors.New("dns record not found")
 	}
 
 	return &record, nil
@@ -159,6 +174,9 @@ func (s *DomainService) ListDnsRecords(domainName string) ([]DnsRecord, error) {
 	}
 	if domain.Status != "success" && domain.Status != "" {
 		return nil, errors.New(domain.Message)
+	}
+	if len(domain.Domains) == 0 {
+		return []DnsRecord{}, nil
 	}
 
 	return domain.Domains[0].Records, nil

@@ -7,32 +7,34 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestDomainService_CreateDomain_happyPath(t *testing.T) {
-	token := "token"
+	var payload CreateDomainParams
+	_ = faker.FakeData(&payload)
 
-	payload := CreateDomainParams{
-		Domain: "example.com",
-	}
+	token := faker.UUIDDigit()
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var fakeResponse BasicResponse
+	_ = faker.FakeData(&fakeResponse)
+	fakeResponse.Status = "success"
+	fakeResponseJson, _ := json.Marshal(fakeResponse)
+
 	mux.HandleFunc("/dns/adddomain", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateBasicResponseJson)
+		fmt.Fprint(w, string(fakeResponseJson))
 	})
 
 	got, err := client.Domain().CreateDomain(payload)
 
-	var want BasicResponse
-	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
-
 	assert.Nil(t, err)
-	assert.Equal(t, want, *got)
+	assert.Equal(t, fakeResponse, *got)
 }
 
 func TestDomainService_CreateDomain_invalidServer(t *testing.T) {
@@ -45,21 +47,30 @@ func TestDomainService_CreateDomain_invalidServer(t *testing.T) {
 }
 
 func TestDomainService_ReadDomain_happyPath(t *testing.T) {
-	client, mux, _, teardown := setup("token")
+	var fakeDomain DnsDomains
+	_ = faker.FakeData(&fakeDomain)
+	if len(fakeDomain.Domains) == 0 {
+		var d Domain
+		_ = faker.FakeData(&d)
+		fakeDomain.Domains = append(fakeDomain.Domains, d)
+	} else if len(fakeDomain.Domains) > 1 {
+		fakeDomain.Domains = fakeDomain.Domains[:1]
+	}
+	fakeDomain.Status = "success"
+
+	client, mux, _, teardown := setup(faker.UUIDDigit())
 	defer teardown()
 
-	domainName := "example.com"
-	expectedResponse := dummyReadDomainRes
-	serverResponse := dummyReadDomainServerRes
+	domainName := fakeDomain.Domains[0].Domain
+	serverResponseJson, _ := json.Marshal(fakeDomain)
 
 	mux.HandleFunc("/dns/"+domainName, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponseJson))
 	})
 
-	var want Domain
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	want := fakeDomain.Domains[0]
 
 	got, _ := client.Domain().ReadDomain(domainName)
 	if !reflect.DeepEqual(*got, want) {
@@ -83,17 +94,25 @@ func TestDomainService_ListDomain_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyReadDomainRes
-	serverResponse := dummyListDomainServerRes
+	var fakeDomains DnsDomains
+	_ = faker.FakeData(&fakeDomains)
+	if len(fakeDomains.Domains) < 2 {
+		for i := len(fakeDomains.Domains); i < 2; i++ {
+			var d Domain
+			_ = faker.FakeData(&d)
+			fakeDomains.Domains = append(fakeDomains.Domains, d)
+		}
+	}
+	fakeDomains.Status = "success"
+	serverResponseJson, _ := json.Marshal(fakeDomains)
 
 	mux.HandleFunc("/dns", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponseJson))
 	})
 
-	var want []Domain
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	want := fakeDomains.Domains
 
 	got, _ := client.Domain().ListDomains()
 	if len(got) != len(want) {
@@ -118,16 +137,25 @@ func TestDomainService_ListDomain_invalidServer(t *testing.T) {
 }
 
 func TestDomainService_DeleteDomain_happyPath(t *testing.T) {
-	token := "token"
-	domainName := "someDomainName"
+	var domain Domain
+	_ = faker.FakeData(&domain)
+
+	token := faker.UUIDDigit()
+	domainName := domain.Domain
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var fakeResponse DeleteResponse
+	_ = faker.FakeData(&fakeResponse)
+	fakeResponse.Status = "success"
+	fakeResponse.Message = "success"
+	fakeResponseJson, _ := json.Marshal(fakeResponse)
+
 	mux.HandleFunc("/dns/"+domainName+"/delete", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "DELETE")
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyDeleteResponseJson)
+		fmt.Fprint(w, string(fakeResponseJson))
 	})
 
 	want := DeleteResponse{Status: "success", Message: "success"}
@@ -150,38 +178,31 @@ func TestDomainService_DeleteDomain_invalidServer(t *testing.T) {
 	}
 }
 
-// Dns Record tests
 func TestDomainService_CreateDnsRecord_happyPath(t *testing.T) {
-	token := "token"
+	var payload CreateDnsRecordParams
+	_ = faker.FakeData(&payload)
+	payload.Domain = faker.DomainName()
 
-	payload := CreateDnsRecordParams{
-		Domain:   "example.com",
-		Type:     "A",
-		Hostname: "example22.com",
-		Value:    "1.1.12.1",
-		TTL:      "65444",
-		Porttype: "TCP",
-		Port:     "5060",
-		Priority: "10",
-		Wight:    "100",
-	}
+	token := faker.UUIDDigit()
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var fakeResponse CreateResponse
+	_ = faker.FakeData(&fakeResponse)
+	fakeResponse.Status = "success"
+	fakeResponseJson, _ := json.Marshal(fakeResponse)
+
 	mux.HandleFunc("/dns/"+payload.Domain+"/record/add", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateBasicResponseJson)
+		fmt.Fprint(w, string(fakeResponseJson))
 	})
 
 	got, err := client.Domain().CreateDnsRecord(payload)
 
-	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
-
 	assert.Nil(t, err)
-	assert.Equal(t, want, *got)
+	assert.Equal(t, fakeResponse, *got)
 }
 
 func TestDomainService_CreateDnsRecord_invalidServer(t *testing.T) {
@@ -194,22 +215,47 @@ func TestDomainService_CreateDnsRecord_invalidServer(t *testing.T) {
 }
 
 func TestDomainService_ReadDnsRecord_happyPath(t *testing.T) {
-	client, mux, _, teardown := setup("token")
+	var fakeDomainResponse DnsDomains
+	_ = faker.FakeData(&fakeDomainResponse)
+	if len(fakeDomainResponse.Domains) == 0 {
+		var d Domain
+		_ = faker.FakeData(&d)
+		if len(d.Records) == 0 {
+			var r DnsRecord
+			_ = faker.FakeData(&r)
+			d.Records = append(d.Records, r)
+		}
+		fakeDomainResponse.Domains = append(fakeDomainResponse.Domains, d)
+	} else if len(fakeDomainResponse.Domains) > 1 {
+		fakeDomainResponse.Domains = fakeDomainResponse.Domains[:1]
+		if len(fakeDomainResponse.Domains[0].Records) == 0 {
+			var r DnsRecord
+			_ = faker.FakeData(&r)
+			fakeDomainResponse.Domains[0].Records = append(fakeDomainResponse.Domains[0].Records, r)
+		}
+	} else {
+		if len(fakeDomainResponse.Domains[0].Records) == 0 {
+			var r DnsRecord
+			_ = faker.FakeData(&r)
+			fakeDomainResponse.Domains[0].Records = append(fakeDomainResponse.Domains[0].Records, r)
+		}
+	}
+	fakeDomainResponse.Status = "success"
+
+	client, mux, _, teardown := setup(faker.UUIDDigit())
 	defer teardown()
 
-	domainName := "example.com"
-	dnsRecordID := "12331"
-	expectedResponse := dummyReadDomainRes
-	serverResponse := dummyReadDomainServerRes
+	domainName := fakeDomainResponse.Domains[0].Domain
+	dnsRecordID := fakeDomainResponse.Domains[0].Records[0].ID
+	serverResponseJson, _ := json.Marshal(fakeDomainResponse)
 
 	mux.HandleFunc("/dns/"+domainName, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponseJson))
 	})
 
-	var want DnsRecord
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	want := fakeDomainResponse.Domains[0].Records[0]
 
 	got, _ := client.Domain().ReadDnsRecord(domainName, dnsRecordID)
 	if !reflect.DeepEqual(*got, want) {
@@ -233,18 +279,49 @@ func TestDomainService_ListDnsRecord_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	domainName := "example.com"
-	expectedResponse := dummyReadDomainRes
-	serverResponse := dummyListDomainServerRes
+	var fakeDomainResponse DnsDomains
+	_ = faker.FakeData(&fakeDomainResponse)
+	if len(fakeDomainResponse.Domains) == 0 {
+		var d Domain
+		_ = faker.FakeData(&d)
+		if len(d.Records) < 2 {
+			for i := len(d.Records); i < 2; i++ {
+				var r DnsRecord
+				_ = faker.FakeData(&r)
+				d.Records = append(d.Records, r)
+			}
+		}
+		fakeDomainResponse.Domains = append(fakeDomainResponse.Domains, d)
+	} else if len(fakeDomainResponse.Domains) > 1 {
+		fakeDomainResponse.Domains = fakeDomainResponse.Domains[:1]
+		if len(fakeDomainResponse.Domains[0].Records) < 2 {
+			for i := len(fakeDomainResponse.Domains[0].Records); i < 2; i++ {
+				var r DnsRecord
+				_ = faker.FakeData(&r)
+				fakeDomainResponse.Domains[0].Records = append(fakeDomainResponse.Domains[0].Records, r)
+			}
+		}
+	} else {
+		if len(fakeDomainResponse.Domains[0].Records) < 2 {
+			for i := len(fakeDomainResponse.Domains[0].Records); i < 2; i++ {
+				var r DnsRecord
+				_ = faker.FakeData(&r)
+				fakeDomainResponse.Domains[0].Records = append(fakeDomainResponse.Domains[0].Records, r)
+			}
+		}
+	}
+	fakeDomainResponse.Status = "success"
 
-	mux.HandleFunc("/dns", func(w http.ResponseWriter, req *http.Request) {
+	domainName := fakeDomainResponse.Domains[0].Domain
+	serverResponseJson, _ := json.Marshal(fakeDomainResponse)
+
+	mux.HandleFunc("/dns/"+domainName, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponseJson))
 	})
 
-	var want []DnsRecord
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	want := fakeDomainResponse.Domains[0].Records
 
 	got, _ := client.Domain().ListDnsRecords(domainName)
 	if len(got) != len(want) {
@@ -269,17 +346,31 @@ func TestDomainService_ListDnsRecord_invalidServer(t *testing.T) {
 }
 
 func TestDomainService_DeleteDnsRecord_happyPath(t *testing.T) {
-	token := "token"
-	domainName := "someDomainName"
-	recordId := "53211"
+	var fakeDomain Domain
+	_ = faker.FakeData(&fakeDomain)
+	if len(fakeDomain.Records) == 0 {
+		var r DnsRecord
+		_ = faker.FakeData(&r)
+		fakeDomain.Records = append(fakeDomain.Records, r)
+	}
+
+	token := faker.UUIDDigit()
+	domainName := fakeDomain.Domain
+	recordId := fakeDomain.Records[0].ID
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var fakeResponse DeleteResponse
+	_ = faker.FakeData(&fakeResponse)
+	fakeResponse.Status = "success"
+	fakeResponse.Message = "success"
+	fakeResponseJson, _ := json.Marshal(fakeResponse)
+
 	mux.HandleFunc("/dns/"+domainName+"/record/"+recordId+"/delete", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "DELETE")
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyDeleteResponseJson)
+		fmt.Fprint(w, string(fakeResponseJson))
 	})
 
 	want := DeleteResponse{Status: "success", Message: "success"}
@@ -301,141 +392,3 @@ func TestDomainService_DeleteDnsRecord_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
-
-const dummyReadDomainRes = `{
-	"domain": "examqweple.com",
-	"nspoint": "NO",
-	"created_at": "2024-05-03 21:29:23",
-	"dnsrecord_count": "2",
-	"records": [
-		{
-			"id": "25244",
-			"hostname": "example22.com.examqweple.com",
-			"type": "A",
-			"value": "1.1.1.1",
-			"ttl": "65444",
-			"priority": "10"
-		},
-		{
-			"id": "25245",
-			"hostname": "example22.com.examqweple.com",
-			"type": "A",
-			"value": "1.1.12.1",
-			"ttl": "65444",
-			"priority": "10"
-		}
-	],
-	"record": {
-		"id": "25245",
-		"hostname": "example22.com.examqweple.com",
-		"type": "A",
-		"value": "1.1.12.1",
-		"ttl": "65444",
-		"priority": "10"
-	}
-}
-`
-
-const dummyReadDomainServerRes = `{
-    "domains": [
-        {
-            "domain": "examqweple.com",
-            "nspoint": "NO",
-            "created_at": "2024-05-03 21:29:23",
-            "dnsrecord_count": "2",
-            "records": [
-                {
-                    "id": "25244",
-                    "hostname": "example22.com.examqweple.com",
-                    "type": "A",
-                    "value": "1.1.1.1",
-                    "ttl": "65444",
-                    "priority": "10"
-                },
-                {
-                    "id": "25245",
-                    "hostname": "example22.com.examqweple.com",
-                    "type": "A",
-                    "value": "1.1.12.1",
-                    "ttl": "65444",
-                    "priority": "10"
-                }
-            ],
-            "record": {
-                "id": "25245",
-                "hostname": "example22.com.examqweple.com",
-                "type": "A",
-                "value": "1.1.12.1",
-                "ttl": "65444",
-                "priority": "10"
-            }
-        }
-    ]
-}
-`
-
-const dummyListDomainServerRes = `[
-	{
-		"domain": "examqweple.com",
-		"nspoint": "NO",
-		"created_at": "2024-05-03 21:29:23",
-		"dnsrecord_count": "2",
-		"records": [
-			{
-				"id": "25244",
-				"hostname": "example22.com.examqweple.com",
-				"type": "A",
-				"value": "1.1.1.1",
-				"ttl": "65444",
-				"priority": "10"
-			},
-			{
-				"id": "25245",
-				"hostname": "example.examqweple.com",
-				"type": "A",
-				"value": "1.1.12.1",
-				"ttl": "65444",
-				"priority": "10"
-			}
-		],
-		"record": {
-			"id": "25245",
-			"hostname": "example.examqweple.com",
-			"type": "A",
-			"value": "1.1.12.1",
-			"ttl": "65444",
-			"priority": "10"
-		}
-	},{
-		"domain": "example2.com",
-		"nspoint": "NO",
-		"created_at": "2024-05-03 21:29:23",
-		"dnsrecord_count": "2",
-		"records": [
-			{
-				"id": "25244",
-				"hostname": "example.example2.com",
-				"type": "A",
-				"value": "1.1.1.1",
-				"ttl": "65444",
-				"priority": "10"
-			},
-			{
-				"id": "25245",
-				"hostname": "example.example2.com",
-				"type": "A",
-				"value": "1.1.12.1",
-				"ttl": "65444",
-				"priority": "10"
-			}
-		],
-		"record": {
-			"id": "25245",
-			"hostname": "example22.com.examqweple.com",
-			"type": "A",
-			"value": "1.1.12.1",
-			"ttl": "65444",
-			"priority": "10"
-		}
-	}
-]`
