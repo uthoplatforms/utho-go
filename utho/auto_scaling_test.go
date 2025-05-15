@@ -172,7 +172,7 @@ func TestAutoScalingService_Delete_happyPath(t *testing.T) {
 	}
 }
 
-func TestAutoScalingService_Delete_invalidServer(t *testing.T) {
+func TestAutoScalingService_DeleteAutoScaling_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	delResponse, err := client.AutoScaling().Delete("someAutoScalingId", "autoscalingName")
@@ -493,7 +493,7 @@ func TestAutoScalingService_ListSchedule_happyPath(t *testing.T) {
 func TestAutoScalingService_ListSchedule_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	autoscaling, err := client.AutoScaling().ListPolicies("id")
+	autoscaling, err := client.AutoScaling().ListSchedules("id")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -675,7 +675,7 @@ func TestAutoScalingService_ListLoadbalancer_happyPath(t *testing.T) {
 func TestAutoScalingService_ListLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	autoscaling, err := client.AutoScaling().ListPolicies("id")
+	autoscaling, err := client.AutoScaling().ListLoadbalancers("id")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -862,7 +862,7 @@ func TestAutoScalingService_ListSecurityGroup_happyPath(t *testing.T) {
 func TestAutoScalingService_ListSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	autoscaling, err := client.AutoScaling().ListPolicies("id")
+	autoscaling, err := client.AutoScaling().ListSecurityGroups("id")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -1049,7 +1049,7 @@ func TestAutoScalingService_ListTargetgroup_happyPath(t *testing.T) {
 func TestAutoScalingService_ListTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	autoscaling, err := client.AutoScaling().ListPolicies("id")
+	autoscaling, err := client.AutoScaling().ListTargetgroups("id")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}

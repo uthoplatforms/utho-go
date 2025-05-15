@@ -279,6 +279,9 @@ func TestCloudInstanceService_CreateSnapshot_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	var payload CreateSnapshotParams
+	_ = faker.FakeData(&payload)
+
 	var fakeResp CreateBasicResponse
 	_ = faker.FakeData(&fakeResp)
 	respBytes, _ := json.Marshal(fakeResp)
@@ -289,7 +292,7 @@ func TestCloudInstanceService_CreateSnapshot_happyPath(t *testing.T) {
 		w.Write(respBytes)
 	})
 
-	got, err := client.CloudInstances().CreateSnapshot(instanceId)
+	got, err := client.CloudInstances().CreateSnapshot(instanceId, payload)
 
 	var want CreateBasicResponse
 	_ = json.Unmarshal(respBytes, &want)
@@ -301,7 +304,7 @@ func TestCloudInstanceService_CreateSnapshot_happyPath(t *testing.T) {
 func TestCloudInstanceService_CreateSnapshot_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	_, err := client.CloudInstances().CreateSnapshot("instanceId")
+	_, err := client.CloudInstances().CreateSnapshot("instanceId", CreateSnapshotParams{})
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -339,12 +342,12 @@ func TestCloudInstanceService_DeleteSnapshot_happyPath(t *testing.T) {
 func TestCloudInstanceService_DeleteSnapshot_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
-	delResponse, err := client.CloudInstances().Delete("someCloudInstanceId", DeleteCloudInstanceParams{})
+	delResponse, err := client.CloudInstances().DeleteSnapshot("someCloudInstanceId", "somesnapshotId")
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
 	if delResponse != nil {
-		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
+		t.Errorf("Was not expecting any response to be returned, instead got %v", delResponse)
 	}
 }
 
@@ -651,7 +654,7 @@ func TestCloudInstanceService_Resize_happyPath(t *testing.T) {
 
 	payload := ResizeCloudInstanceParams{
 		Type: "ramcpu",
-		Plan: 11111,
+		Plan: "11111",
 	}
 	got, err := client.CloudInstances().Resize(instanceId, payload)
 
