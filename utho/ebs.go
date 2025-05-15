@@ -7,32 +7,32 @@ import (
 type EBService service
 
 type EBSs struct {
-	Ebs     []Ebs  `json:"ebs"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	Ebs     []Ebs  `json:"ebs" faker:"-"`
+	Status  string `json:"status" faker:"oneof: success, failure"`
+	Message string `json:"message" faker:"sentence"`
 }
 
 type Ebs struct {
-	ID         string   `json:"did"`
-	Cloudid    string   `json:"cloudid"`
-	Primaryd   string   `json:"primaryd"`
-	Size       string   `json:"size"`
-	Status     string   `json:"status"`
-	Extrabill  string   `json:"extrabill"`
-	CreatedAt  string   `json:"created_at"`
-	DeletedAt  string   `json:"deleted_at"`
-	Ebs        string   `json:"ebs"`
-	Name       string   `json:"name"`
-	Iops       string   `json:"iops"`
-	Throughput string   `json:"throughput"`
+	ID         string   `json:"did" faker:"uuid_digit"`
+	Cloudid    string   `json:"cloudid" faker:"uuid_digit"`
+	Primaryd   string   `json:"primaryd" faker:"oneof: 0, 1"`
+	Size       string   `json:"size" faker:"oneof: 10.000, 20.000, 30.000"`
+	Status     string   `json:"status" faker:"oneof: Active, Inactive"`
+	Extrabill  string   `json:"extrabill" faker:"oneof: 0, 1"`
+	CreatedAt  string   `json:"created_at" faker:"timestamp"`
+	DeletedAt  string   `json:"deleted_at" faker:"timestamp"`
+	Ebs        string   `json:"ebs" faker:"oneof: 0, 1"`
+	Name       string   `json:"name" faker:"name"`
+	Iops       string   `json:"iops" faker:"oneof: 1000, 2000, 3000"`
+	Throughput string   `json:"throughput" faker:"oneof: 125, 250, 500"`
 	Location   Location `json:"location"`
 }
 
 type Location struct {
-	City    string `json:"city"`
-	Country string `json:"country"`
-	Dc      string `json:"dc"`
-	Dccc    string `json:"dccc"`
+	City    string `json:"city" faker:"city"`
+	Country string `json:"country" faker:"country"`
+	Dc      string `json:"dc" faker:"word"`
+	Dccc    string `json:"dccc" faker:"word"`
 }
 
 type CreateEBSParams struct {
@@ -118,7 +118,7 @@ type AttachEBSParams struct {
 
 func (s *EBService) Attach(params AttachEBSParams) (*CreateResponse, error) {
 	reqUrl := "ebs/" + params.EBSId + "/attach"
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
 	var ebs CreateResponse
 	_, err := s.client.Do(req, &ebs)
@@ -134,7 +134,7 @@ func (s *EBService) Attach(params AttachEBSParams) (*CreateResponse, error) {
 
 func (s *EBService) Dettach(params AttachEBSParams) (*CreateResponse, error) {
 	reqUrl := "ebs/" + params.EBSId + "/dettach"
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
 	var ebs CreateResponse
 	_, err := s.client.Do(req, &ebs)
@@ -146,4 +146,26 @@ func (s *EBService) Dettach(params AttachEBSParams) (*CreateResponse, error) {
 	}
 
 	return &ebs, nil
+}
+
+type ResizeEBSParams struct {
+	Disk       string `json:"disk"`
+	Iops       string `json:"iops"`
+	Throughput string `json:"throughput"`
+}
+
+func (s *EBService) Resize(ebsId string, params ResizeEBSParams) (*UpdateResponse, error) {
+	reqUrl := "ebs/" + ebsId + "/resize"
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
+
+	var updateResponse UpdateResponse
+	_, err := s.client.Do(req, &updateResponse)
+	if err != nil {
+		return nil, err
+	}
+	if updateResponse.Status != "success" && updateResponse.Status != "" {
+		return nil, errors.New(updateResponse.Message)
+	}
+
+	return &updateResponse, nil
 }

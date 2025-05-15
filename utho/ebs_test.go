@@ -7,19 +7,14 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEbsService_Create_happyPath(t *testing.T) {
 	token := "token"
-	payload := CreateEBSParams{
-		Name:       "example-storage",
-		Dcslug:     "inmumbaizone2F",
-		Disk:       "10",
-		Iops:       "1000",
-		Throughput: "125",
-		DiskType:   "SSD",
-	}
+	payload := CreateEBSParams{}
+	_ = faker.FakeData(&payload)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -52,22 +47,24 @@ func TestEbsService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	ebsId := "11111"
-	expectedResponse := dummyReadEbsRes
-	serverResponse := dummyEbsServerRes
+	ebsId := faker.UUIDDigit()
+	var dummyEbs Ebs
+	_ = faker.FakeData(&dummyEbs)
+
+	serverResponse, _ := json.Marshal(EBSs{
+		Ebs:    []Ebs{dummyEbs},
+		Status: "success",
+	})
 
 	mux.HandleFunc("/ebs/"+ebsId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want Ebs
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	got, _ := client.Ebs().Read(ebsId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
+	if !reflect.DeepEqual(*got, dummyEbs) {
+		t.Errorf("Response = %v, want %v", *got, dummyEbs)
 	}
 }
 
@@ -87,25 +84,31 @@ func TestEbsService_List_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyReadEbsRes
-	serverResponse := dummyReadEbsRes
+	var dummyEbsList []Ebs
+	for i := 0; i < 3; i++ {
+		var ebs Ebs
+		_ = faker.FakeData(&ebs)
+		dummyEbsList = append(dummyEbsList, ebs)
+	}
+
+	serverResponse, _ := json.Marshal(EBSs{
+		Ebs:    dummyEbsList,
+		Status: "success",
+	})
 
 	mux.HandleFunc("/ebs", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want []Ebs
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	got, _ := client.Ebs().List()
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d ebs to be returned, instead got %d", len(want), len(got))
+	if len(got) != len(dummyEbsList) {
+		t.Errorf("Was expecting %d ebs to be returned, instead got %d", len(dummyEbsList), len(got))
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
+	if !reflect.DeepEqual(got, dummyEbsList) {
+		t.Errorf("Response = %v, want %v", got, dummyEbsList)
 	}
 }
 
@@ -153,29 +156,3 @@ func TestEbsService_Delete_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
-
-const dummyReadEbsRes = `{
-	"did": "11111",
-	"cloudid": "22222",
-	"primaryd": "0",
-	"size": "30.000",
-	"status": "Active",
-	"extrabill": "0",
-	"created_at": "2024-09-22 19:14:33",
-	"deleted_at": "0000-00-00 00:00:00",
-	"ebs": "1",
-	"name": "testee",
-	"iops": "3000",
-	"throughput": "125",
-	"location": {
-		"city": "Mumbai",
-		"country": "India",
-		"dc": "inmumbaizone2",
-		"dccc": "in"
-	}
-}
-`
-
-const dummyEbsServerRes = `{
-    "ebs": [` + dummyReadEbsRes + `]
-}`
