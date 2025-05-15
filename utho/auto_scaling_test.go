@@ -144,8 +144,10 @@ func TestAutoScalingService_List_invalidServer(t *testing.T) {
 
 func TestAutoScalingService_Delete_happyPath(t *testing.T) {
 	token := "token"
-	autoscalingId := "11111"
-	autoscalingName := "Auto-scaling-Jz8hceLN.utho"
+
+	var autoScalingeId, autoscalingName string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoscalingName)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -156,7 +158,7 @@ func TestAutoScalingService_Delete_happyPath(t *testing.T) {
 	fakeResp.Message = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
-	mux.HandleFunc("/autoscaling/"+autoscalingId, func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "DELETE")
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		w.Write(respBytes)
@@ -164,13 +166,13 @@ func TestAutoScalingService_Delete_happyPath(t *testing.T) {
 
 	want := fakeResp
 
-	got, _ := client.AutoScaling().Delete(autoscalingId, autoscalingName)
+	got, _ := client.AutoScaling().Delete(autoScalingeId, autoscalingName)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
 }
 
-func TestAutoScalingService_DeleteAutoScaling_invalidServer(t *testing.T) {
+func TestAutoScalingService_Delete_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	delResponse, err := client.AutoScaling().Delete("someAutoScalingId", "autoscalingName")
@@ -322,7 +324,9 @@ func TestAutoScalingService_ListPolicy_invalidServer(t *testing.T) {
 
 func TestAutoScalingService_DeletePolicy_happyPath(t *testing.T) {
 	token := "token"
-	autoScalingPolicyId := "22222"
+
+	var autoScalingPolicyId string
+	_ = faker.FakeData(&autoScalingPolicyId)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -500,8 +504,10 @@ func TestAutoScalingService_ListSchedule_invalidServer(t *testing.T) {
 
 func TestAutoScalingService_DeleteSchedule_happyPath(t *testing.T) {
 	token := "token"
-	autoScalingeId := "11111"
-	autoScalingScheduleId := "33333"
+
+	var autoScalingeId, autoScalingScheduleId string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoScalingScheduleId)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -680,8 +686,10 @@ func TestAutoScalingService_ListLoadbalancer_invalidServer(t *testing.T) {
 
 func TestAutoScalingService_DeleteLoadbalancer_happyPath(t *testing.T) {
 	token := "token"
-	autoScalingeId := "11111"
-	autoScalingLoadbalancerId := "44444"
+
+	var autoScalingeId, autoScalingLoadbalancerId string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoScalingLoadbalancerId)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -762,7 +770,7 @@ func TestAutoScalingService_ReadSecurityGroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	autoscalingId := "11111"
+	autoScalingeId := "11111"
 	autoscalingSecurityGroupId := "55555"
 
 	var fakeGroup Groups
@@ -780,7 +788,7 @@ func TestAutoScalingService_ReadSecurityGroup_happyPath(t *testing.T) {
 	serverResponse, _ := json.Marshal(serverResp)
 	expectedResponse, _ := json.Marshal(fakeSecurityGroup)
 
-	mux.HandleFunc("/autoscaling/"+autoscalingId, func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		w.Write(serverResponse)
@@ -789,7 +797,7 @@ func TestAutoScalingService_ReadSecurityGroup_happyPath(t *testing.T) {
 	var want SecurityGroup
 	_ = json.Unmarshal(expectedResponse, &want)
 
-	got, _ := client.AutoScaling().ReadSecurityGroup(autoscalingId, autoscalingSecurityGroupId)
+	got, _ := client.AutoScaling().ReadSecurityGroup(autoScalingeId, autoscalingSecurityGroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -811,7 +819,7 @@ func TestAutoScalingService_ListSecurityGroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	autoscalingId := "11111"
+	autoScalingeId := "11111"
 
 	var fakeGroup Groups
 	_ = faker.FakeData(&fakeGroup)
@@ -832,7 +840,7 @@ func TestAutoScalingService_ListSecurityGroup_happyPath(t *testing.T) {
 	serverResponse, _ := json.Marshal(serverResp)
 	expectedResponse, _ := json.Marshal(fakeSecurityGroups)
 
-	mux.HandleFunc("/autoscaling/"+autoscalingId, func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		w.Write(serverResponse)
@@ -841,7 +849,7 @@ func TestAutoScalingService_ListSecurityGroup_happyPath(t *testing.T) {
 	var want []SecurityGroup
 	_ = json.Unmarshal(expectedResponse, &want)
 
-	got, _ := client.AutoScaling().ListSecurityGroups(autoscalingId)
+	got, _ := client.AutoScaling().ListSecurityGroups(autoScalingeId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d autoscaling to be returned, instead got %d", len(want), len(got))
 	}
@@ -865,8 +873,10 @@ func TestAutoScalingService_ListSecurityGroup_invalidServer(t *testing.T) {
 
 func TestAutoScalingService_DeleteSecurityGroup_happyPath(t *testing.T) {
 	token := "token"
-	autoScalingeId := "11111"
-	autoScalingSecurityGroupId := "55555"
+
+	var autoScalingeId, autoScalingSecurityGroupId string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoScalingSecurityGroupId)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -947,7 +957,7 @@ func TestAutoScalingService_ReadTargetgroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	autoscalingId := "11111"
+	autoScalingeId := "11111"
 	autoscalingTargetgroupId := "666666"
 
 	var fakeGroup Groups
@@ -965,7 +975,7 @@ func TestAutoScalingService_ReadTargetgroup_happyPath(t *testing.T) {
 	serverResponse, _ := json.Marshal(serverResp)
 	expectedResponse, _ := json.Marshal(fakeTargetGroup)
 
-	mux.HandleFunc("/autoscaling/"+autoscalingId, func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		w.Write(serverResponse)
@@ -974,7 +984,7 @@ func TestAutoScalingService_ReadTargetgroup_happyPath(t *testing.T) {
 	var want AutoScalingTargetGroup
 	_ = json.Unmarshal(expectedResponse, &want)
 
-	got, _ := client.AutoScaling().ReadTargetgroup(autoscalingId, autoscalingTargetgroupId)
+	got, _ := client.AutoScaling().ReadTargetgroup(autoScalingeId, autoscalingTargetgroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -996,7 +1006,7 @@ func TestAutoScalingService_ListTargetgroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	autoscalingId := "11111"
+	autoScalingeId := "11111"
 
 	var fakeGroup Groups
 	_ = faker.FakeData(&fakeGroup)
@@ -1017,7 +1027,7 @@ func TestAutoScalingService_ListTargetgroup_happyPath(t *testing.T) {
 	serverResponse, _ := json.Marshal(serverResp)
 	expectedResponse, _ := json.Marshal(fakeTargetGroups)
 
-	mux.HandleFunc("/autoscaling/"+autoscalingId, func(w http.ResponseWriter, req *http.Request) {
+	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		w.Write(serverResponse)
@@ -1026,7 +1036,7 @@ func TestAutoScalingService_ListTargetgroup_happyPath(t *testing.T) {
 	var want []AutoScalingTargetGroup
 	_ = json.Unmarshal(expectedResponse, &want)
 
-	got, _ := client.AutoScaling().ListTargetgroups(autoscalingId)
+	got, _ := client.AutoScaling().ListTargetgroups(autoScalingeId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d autoscaling to be returned, instead got %d", len(want), len(got))
 	}
@@ -1050,8 +1060,10 @@ func TestAutoScalingService_ListTargetgroup_invalidServer(t *testing.T) {
 
 func TestAutoScalingService_DeleteTargetgroup_happyPath(t *testing.T) {
 	token := "token"
-	autoScalingeId := "11111"
-	autoScalingTargetgroupId := "666666"
+
+	var autoScalingeId, autoScalingTargetgroupId string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoScalingTargetgroupId)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -1085,5 +1097,131 @@ func TestAutoScalingService_DeleteTargetgroup_invalidServer(t *testing.T) {
 	}
 	if delResponse != nil {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
+	}
+}
+
+func TestAutoScalingService_Update_happyPath(t *testing.T) {
+	token := "token"
+	var autoScalingeId string
+	_ = faker.FakeData(&autoScalingeId)
+
+	var payload UpdateAutoScalingParams
+	_ = faker.FakeData(&payload)
+	payload.AutoScalingId = autoScalingeId
+
+	client, mux, _, teardown := setup(token)
+	defer teardown()
+
+	var fakeResp UpdateResponse
+	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
+	fakeResp.Message = "success"
+	respBytes, _ := json.Marshal(fakeResp)
+
+	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodPut)
+		testHeader(t, req, "Authorization", "Bearer "+token)
+		w.Write(respBytes)
+	})
+
+	want := fakeResp
+
+	got, err := client.AutoScaling().Update(payload)
+
+	assert.Nil(t, err)
+	assert.Equal(t, want, *got)
+}
+
+func TestAutoScalingService_Update_invalidServer(t *testing.T) {
+	client, _ := NewClient("token")
+
+	_, err := client.AutoScaling().Update(UpdateAutoScalingParams{AutoScalingId: "someId"})
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
+
+func TestAutoScalingService_UpdatePolicy_happyPath(t *testing.T) {
+	token := "token"
+	var autoScalingeId, autoScalingPolicyId string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoScalingPolicyId)
+
+	var payload UpdateAutoScalingPolicyParams
+	_ = faker.FakeData(&payload)
+	payload.AutoScalingPolicyId = autoScalingPolicyId
+
+	client, mux, _, teardown := setup(token)
+	defer teardown()
+
+	var fakeResp UpdateResponse
+	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
+	fakeResp.Message = "success"
+	respBytes, _ := json.Marshal(fakeResp)
+
+	mux.HandleFunc("/autoscaling/policy/"+autoScalingPolicyId, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodPut)
+		testHeader(t, req, "Authorization", "Bearer "+token)
+		w.Write(respBytes)
+	})
+
+	want := fakeResp
+
+	got, err := client.AutoScaling().UpdatePolicy(payload)
+
+	assert.Nil(t, err)
+	assert.Equal(t, want, *got)
+}
+
+func TestAutoScalingService_UpdatePolicy_invalidServer(t *testing.T) {
+	client, _ := NewClient("token")
+
+	_, err := client.AutoScaling().UpdatePolicy(UpdateAutoScalingPolicyParams{AutoScalingPolicyId: "someId"})
+	if err == nil {
+		t.Errorf("Expected error to be returned")
+	}
+}
+
+func TestAutoScalingService_UpdateSchedule_happyPath(t *testing.T) {
+	token := "token"
+	var autoScalingeId, autoScalingScheduleId string
+	_ = faker.FakeData(&autoScalingeId)
+	_ = faker.FakeData(&autoScalingScheduleId)
+
+	var payload UpdateAutoScalingScheduleParams
+	_ = faker.FakeData(&payload)
+	payload.AutoScalingeId = autoScalingeId
+	payload.AutoScalingScheduleId = autoScalingScheduleId
+
+	client, mux, _, teardown := setup(token)
+	defer teardown()
+
+	var fakeResp UpdateResponse
+	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
+	fakeResp.Message = "success"
+	respBytes, _ := json.Marshal(fakeResp)
+
+	mux.HandleFunc("/autoscaling/"+autoScalingeId+"/schedulepolicy/"+autoScalingScheduleId, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodPut)
+		testHeader(t, req, "Authorization", "Bearer "+token)
+		w.Write(respBytes)
+	})
+
+	want := fakeResp
+
+	got, err := client.AutoScaling().UpdateSchedule(payload)
+
+	assert.Nil(t, err)
+	assert.Equal(t, want, *got)
+}
+
+func TestAutoScalingService_UpdateSchedule_invalidServer(t *testing.T) {
+	client, _ := NewClient("token")
+
+	_, err := client.AutoScaling().UpdateSchedule(UpdateAutoScalingScheduleParams{AutoScalingeId: "someId", AutoScalingScheduleId: "someOtherId"})
+	if err == nil {
+		t.Errorf("Expected error to be returned")
 	}
 }

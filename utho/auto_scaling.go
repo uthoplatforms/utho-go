@@ -8,124 +8,144 @@ import (
 type AutoScalingService service
 
 type AutoScalings struct {
-	Groups  []Groups `json:"groups"`
-	Status  string   `json:"status"`
-	Message string   `json:"message"`
+	Groups  []Groups `json:"groups" faker:"slice_len=1"`
+	Status  string   `json:"status" faker:"oneof:success,error"`
+	Message string   `json:"message" faker:"sentence"`
 }
 type Groups struct {
-	ID                 string                     `json:"id"`
-	Userid             string                     `json:"userid"`
-	Name               string                     `json:"name"`
-	Dcslug             string                     `json:"dcslug"`
-	Minsize            string                     `json:"minsize"`
-	Maxsize            string                     `json:"maxsize"`
-	Desiredsize        string                     `json:"desiredsize"`
-	Planid             string                     `json:"planid"`
-	Planname           string                     `json:"planname"`
-	InstanceTemplateid string                     `json:"instance_templateid"`
-	Image              string                     `json:"image"`
-	ImageName          string                     `json:"image_name"`
-	Snapshotid         string                     `json:"snapshotid"`
-	Status             string                     `json:"status"`
-	CreatedAt          string                     `json:"created_at"`
-	SuspendedAt        string                     `json:"suspended_at"`
-	StoppedAt          string                     `json:"stopped_at"`
-	StartedAt          string                     `json:"started_at"`
-	DeletedAt          string                     `json:"deleted_at"`
-	PublicIPEnabled    string                     `json:"public_ip_enabled"`
-	Vpc                []AutoScalingVpc           `json:"vpc"`
-	CooldownTill       string                     `json:"cooldown_till"`
-	Loadbalancers      []AutoScalingLoadbalancers `json:"load_balancers"`
-	TargetGroups       []AutoScalingTargetGroup   `json:"target_groups"`
-	SecurityGroups     []SecurityGroup            `json:"security_groups"`
-	Backupid           string                     `json:"backupid"`
-	Stack              string                     `json:"stack"`
-	StackFields        string                     `json:"stack_fields"`
-	Instances          []Instances                `json:"instances"`
-	Policies           []Policy                   `json:"policies"`
-	Schedules          []Schedule                 `json:"schedules"`
+	ID                 string                     `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Userid             string                     `json:"userid" faker:"boundary_start=100000,boundary_end=999999"`
+	Name               string                     `json:"name" faker:"word"`
+	Dcslug             string                     `json:"dcslug" faker:"word"`
+	Minsize            string                     `json:"minsize" faker:"oneof:1,2,3,4,5"`
+	Maxsize            string                     `json:"maxsize" faker:"oneof:1,2,3,4,5"`
+	Desiredsize        string                     `json:"desiredsize" faker:"oneof:1,2,3,4,5"`
+	Planid             string                     `json:"planid" faker:"boundary_start=100000,boundary_end=999999"`
+	Planname           string                     `json:"planname" faker:"word"`
+	InstanceTemplateid string                     `json:"instance_templateid" faker:"word"`
+	Image              string                     `json:"image" faker:"word"`
+	ImageName          string                     `json:"image_name" faker:"word"`
+	Snapshotid         string                     `json:"snapshotid" faker:"boundary_start=100000,boundary_end=999999"`
+	Status             string                     `json:"status" faker:"oneof:Active,Stopped"`
+	CreatedAt          string                     `json:"created_at" faker:"date"`
+	SuspendedAt        string                     `json:"suspended_at" faker:"date"`
+	StoppedAt          string                     `json:"stopped_at" faker:"date"`
+	StartedAt          string                     `json:"started_at" faker:"date"`
+	DeletedAt          string                     `json:"deleted_at" faker:"date"`
+	PublicIPEnabled    string                     `json:"public_ip_enabled" faker:"oneof:0,1"`
+	Vpc                []AutoScalingVpc           `json:"vpc" faker:"slice_len=1"`
+	CooldownTill       string                     `json:"cooldown_till" faker:"date"`
+	Loadbalancers      []AutoScalingLoadbalancers `json:"load_balancers" faker:"slice_len=1"`
+	TargetGroups       []AutoScalingTargetGroup   `json:"target_groups" faker:"slice_len=1"`
+	SecurityGroups     []SecurityGroup            `json:"security_groups" faker:"slice_len=1"`
+	Backupid           string                     `json:"backupid" faker:"boundary_start=100000,boundary_end=999999"`
+	Stack              string                     `json:"stack" faker:"boundary_start=100000,boundary_end=999999"`
+	StackFields        string                     `json:"stack_fields" faker:"word"`
+	Instances          []Instances                `json:"instances" faker:"slice_len=1"`
+	Policies           []Policy                   `json:"policies" faker:"slice_len=1"`
+	Schedules          []Schedule                 `json:"schedules" faker:"slice_len=1"`
 	DeletedInstances   []any                      `json:"deleted_instances"`
-	Dclocation         Dclocation                 `json:"dclocation"`
+	Dclocation         AutoScalingDclocation      `json:"dclocation"`
 	Plan               AutoScalingPlan            `json:"plan"`
 }
 type AutoScalingVpc struct {
-	Total      int                    `json:"total"`
-	Available  int                    `json:"available"`
-	Network    string                 `json:"network"`
-	Name       string                 `json:"name"`
-	Size       string                 `json:"size"`
-	Dcslug     string                 `json:"dcslug"`
-	Dclocation Dclocation             `json:"dclocation"`
-	IsDefault  any                    `json:"is_default"`
-	Resources  []AutoScalingResources `json:"resources"`
+	ID               string                 `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Total            int                    `json:"total" faker:"boundary_start=1,boundary_end=255"`
+	Available        int                    `json:"available" faker:"boundary_start=1,boundary_end=255"`
+	Network          string                 `json:"network" faker:"ipv4"`
+	Name             string                 `json:"name" faker:"word"`
+	Size             string                 `json:"size" faker:"oneof:24,16,8"`
+	Dcslug           string                 `json:"dcslug" faker:"word"`
+	Dclocation       AutoScalingDclocation  `json:"dclocation"`
+	IsDefault        string                 `json:"is_default" faker:"oneof:0,1"`
+	IsVpc            string                 `json:"is_vpc" faker:"oneof:0,1"`
+	Routetable       []any                  `json:"routetable"`
+	Subnets          []any                  `json:"subnets"`
+	InternetGateways []any                  `json:"internet_gateways"`
+	Resources        []AutoScalingResources `json:"resources" faker:"slice_len=1"`
 }
 type AutoScalingResources struct {
-	Type string `json:"type"`
-	ID   string `json:"id"`
-	Name string `json:"name"`
-	IP   string `json:"ip"`
+	Type         string                `json:"type" faker:"word"`
+	ResourceID   string                `json:"resource_id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID           string                `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Name         string                `json:"name" faker:"word"`
+	RAM          string                `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
+	CPU          string                `json:"cpu" faker:"oneof:1,2,4,8,16"`
+	Disksize     string                `json:"disksize" faker:"oneof:20,50,80,100"`
+	DedicatedCPU any                   `json:"dedicated_cpu"`
+	Dclocation   AutoScalingDclocation `json:"dclocation"`
+	IP           string                `json:"ip" faker:"ipv4"`
+	PrivateIP    string                `json:"private_ip" faker:"ipv4"`
+	Vpc          string                `json:"vpc" faker:"word"`
+	Source       string                `json:"source" faker:"word"`
 }
 type AutoScalingLoadbalancers struct {
-	ID   string `json:"lbid"`
-	Name string `json:"name"`
-	IP   string `json:"ip"`
+	ID   string `json:"lbid" faker:"boundary_start=100000,boundary_end=999999"`
+	Name string `json:"name" faker:"word"`
+	IP   string `json:"ip" faker:"ipv4"`
 }
 type AutoScalingTargetGroup struct {
-	ID       string `json:"id"`
-	Name     string `json:"name"`
-	Protocol string `json:"protocol"`
-	Port     string `json:"port"`
+	ID       string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Name     string `json:"name" faker:"word"`
+	Protocol string `json:"protocol" faker:"word"`
+	Port     string `json:"port" faker:"oneof:80,443,8080"`
 }
 type SecurityGroup struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID   string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Name string `json:"name" faker:"word"`
 }
 type Instances struct {
-	ID        string `json:"cloudid"`
-	Hostname  string `json:"hostname"`
-	CreatedAt string `json:"created_at"`
-	IP        string `json:"ip"`
-	Status    string `json:"status"`
+	ID        string `json:"cloudid" faker:"boundary_start=100000,boundary_end=999999"`
+	Hostname  string `json:"hostname" faker:"hostname"`
+	CreatedAt string `json:"created_at" faker:"date"`
+	IP        string `json:"ip" faker:"ipv4"`
+	Status    string `json:"status" faker:"oneof:Active,Stopped"`
 }
 type Policy struct {
-	ID                 string `json:"id"`
-	Userid             string `json:"userid"`
-	Product            string `json:"product"`
-	Productid          string `json:"productid"`
-	Groupid            string `json:"groupid"`
-	Name               string `json:"name"`
-	Type               string `json:"type"`
-	Adjust             string `json:"adjust"`
-	Period             string `json:"period"`
-	Cooldown           string `json:"cooldown"`
-	CooldownTill       string `json:"cooldown_till"`
-	Compare            string `json:"compare"`
-	Value              string `json:"value"`
-	AlertID            string `json:"alert_id"`
-	Status             string `json:"status"`
-	KubernetesID       string `json:"kubernetes_id"`
-	KubernetesNodepool string `json:"kubernetes_nodepool"`
-	Cloudid            string `json:"cloudid"`
-	Maxsize            string `json:"maxsize"`
-	Minsize            string `json:"minsize"`
+	ID                 string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Userid             string `json:"userid" faker:"boundary_start=100000,boundary_end=999999"`
+	Product            string `json:"product" faker:"word"`
+	Productid          string `json:"productid" faker:"boundary_start=100000,boundary_end=999999"`
+	Groupid            string `json:"groupid" faker:"boundary_start=100000,boundary_end=999999"`
+	Name               string `json:"name" faker:"word"`
+	Type               string `json:"type" faker:"word"`
+	Adjust             string `json:"adjust" faker:"oneof:1,2,3"`
+	Period             string `json:"period" faker:"oneof:5m,10m,15m"`
+	Cooldown           string `json:"cooldown" faker:"oneof:60,120,300"`
+	CooldownTill       string `json:"cooldown_till" faker:"date"`
+	Compare            string `json:"compare" faker:"oneof:above,below"`
+	Value              string `json:"value" faker:"oneof:1,2,3"`
+	AlertID            string `json:"alert_id" faker:"boundary_start=100000,boundary_end=999999"`
+	Status             string `json:"status" faker:"oneof:1,0"`
+	KubernetesID       string `json:"kubernetes_id" faker:"boundary_start=100000,boundary_end=999999"`
+	KubernetesNodepool string `json:"kubernetes_nodepool" faker:"word"`
+	Cloudid            string `json:"cloudid" faker:"boundary_start=100000,boundary_end=999999"`
+	Maxsize            string `json:"maxsize" faker:"oneof:1,2,3,4,5"`
+	Minsize            string `json:"minsize" faker:"oneof:1,2,3,4,5"`
 }
 type Schedule struct {
-	ID          string `json:"id"`
-	Groupid     string `json:"groupid"`
-	Name        string `json:"name"`
-	Desiredsize string `json:"desiredsize"`
-	Recurrence  string `json:"recurrence"`
-	StartDate   string `json:"start_date"`
-	Status      string `json:"status"`
-	Timezone    string `json:"timezone"`
+	ID          string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	Groupid     string `json:"groupid" faker:"boundary_start=100000,boundary_end=999999"`
+	Name        string `json:"name" faker:"word"`
+	Desiredsize string `json:"desiredsize" faker:"oneof:1,2,3,4,5"`
+	Recurrence  string `json:"recurrence" faker:"word"`
+	StartDate   string `json:"start_date" faker:"date"`
+	Status      string `json:"status" faker:"oneof:1,0"`
+	Timezone    string `json:"timezone" faker:"word"`
 }
 type AutoScalingPlan struct {
-	Planid         string `json:"planid"`
-	RAM            string `json:"ram"`
-	CPU            string `json:"cpu"`
-	Disk           string `json:"disk"`
-	Bandwidth      string `json:"bandwidth"`
-	DedicatedVcore string `json:"dedicated_vcore"`
+	Planid         string `json:"planid" faker:"boundary_start=100000,boundary_end=999999"`
+	RAM            string `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
+	CPU            string `json:"cpu" faker:"oneof:1,2,4,8,16"`
+	Disk           string `json:"disk" faker:"oneof:20,50,80,100"`
+	Bandwidth      string `json:"bandwidth" faker:"oneof:100,500,1000,2000"`
+	DedicatedVcore string `json:"dedicated_vcore" faker:"oneof:0,1"`
+}
+type AutoScalingDclocation struct {
+	Location string `json:"location" faker:"word"`
+	Country  string `json:"country,omitempty" faker:"word"`
+	DC       string `json:"dc,omitempty" faker:"word"`
+	Dccc     string `json:"dccc" faker:"word"`
 }
 
 type CreateAutoScalingParams struct {
