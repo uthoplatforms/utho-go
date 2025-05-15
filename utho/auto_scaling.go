@@ -2,7 +2,6 @@ package utho
 
 import (
 	"errors"
-	"time"
 )
 
 type AutoScalingService service
@@ -158,31 +157,38 @@ type CreateAutoScalingParams struct {
 	Planid             string                  `json:"planid"`
 	Planname           string                  `json:"planname"`
 	InstanceTemplateid string                  `json:"instance_templateid"`
-	PublicIPEnabled    bool                    `json:"public_ip_enabled"`
+	PublicIPEnabled    string                  `json:"public_ip_enabled"`
 	Vpc                string                  `json:"vpc"`
 	LoadBalancers      string                  `json:"load_balancers"`
 	SecurityGroups     string                  `json:"security_groups"`
 	Policies           []CreatePoliciesParams  `json:"policies"`
 	Schedules          []CreateSchedulesParams `json:"schedules"`
-	Stackid            string                  `json:"stack"`
+	Stackid            string                  `json:"stackid"`
 	Stackimage         string                  `json:"stackimage"`
 	TargetGroups       string                  `json:"target_groups"`
 }
 type CreatePoliciesParams struct {
-	Name     string `json:"name"`
-	Type     string `json:"type"`
-	Compare  string `json:"compare"`
-	Value    string `json:"value"`
-	Adjust   string `json:"adjust"`
-	Period   string `json:"period"`
-	Cooldown string `json:"cooldown"`
+	Name      string `json:"name"`
+	Type      string `json:"type"`
+	Compare   string `json:"compare"`
+	Value     string `json:"value"`
+	Adjust    string `json:"adjust"`
+	Period    string `json:"period"`
+	Cooldown  string `json:"cooldown"`
+	Product   string `json:"product"`
+	Productid string `json:"productid"`
 }
+
 type CreateSchedulesParams struct {
-	Name         string    `json:"name"`
-	Desiredsize  string    `json:"desiredsize"`
-	StartDate    time.Time `json:"start_date"`
-	SelectedTime string    `json:"selectedTime"`
-	SelectedDate string    `json:"selectedDate"`
+	Name         string `json:"name"`
+	Desiredsize  string `json:"desiredsize"`
+	Recurrence   string `json:"recurrence"`
+	StartDate    string `json:"start_date"`
+	SelectedTime string `json:"selectedTime"`
+	SelectedDate string `json:"selectedDate"`
+	Adjust       string `json:"adjust"`
+	Period       string `json:"period"`
+	Cooldown     string `json:"cooldown"`
 }
 
 type CreateAutoScalingResponse struct {
@@ -248,6 +254,7 @@ type UpdateAutoScalingParams struct {
 	Minsize       string `json:"minsize"`
 	Maxsize       string `json:"maxsize"`
 	Desiredsize   string `json:"desiredsize"`
+	Stackid       string `json:"stackid"`
 }
 
 func (s *AutoScalingService) Update(params UpdateAutoScalingParams) (*UpdateResponse, error) {
@@ -466,6 +473,9 @@ type UpdateAutoScalingScheduleParams struct {
 	Desiredsize           string `json:"desiredsize"`
 	Recurrence            string `json:"recurrence"`
 	StartDate             string `json:"start_date"`
+	Adjust                string `json:"adjust"`
+	Period                string `json:"period"`
+	Cooldown              string `json:"cooldown"`
 }
 
 func (s *AutoScalingService) UpdateSchedule(params UpdateAutoScalingScheduleParams) (*UpdateResponse, error) {
