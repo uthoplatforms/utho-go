@@ -3,6 +3,7 @@ package utho
 import (
 	"context"
 	"errors"
+	"fmt"
 )
 
 type KubernetesService service
@@ -13,18 +14,18 @@ type Kubernetes struct {
 	Message string `json:"message"`
 }
 type K8s struct {
-	ID             string              `json:"id"`
+	ID             int                 `json:"id,string"`
 	CreatedAt      string              `json:"created_at"`
 	Dcslug         string              `json:"dcslug"`
 	RefID          string              `json:"ref_id"`
 	Nodepool       string              `json:"nodepool"`
 	Hostname       string              `json:"hostname"`
-	RAM            string              `json:"ram"`
-	CPU            string              `json:"cpu"`
-	Disksize       string              `json:"disksize"`
+	RAM            int                 `json:"ram,string"`
+	CPU            int                 `json:"cpu,string"`
+	Disksize       int                 `json:"disksize,string"`
 	AppStatus      string              `json:"app_status"`
 	IP             string              `json:"ip"`
-	Cloudid        string              `json:"cloudid"`
+	Cloudid        int                 `json:"cloudid,string"`
 	Powerstatus    string              `json:"powerstatus"`
 	Dclocation     K8sDclocation       `json:"dclocation"`
 	Status         string              `json:"status"`
@@ -49,7 +50,7 @@ type KubernetesClusterInfo struct {
 	Master  MasterNodeDetails         `json:"master"`
 }
 type KubernetesClusterMetadata struct {
-	ID              string        `json:"id"`
+	ID              int           `json:"id,string"`
 	Version         string        `json:"version"`
 	Label           string        `json:"label"`
 	Endpoint        string        `json:"endpoint"`
@@ -70,20 +71,20 @@ type KubernetesClusterMetadata struct {
 	LoadBalancers   string        `json:"load_balancers"`
 	SecurityGroups  string        `json:"security_groups"`
 	TargetGroups    string        `json:"target_groups"`
-	Userid          string        `json:"userid"`
+	Userid          int           `json:"userid,string"`
 	Powerstatus     string        `json:"powerstatus"`
 	Dclocation      K8sDclocation `json:"dclocation"`
 }
 type MasterNodeDetails struct {
-	Cloudid        string         `json:"cloudid"`
+	Cloudid        int            `json:"cloudid,string"`
 	Hostname       string         `json:"hostname"`
-	Ram            string         `json:"ram"`
-	Cpu            string         `json:"cpu"`
+	Ram            int            `json:"ram,string"`
+	Cpu            int            `json:"cpu,string"`
 	Cost           string         `json:"cost"`
-	Disksize       string         `json:"disksize"`
+	Disksize       int            `json:"disksize,string"`
 	AppStatus      string         `json:"app_status"`
 	Dcslug         string         `json:"dcslug"`
-	Planid         string         `json:"planid"`
+	Planid         int            `json:"planid,string"`
 	Ip             string         `json:"ip"`
 	PrivateNetwork PrivateNetwork `json:"private_network"`
 }
@@ -91,30 +92,31 @@ type NodepoolDetails struct {
 	ID        string        `json:"id"`
 	Size      string        `json:"size"`
 	Cost      float64       `json:"cost"`
-	Planid    string        `json:"planid"`
-	Count     string        `json:"count"`
+	Planid    int           `json:"planid,string"`
+	Count     int           `json:"count,string"`
 	AutoScale bool          `json:"auto_scale"`
-	MinNodes  int           `json:"min_nodes"`
-	MaxNodes  int           `json:"max_nodes"`
+	MinNodes  int           `json:"min_nodes,string"`
+	MaxNodes  int           `json:"max_nodes,string"`
 	Policies  []interface{} `json:"policies"`
 	Workers   []WorkerNode  `json:"workers"`
 }
+
 type WorkerNode struct {
-	ID             string         `json:"cloudid"`
+	ID             int            `json:"cloudid,string"`
 	Nodepool       string         `json:"nodepool"`
 	Hostname       string         `json:"hostname"`
-	Ram            string         `json:"ram"`
+	Ram            int            `json:"ram,string"`
 	Cost           string         `json:"cost"`
-	Cpu            string         `json:"cpu"`
-	Disksize       string         `json:"disksize"`
+	Cpu            int            `json:"cpu,string"`
+	Disksize       int            `json:"disksize,string"`
 	AppStatus      string         `json:"app_status"`
 	Ip             string         `json:"ip"`
-	Planid         string         `json:"planid"`
+	Planid         int            `json:"planid,string"`
 	Status         string         `json:"status"`
 	PrivateNetwork PrivateNetwork `json:"private_network"`
 }
 type VpcDetails struct {
-	ID         string `json:"id"`
+	ID         int    `json:"id,string"`
 	VpcNetwork string `json:"vpc_network"`
 }
 type PrivateNetwork struct {
@@ -129,18 +131,18 @@ type K8sDclocation struct {
 	Dccc     string `json:"dccc"`
 }
 type K8sLoadbalancers struct {
-	ID   string `json:"lbid"`
+	ID   int    `json:"lbid,string"`
 	Name string `json:"name"`
 	IP   string `json:"ip"`
 }
 type K8sTargetGroups struct {
-	ID       string `json:"id"`
+	ID       int    `json:"id,string"`
 	Name     string `json:"name"`
 	Protocol any    `json:"protocol"`
 	Port     string `json:"port"`
 }
 type K8sSecurityGroups struct {
-	ID   string `json:"id"`
+	ID   int    `json:"id,string"`
 	Name string `json:"name"`
 }
 
@@ -178,8 +180,8 @@ type CreateKubernetesPoliciesParams struct {
 }
 
 type CreateKubernetesNodePoolParams struct {
-	KubernetesId string
-	Nodepools    []CreateNodepoolsDetails `json:"nodepools"`
+	ClusterId int
+	Nodepools []CreateNodepoolsDetails `json:"nodepools"`
 }
 type CreateNodepoolsDetails struct {
 	Label string              `json:"label"`
@@ -208,8 +210,8 @@ func (k *KubernetesService) Create(ctx context.Context, params CreateKubernetesP
 	return &kubernetes, nil
 }
 
-func (k *KubernetesService) Read(ctx context.Context, clusterId string) (*KubernetesCluster, error) {
-	reqUrl := "kubernetes/" + clusterId
+func (k *KubernetesService) Read(ctx context.Context, clusterId int) (*KubernetesCluster, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetes KubernetesCluster
@@ -241,13 +243,13 @@ func (k *KubernetesService) List(ctx context.Context) ([]K8s, error) {
 }
 
 type DeleteKubernetesParams struct {
-	ClusterId string
+	ClusterId int
 	// confirm message"I am aware this action will delete data and cluster permanently"
 	Confirm string `json:"confirm"`
 }
 
 func (k *KubernetesService) Delete(ctx context.Context, params DeleteKubernetesParams) (*DeleteResponse, error) {
-	reqUrl := "kubernetes/" + params.ClusterId + "/destroy"
+	reqUrl := fmt.Sprintf("kubernetes/%d/destroy", params.ClusterId)
 	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -262,12 +264,12 @@ func (k *KubernetesService) Delete(ctx context.Context, params DeleteKubernetesP
 }
 
 type CreateKubernetesLoadbalancerParams struct {
-	KubernetesId   string
-	LoadbalancerId string
+	ClusterId      int
+	LoadbalancerId int
 }
 
 func (k *KubernetesService) CreateLoadbalancer(ctx context.Context, params CreateKubernetesLoadbalancerParams) (*CreateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/loadbalancer/" + params.LoadbalancerId
+	reqUrl := fmt.Sprintf("kubernetes/%d/loadbalancer/%d", params.ClusterId, params.LoadbalancerId)
 	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
@@ -282,8 +284,8 @@ func (k *KubernetesService) CreateLoadbalancer(ctx context.Context, params Creat
 	return &kubernetes, nil
 }
 
-func (k *KubernetesService) ReadLoadbalancer(ctx context.Context, kubernetesId, loadbalancerId string) (*K8sLoadbalancers, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+func (k *KubernetesService) ReadLoadbalancer(ctx context.Context, clusterId, loadbalancerId int) (*K8sLoadbalancers, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
@@ -300,15 +302,15 @@ func (k *KubernetesService) ReadLoadbalancer(ctx context.Context, kubernetesId, 
 			loadbalancers = r
 		}
 	}
-	if len(loadbalancers.ID) == 0 {
+	if loadbalancers.ID == 0 {
 		return nil, errors.New("kubernetess loadbalancer not found")
 	}
 
 	return &loadbalancers, nil
 }
 
-func (k *KubernetesService) ListLoadbalancers(ctx context.Context, kubernetesId string) ([]K8sLoadbalancers, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+func (k *KubernetesService) ListLoadbalancers(ctx context.Context, clusterId int) ([]K8sLoadbalancers, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
@@ -323,8 +325,8 @@ func (k *KubernetesService) ListLoadbalancers(ctx context.Context, kubernetesId 
 	return kubernetess.LoadBalancers, nil
 }
 
-func (k *KubernetesService) DeleteLoadbalancer(ctx context.Context, kubernetesId, kubernetesLoadbalancerId string) (*DeleteResponse, error) {
-	reqUrl := "kubernetes/" + kubernetesId + "/loadbalancerpolicy/" + kubernetesLoadbalancerId
+func (k *KubernetesService) DeleteLoadbalancer(ctx context.Context, clusterId, kubernetesLoadbalancerId int) (*DeleteResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/loadbalancer/%d", clusterId, kubernetesLoadbalancerId)
 	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -339,12 +341,12 @@ func (k *KubernetesService) DeleteLoadbalancer(ctx context.Context, kubernetesId
 }
 
 type CreateKubernetesSecurityGroupParams struct {
-	KubernetesId              string
-	KubernetesSecurityGroupId string
+	ClusterId                 int
+	KubernetesSecurityGroupId int
 }
 
 func (k *KubernetesService) CreateSecurityGroup(ctx context.Context, params CreateKubernetesSecurityGroupParams) (*CreateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/securitygroup/" + params.KubernetesSecurityGroupId
+	reqUrl := fmt.Sprintf("kubernetes/%d", params.ClusterId)
 	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
@@ -359,8 +361,8 @@ func (k *KubernetesService) CreateSecurityGroup(ctx context.Context, params Crea
 	return &kubernetes, nil
 }
 
-func (k *KubernetesService) ReadSecurityGroup(ctx context.Context, kubernetesId, securitygroupId string) (*K8sSecurityGroups, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+func (k *KubernetesService) ReadSecurityGroup(ctx context.Context, clusterId, securitygroupId int) (*K8sSecurityGroups, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
@@ -377,15 +379,15 @@ func (k *KubernetesService) ReadSecurityGroup(ctx context.Context, kubernetesId,
 			securitygroups = r
 		}
 	}
-	if len(securitygroups.ID) == 0 {
+	if securitygroups.ID == 0 {
 		return nil, errors.New("kubernetess securitygroup not found")
 	}
 
 	return &securitygroups, nil
 }
 
-func (k *KubernetesService) ListSecurityGroups(ctx context.Context, kubernetesId string) ([]K8sSecurityGroups, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+func (k *KubernetesService) ListSecurityGroups(ctx context.Context, clusterId int) ([]K8sSecurityGroups, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
@@ -400,8 +402,8 @@ func (k *KubernetesService) ListSecurityGroups(ctx context.Context, kubernetesId
 	return kubernetess.SecurityGroups, nil
 }
 
-func (k *KubernetesService) DeleteSecurityGroup(ctx context.Context, kuberneteseId, kubernetesSecurityGroupId string) (*DeleteResponse, error) {
-	reqUrl := "kubernetes/" + kuberneteseId + "/securitygroup/" + kubernetesSecurityGroupId
+func (k *KubernetesService) DeleteSecurityGroup(ctx context.Context, clusterId, kubernetesSecurityGroupId int) (*DeleteResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/securitygroup/%d", clusterId, kubernetesSecurityGroupId)
 	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -416,12 +418,12 @@ func (k *KubernetesService) DeleteSecurityGroup(ctx context.Context, kubernetese
 }
 
 type CreateKubernetesTargetgroupParams struct {
-	KubernetesId            string
-	KubernetesTargetgroupId string
+	ClusterId               int
+	KubernetesTargetgroupId int
 }
 
 func (k *KubernetesService) CreateTargetgroup(ctx context.Context, params CreateKubernetesTargetgroupParams) (*CreateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/targetgroup/" + params.KubernetesTargetgroupId
+	reqUrl := fmt.Sprintf("kubernetes/%d/targetgroup/%d", params.ClusterId, params.KubernetesTargetgroupId)
 	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
@@ -436,8 +438,8 @@ func (k *KubernetesService) CreateTargetgroup(ctx context.Context, params Create
 	return &kubernetes, nil
 }
 
-func (k *KubernetesService) ReadTargetgroup(ctx context.Context, kubernetesId, targetgroupId string) (*K8sTargetGroups, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+func (k *KubernetesService) ReadTargetgroup(ctx context.Context, clusterId, targetgroupId int) (*K8sTargetGroups, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
@@ -449,7 +451,7 @@ func (k *KubernetesService) ReadTargetgroup(ctx context.Context, kubernetesId, t
 		return nil, errors.New(kubernetess.Message)
 	}
 
-	if len(kubernetess.Info.Cluster.ID) == 0 {
+	if kubernetess.Info.Cluster.ID == 0 {
 		return nil, errors.New("no Cluster Found")
 	}
 	var targetgroups K8sTargetGroups
@@ -458,15 +460,15 @@ func (k *KubernetesService) ReadTargetgroup(ctx context.Context, kubernetesId, t
 			targetgroups = tg
 		}
 	}
-	if len(targetgroups.ID) == 0 {
+	if targetgroups.ID == 0 {
 		return nil, errors.New("kubernetess targetgroup not found")
 	}
 
 	return &targetgroups, nil
 }
 
-func (k *KubernetesService) ListTargetgroups(ctx context.Context, kubernetesId string) ([]K8sTargetGroups, error) {
-	reqUrl := "kubernetes/" + kubernetesId
+func (k *KubernetesService) ListTargetgroups(ctx context.Context, clusterId int) ([]K8sTargetGroups, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesCluster
@@ -481,8 +483,8 @@ func (k *KubernetesService) ListTargetgroups(ctx context.Context, kubernetesId s
 	return kubernetess.TargetGroups, nil
 }
 
-func (k *KubernetesService) DeleteTargetgroup(ctx context.Context, kuberneteseId, kubernetesTargetgroupId string) (*DeleteResponse, error) {
-	reqUrl := "kubernetes/" + kuberneteseId + "/targetgroup/" + kubernetesTargetgroupId
+func (k *KubernetesService) DeleteTargetgroup(ctx context.Context, clusterId, kubernetesTargetgroupId int) (*DeleteResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/targetgroup/%d", clusterId, kubernetesTargetgroupId)
 	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -496,8 +498,8 @@ func (k *KubernetesService) DeleteTargetgroup(ctx context.Context, kuberneteseId
 	return &delResponse, nil
 }
 
-func (k *KubernetesService) PowerOff(ctx context.Context, kubernetesId string) (*BasicResponse, error) {
-	reqUrl := "kubernetes/" + kubernetesId + "/stop"
+func (k *KubernetesService) PowerOff(ctx context.Context, clusterId int) (*BasicResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/stop", clusterId)
 	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var basicResponse BasicResponse
@@ -512,8 +514,8 @@ func (k *KubernetesService) PowerOff(ctx context.Context, kubernetesId string) (
 	return &basicResponse, nil
 }
 
-func (k *KubernetesService) PowerOn(ctx context.Context, kubernetesId string) (*BasicResponse, error) {
-	reqUrl := "kubernetes/" + kubernetesId + "/start"
+func (k *KubernetesService) PowerOn(ctx context.Context, clusterId int) (*BasicResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/start", clusterId)
 	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var basicResponse BasicResponse
@@ -528,8 +530,9 @@ func (k *KubernetesService) PowerOn(ctx context.Context, kubernetesId string) (*
 	return &basicResponse, nil
 }
 
+// NodePool
 func (k *KubernetesService) CreateNodePool(ctx context.Context, params CreateKubernetesNodePoolParams) (*CreateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/add"
+	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/add", params.ClusterId)
 	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes CreateResponse
@@ -544,23 +547,91 @@ func (k *KubernetesService) CreateNodePool(ctx context.Context, params CreateKub
 	return &kubernetes, nil
 }
 
-type UpdateKubernetesAutoscaleNodepool struct {
-	KubernetesId string
-	NodePoolId   string
-	Count        string `json:"count"`
-	Label        string `json:"label"`
-	PoolType     string `json:"pool_type"`
-	Size         string `json:"size"`
-	Policies     string `json:"policies"`
-	MinNodes     int    `json:"min_nodes"`
-	MaxNodes     int    `json:"max_nodes"`
+func (k *KubernetesService) ReadNodePool(ctx context.Context, clusterId int, nodePoolId string) (*NodepoolDetails, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
+	req, _ := k.client.NewRequest("GET", reqUrl)
+
+	var kubernetess KubernetesCluster
+	_, err := k.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
+
+	if kubernetess.Info.Cluster.ID == 0 {
+		return nil, errors.New("no Cluster Found")
+	}
+	var nodepools NodepoolDetails
+	for id, np := range kubernetess.Nodepools {
+		if id == nodePoolId {
+			np.ID = id
+			nodepools = np
+		}
+	}
+	if len(nodepools.ID) == 0 {
+		return nil, errors.New("kubernetess NodePool not found")
+	}
+
+	return &nodepools, nil
 }
 
-func (k *KubernetesService) UpdateAutoscaleNodepool(ctx context.Context, params UpdateKubernetesAutoscaleNodepool) (*UpdateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodePoolId + "/update"
+func (k *KubernetesService) ListNodePools(ctx context.Context, clusterId int) ([]NodepoolDetails, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
+	req, _ := k.client.NewRequest("GET", reqUrl)
+
+	var kubernetess KubernetesCluster
+	_, err := k.client.Do(req, &kubernetess)
+	if err != nil {
+		return nil, err
+	}
+	if kubernetess.Status != "success" && kubernetess.Status != "" {
+		return nil, errors.New(kubernetess.Message)
+	}
+
+	nodepools := make([]NodepoolDetails, 0, len(kubernetess.Nodepools))
+	for id, np := range kubernetess.Nodepools {
+		np.ID = id
+		nodepools = append(nodepools, np)
+	}
+	return nodepools, nil
+}
+
+type UpdateKubernetesAutoscaleNodepool struct {
+	ClusterId  int
+	NodePoolId string
+	Count      int    `json:"count"`
+	Label      string `json:"label,omitempty"`
+	PoolType   string `json:"pool_type,omitempty"`
+	Size       int    `json:"size,omitempty"`
+	Policies   string `json:"policies,omitempty"`
+	MinNodes   int    `json:"min_nodes,omitempty"`
+	MaxNodes   int    `json:"max_nodes,omitempty"`
+}
+
+type UpdateKubernetesAutoscaleNodepoolResponse struct {
+	ID        string        `json:"id"`
+	Size      string        `json:"size"`
+	Cost      float64       `json:"cost"`
+	Planid    string        `json:"planid"`
+	Count     int           `json:"count"`
+	AutoScale bool          `json:"auto_scale"`
+	MinNodes  int           `json:"min_nodes"`
+	MaxNodes  int           `json:"max_nodes"`
+	Policies  []interface{} `json:"policies"`
+	Workers   []WorkerNode  `json:"workers"`
+
+	Status  string `json:"status"`
+	Message string `json:"message"`
+}
+
+// UpdateAutoscaleNodepool
+func (k *KubernetesService) UpdateNodePool(ctx context.Context, params UpdateKubernetesAutoscaleNodepool) (*UpdateKubernetesAutoscaleNodepoolResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%s/update", params.ClusterId, params.NodePoolId)
 	req, _ := k.client.NewRequest("POST", reqUrl)
 
-	var kubernetes UpdateResponse
+	var kubernetes UpdateKubernetesAutoscaleNodepoolResponse
 	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
@@ -573,16 +644,16 @@ func (k *KubernetesService) UpdateAutoscaleNodepool(ctx context.Context, params 
 }
 
 type UpdateKubernetesStaticNodepool struct {
-	KubernetesId string
-	NodePoolId   string
-	Count        string `json:"count"`
-	Label        string `json:"label"`
-	PoolType     string `json:"pool_type"`
-	Size         string `json:"size"`
+	ClusterId  int
+	NodePoolId int
+	Count      string `json:"count"`
+	Label      string `json:"label"`
+	PoolType   string `json:"pool_type"`
+	Size       string `json:"size"`
 }
 
 func (k *KubernetesService) UpdateStaticNodepool(ctx context.Context, params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
-	reqUrl := "kubernetes/" + params.KubernetesId + "/nodepool/" + params.NodePoolId + "/update"
+	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%d/update", params.ClusterId, params.NodePoolId)
 	req, _ := k.client.NewRequest("POST", reqUrl)
 
 	var kubernetes UpdateResponse
@@ -595,4 +666,25 @@ func (k *KubernetesService) UpdateStaticNodepool(ctx context.Context, params Upd
 	}
 
 	return &kubernetes, nil
+}
+
+type DeleteNodeParams struct {
+	ClusterId int
+	PoolId    string
+	NodeId    string
+}
+
+func (k *KubernetesService) DeleteNode(ctx context.Context, params DeleteNodeParams) (*DeleteResponse, error) {
+	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%s/node/%s", params.ClusterId, params.PoolId, params.NodeId)
+	req, _ := k.client.NewRequest("DELETE", reqUrl)
+
+	var delResponse DeleteResponse
+	if _, err := k.client.Do(req, &delResponse); err != nil {
+		return nil, err
+	}
+	if delResponse.Status != "success" && delResponse.Status != "" {
+		return nil, errors.New(delResponse.Message)
+	}
+
+	return &delResponse, nil
 }

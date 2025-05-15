@@ -35,7 +35,8 @@ func TestKubernetesService_Create_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/deploy", func(w http.ResponseWriter, req *http.Request) {
+	URL := "/kubernetes/deploy"
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyCreateResponseJson)
@@ -65,11 +66,12 @@ func TestKubernetesService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := "11111"
+	clusterId := 1111
 	expectedResponse := dummyReadKubernetesRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes/"+clusterId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -89,12 +91,12 @@ func TestKubernetesService_Read_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	apikey, err := client.Kubernetes().Read(ctx, "someId")
+	cluster, err := client.Kubernetes().Read(ctx, 0000)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
-	if apikey != nil {
-		t.Errorf("Was not expecting any apikey to be returned, instead got %v", apikey)
+	if cluster != nil {
+		t.Errorf("Was not expecting any cluster to be returned, instead got %v", cluster)
 	}
 }
 
@@ -105,7 +107,8 @@ func TestKubernetesService_List_happyPath(t *testing.T) {
 	expectedResponse := dummyListKubernetesRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes", func(w http.ResponseWriter, req *http.Request) {
+	URL := "/kubernetes"
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -141,15 +144,16 @@ func TestKubernetesService_List_invalidServer(t *testing.T) {
 func TestKubernetesService_Delete_happyPath(t *testing.T) {
 	token := "token"
 	payload := DeleteKubernetesParams{
-		ClusterId: "11111",
+		ClusterId: 1111,
 		Confirm:   "I am aware this action will delete data and cluster permanently",
 	}
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+payload.ClusterId+"/destroy", func(w http.ResponseWriter, req *http.Request) {
-		testHttpMethod(t, req, "DELETE")
+	URL := fmt.Sprintf("/kubernetes/%d/destroy", payload.ClusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodDelete)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyDeleteResponseJson)
 	})
@@ -181,14 +185,15 @@ func TestKubernetesServices_CreateLoadbalancer_happyPath(t *testing.T) {
 	token := "token"
 
 	payload := CreateKubernetesLoadbalancerParams{
-		KubernetesId:   "11111",
-		LoadbalancerId: "22222",
+		ClusterId:      1111,
+		LoadbalancerId: 2222,
 	}
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+payload.KubernetesId+"/loadbalancer/"+payload.LoadbalancerId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d/loadbalancer/%d", payload.ClusterId, payload.LoadbalancerId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
@@ -218,12 +223,13 @@ func TestKubernetesServices_ReadLoadbalancer_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	kubernetesId := "11111"
-	loadbalancerID := "22222"
+	clusterId := 1111
+	loadbalancerId := 22222
 	expectedResponse := dummyReadKubernetesLoadbalancerRes
-	serverResponse := dummyKubernetesServerRes
+	serverResponse := dummyReadKubernetesLoadbalancerRes
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -233,7 +239,7 @@ func TestKubernetesServices_ReadLoadbalancer_happyPath(t *testing.T) {
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ReadLoadbalancer(ctx, kubernetesId, loadbalancerID)
+	got, _ := client.Kubernetes().ReadLoadbalancer(ctx, clusterId, loadbalancerId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -243,12 +249,12 @@ func TestKubernetesServices_ReadLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	apikey, err := client.Kubernetes().ReadLoadbalancer(ctx, "11111", "122134")
+	loadbalancer, err := client.Kubernetes().ReadLoadbalancer(ctx, 1111, 122134)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
-	if apikey != nil {
-		t.Errorf("Was not expecting any apikey to be returned, instead got %v", apikey)
+	if loadbalancer != nil {
+		t.Errorf("Was not expecting any loadbalancer to be returned, instead got %v", loadbalancer)
 	}
 }
 
@@ -256,11 +262,12 @@ func TestKubernetesServices_ListLoadbalancer_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	kubernetesId := "11111"
+	clusterId := 1111
 	expectedResponse := dummyListKubernetesLoadbalancerRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -270,7 +277,7 @@ func TestKubernetesServices_ListLoadbalancer_happyPath(t *testing.T) {
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ListLoadbalancers(ctx, kubernetesId)
+	got, _ := client.Kubernetes().ListLoadbalancers(ctx, clusterId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d kubernetes loadbalancer to be returned, instead got %d", len(want), len(got))
 	}
@@ -284,7 +291,7 @@ func TestKubernetesServices_ListLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	loadbalancer, err := client.Kubernetes().ListLoadbalancers(ctx, "11111")
+	loadbalancer, err := client.Kubernetes().ListLoadbalancers(ctx, 1111)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -295,14 +302,15 @@ func TestKubernetesServices_ListLoadbalancer_invalidServer(t *testing.T) {
 
 func TestKubernetesServices_DeleteLoadbalancer_happyPath(t *testing.T) {
 	token := "token"
-	kubernetesId := "11111"
-	loadbalancerId := "22222"
+	clusterId := 1111
+	loadbalancerId := 22222
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId+"/loadbalancerpolicy/"+loadbalancerId, func(w http.ResponseWriter, req *http.Request) {
-		testHttpMethod(t, req, "DELETE")
+	URL := fmt.Sprintf("/kubernetes/%d/loadbalancer/%d", clusterId, loadbalancerId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodDelete)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyDeleteResponseJson)
 	})
@@ -310,7 +318,7 @@ func TestKubernetesServices_DeleteLoadbalancer_happyPath(t *testing.T) {
 	want := DeleteResponse{Status: "success", Message: "success"}
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().DeleteLoadbalancer(ctx, kubernetesId, loadbalancerId)
+	got, _ := client.Kubernetes().DeleteLoadbalancer(ctx, clusterId, loadbalancerId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -320,7 +328,7 @@ func TestKubernetesServices_DeleteLoadbalancer_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	delResponse, err := client.Kubernetes().DeleteLoadbalancer(ctx, "someLoadbalancerName", "123543")
+	delResponse, err := client.Kubernetes().DeleteLoadbalancer(ctx, 1111, 123543)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -334,14 +342,15 @@ func TestKubernetesServices_CreateSecurityGroup_happyPath(t *testing.T) {
 	token := "token"
 
 	payload := CreateKubernetesSecurityGroupParams{
-		KubernetesId:              "11111",
-		KubernetesSecurityGroupId: "44444",
+		ClusterId:                 1111,
+		KubernetesSecurityGroupId: 44444,
 	}
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+payload.KubernetesId+"/securitygroup/"+payload.KubernetesSecurityGroupId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d/securitygroup/%d", payload.ClusterId, payload.KubernetesSecurityGroupId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
@@ -371,12 +380,13 @@ func TestKubernetesServices_ReadSecurityGroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	kubernetesId := "11111"
-	securityGroupId := "44444"
+	clusterId := 1111
+	securityGroupId := 44444
 	expectedResponse := dummyReadKubernetesSecurityGroupRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -386,7 +396,7 @@ func TestKubernetesServices_ReadSecurityGroup_happyPath(t *testing.T) {
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ReadSecurityGroup(ctx, kubernetesId, securityGroupId)
+	got, _ := client.Kubernetes().ReadSecurityGroup(ctx, clusterId, securityGroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -396,12 +406,12 @@ func TestKubernetesServices_ReadSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	apikey, err := client.Kubernetes().ReadSecurityGroup(ctx, "11111", "122134")
+	securityGroup, err := client.Kubernetes().ReadSecurityGroup(ctx, 1111, 122134)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
-	if apikey != nil {
-		t.Errorf("Was not expecting any apikey to be returned, instead got %v", apikey)
+	if securityGroup != nil {
+		t.Errorf("Was not expecting any securityGroup to be returned, instead got %v", securityGroup)
 	}
 }
 
@@ -409,11 +419,12 @@ func TestKubernetesServices_ListSecurityGroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	kubernetesId := "11111"
+	clusterId := 1111
 	expectedResponse := dummyListKubernetesSecurityGroupRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -423,7 +434,7 @@ func TestKubernetesServices_ListSecurityGroup_happyPath(t *testing.T) {
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ListSecurityGroups(ctx, kubernetesId)
+	got, _ := client.Kubernetes().ListSecurityGroups(ctx, clusterId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d kubernetes securitygroup to be returned, instead got %d", len(want), len(got))
 	}
@@ -437,7 +448,7 @@ func TestKubernetesServices_ListSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	securitygroup, err := client.Kubernetes().ListSecurityGroups(ctx, "11111")
+	securitygroup, err := client.Kubernetes().ListSecurityGroups(ctx, 1111)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -448,14 +459,15 @@ func TestKubernetesServices_ListSecurityGroup_invalidServer(t *testing.T) {
 
 func TestKubernetesServices_DeleteSecurityGroup_happyPath(t *testing.T) {
 	token := "token"
-	kubernetesId := "11111"
-	securityGroupId := "44444"
+	clusterId := 1111
+	securityGroupId := 44444
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId+"/securitygroup/"+securityGroupId, func(w http.ResponseWriter, req *http.Request) {
-		testHttpMethod(t, req, "DELETE")
+	URL := fmt.Sprintf("/kubernetes/%d/securitygroup/%d", clusterId, securityGroupId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodDelete)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyDeleteResponseJson)
 	})
@@ -463,7 +475,7 @@ func TestKubernetesServices_DeleteSecurityGroup_happyPath(t *testing.T) {
 	want := DeleteResponse{Status: "success", Message: "success"}
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().DeleteSecurityGroup(ctx, kubernetesId, securityGroupId)
+	got, _ := client.Kubernetes().DeleteSecurityGroup(ctx, clusterId, securityGroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -473,7 +485,7 @@ func TestKubernetesServices_DeleteSecurityGroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	delResponse, err := client.Kubernetes().DeleteSecurityGroup(ctx, "someSecurityGroupName", "123543")
+	delResponse, err := client.Kubernetes().DeleteSecurityGroup(ctx, 1111, 123543)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -487,14 +499,15 @@ func TestKubernetesServices_CreateTargetgroup_happyPath(t *testing.T) {
 	token := "token"
 
 	payload := CreateKubernetesTargetgroupParams{
-		KubernetesId:            "11111",
-		KubernetesTargetgroupId: "33333",
+		ClusterId:               1111,
+		KubernetesTargetgroupId: 33333,
 	}
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+payload.KubernetesId+"/targetgroup/"+payload.KubernetesTargetgroupId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d/targetgroup/%d", payload.ClusterId, payload.KubernetesTargetgroupId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
@@ -524,12 +537,13 @@ func TestKubernetesServices_ReadTargetgroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	kubernetesId := "11111"
-	targetgroupId := "33333"
+	clusterId := 1111
+	targetgroupId := 33333
 	expectedResponse := dummyReadKubernetesTargetgroupRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -539,7 +553,7 @@ func TestKubernetesServices_ReadTargetgroup_happyPath(t *testing.T) {
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ReadTargetgroup(ctx, kubernetesId, targetgroupId)
+	got, _ := client.Kubernetes().ReadTargetgroup(ctx, clusterId, targetgroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -549,12 +563,12 @@ func TestKubernetesServices_ReadTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	apikey, err := client.Kubernetes().ReadTargetgroup(ctx, "11111", "122134")
+	targetGroup, err := client.Kubernetes().ReadTargetgroup(ctx, 1111, 122134)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
-	if apikey != nil {
-		t.Errorf("Was not expecting any apikey to be returned, instead got %v", apikey)
+	if targetGroup != nil {
+		t.Errorf("Was not expecting any targetGroup to be returned, instead got %v", targetGroup)
 	}
 }
 
@@ -562,11 +576,12 @@ func TestKubernetesServices_ListTargetgroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	kubernetesId := "11111"
+	clusterId := 1111
 	expectedResponse := dummyListKubernetesTargetgroupRes
 	serverResponse := dummyKubernetesServerRes
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId, func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
 		fmt.Fprint(w, serverResponse)
@@ -576,7 +591,7 @@ func TestKubernetesServices_ListTargetgroup_happyPath(t *testing.T) {
 	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ListTargetgroups(ctx, kubernetesId)
+	got, _ := client.Kubernetes().ListTargetgroups(ctx, clusterId)
 	if len(got) != len(want) {
 		t.Errorf("Was expecting %d kubernetes targetgroup to be returned, instead got %d", len(want), len(got))
 	}
@@ -590,7 +605,7 @@ func TestKubernetesServices_ListTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	targetgroup, err := client.Kubernetes().ListTargetgroups(ctx, "11111")
+	targetgroup, err := client.Kubernetes().ListTargetgroups(ctx, 1111)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -601,14 +616,15 @@ func TestKubernetesServices_ListTargetgroup_invalidServer(t *testing.T) {
 
 func TestKubernetesServices_DeleteTargetgroup_happyPath(t *testing.T) {
 	token := "token"
-	kubernetesId := "11111"
-	targetgroupId := "33333"
+	clusterId := 1111
+	targetgroupId := 33333
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId+"/targetgroup/"+targetgroupId, func(w http.ResponseWriter, req *http.Request) {
-		testHttpMethod(t, req, "DELETE")
+	URL := fmt.Sprintf("/kubernetes/%d/targetgroup/%d", clusterId, targetgroupId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, http.MethodDelete)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyDeleteResponseJson)
 	})
@@ -616,7 +632,7 @@ func TestKubernetesServices_DeleteTargetgroup_happyPath(t *testing.T) {
 	want := DeleteResponse{Status: "success", Message: "success"}
 
 	ctx := context.Background()
-	got, _ := client.Kubernetes().DeleteTargetgroup(ctx, kubernetesId, targetgroupId)
+	got, _ := client.Kubernetes().DeleteTargetgroup(ctx, clusterId, targetgroupId)
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -626,7 +642,7 @@ func TestKubernetesServices_DeleteTargetgroup_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	delResponse, err := client.Kubernetes().DeleteTargetgroup(ctx, "someTargetgroupName", "123543")
+	delResponse, err := client.Kubernetes().DeleteTargetgroup(ctx, 1111, 123543)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -637,19 +653,20 @@ func TestKubernetesServices_DeleteTargetgroup_invalidServer(t *testing.T) {
 
 func TestKubernetesService_PowerOn_happyPath(t *testing.T) {
 	token := "token"
-	kubernetesId := "someId"
+	clusterId := 0000
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId+"/start", func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d/start", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
 	ctx := context.Background()
-	got, err := client.Kubernetes().PowerOn(ctx, kubernetesId)
+	got, err := client.Kubernetes().PowerOn(ctx, clusterId)
 
 	var want BasicResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -662,7 +679,7 @@ func TestKubernetesService_PowerOn_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	_, err := client.Kubernetes().PowerOn(ctx, "kubernetesId")
+	_, err := client.Kubernetes().PowerOn(ctx, 11111)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
@@ -670,19 +687,20 @@ func TestKubernetesService_PowerOn_invalidServer(t *testing.T) {
 
 func TestKubernetesService_PowerOff_happyPath(t *testing.T) {
 	token := "token"
-	kubernetesId := "someId"
+	clusterId := 0000
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	mux.HandleFunc("/kubernetes/"+kubernetesId+"/stop", func(w http.ResponseWriter, req *http.Request) {
+	URL := fmt.Sprintf("/kubernetes/%d/stop", clusterId)
+	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
 		fmt.Fprint(w, dummyCreateBasicResponseJson)
 	})
 
 	ctx := context.Background()
-	got, err := client.Kubernetes().PowerOff(ctx, kubernetesId)
+	got, err := client.Kubernetes().PowerOff(ctx, clusterId)
 
 	var want BasicResponse
 	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
@@ -695,7 +713,7 @@ func TestKubernetesService_PowerOff_invalidServer(t *testing.T) {
 	client, _ := NewClient("token")
 
 	ctx := context.Background()
-	_, err := client.Kubernetes().PowerOff(ctx, "kubernetesId")
+	_, err := client.Kubernetes().PowerOff(ctx, 11111)
 	if err == nil {
 		t.Errorf("Expected error to be returned")
 	}
