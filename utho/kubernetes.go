@@ -10,25 +10,25 @@ type KubernetesService service
 
 type Kubernetes struct {
 	K8s     []K8s  `json:"k8s"`
-	Status  string `json:"status"`
-	Message string `json:"message"`
+	Status  string `json:"status" faker:"oneof: success, failure"`
+	Message string `json:"message" faker:"sentence"`
 }
 type K8s struct {
 	ID             int                 `json:"id,string"`
-	CreatedAt      string              `json:"created_at"`
-	Dcslug         string              `json:"dcslug"`
-	RefID          string              `json:"ref_id"`
-	Nodepool       string              `json:"nodepool"`
+	CreatedAt      string              `json:"created_at" faker:"timestamp"`
+	Dcslug         string              `json:"dcslug" faker:"word"`
+	RefID          string              `json:"ref_id" faker:"uuid_digit"`
+	Nodepool       string              `json:"nodepool" faker:"word"`
 	Hostname       string              `json:"hostname"`
 	RAM            int                 `json:"ram,string"`
 	CPU            int                 `json:"cpu,string"`
 	Disksize       int                 `json:"disksize,string"`
-	AppStatus      string              `json:"app_status"`
-	IP             string              `json:"ip"`
+	AppStatus      string              `json:"app_status" faker:"oneof: Active, Inactive"`
+	IP             string              `json:"ip" faker:"ipv4"`
 	Cloudid        int                 `json:"cloudid,string"`
-	Powerstatus    string              `json:"powerstatus"`
+	Powerstatus    string              `json:"powerstatus" faker:"oneof: On, Off"`
 	Dclocation     K8sDclocation       `json:"dclocation"`
-	Status         string              `json:"status"`
+	Status         string              `json:"status" faker:"oneof: Running, Stopped"`
 	WorkerCount    string              `json:"worker_count"`
 	LoadBalancers  []K8sLoadbalancers  `json:"load_balancers"`
 	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
@@ -71,8 +71,9 @@ type KubernetesClusterMetadata struct {
 	LoadBalancers   string        `json:"load_balancers"`
 	SecurityGroups  string        `json:"security_groups"`
 	TargetGroups    string        `json:"target_groups"`
-	Userid          int           `json:"userid,string"`
+	Userid          string        `json:"userid"`
 	Powerstatus     string        `json:"powerstatus"`
+	Dns             string        `json:"dns"`
 	Dclocation      K8sDclocation `json:"dclocation"`
 }
 type MasterNodeDetails struct {
@@ -81,7 +82,8 @@ type MasterNodeDetails struct {
 	Ram            int            `json:"ram,string"`
 	Cpu            int            `json:"cpu,string"`
 	Cost           string         `json:"cost"`
-	Disksize       int            `json:"disksize,string"`
+	Disksize       string         `json:"disksize"`
+	Bandwidth      string         `json:"bandwidth"`
 	AppStatus      string         `json:"app_status"`
 	Dcslug         string         `json:"dcslug"`
 	Planid         int            `json:"planid,string"`
@@ -93,8 +95,9 @@ type NodepoolDetails struct {
 	Size      string        `json:"size"`
 	Cost      float64       `json:"cost"`
 	Planid    int           `json:"planid,string"`
+	Ip        string        `json:"ip"`
 	Count     int           `json:"count,string"`
-	AutoScale bool          `json:"auto_scale"`
+	AutoScale int           `json:"auto_scale,string"`
 	MinNodes  int           `json:"min_nodes,string"`
 	MaxNodes  int           `json:"max_nodes,string"`
 	Policies  []interface{} `json:"policies"`
@@ -109,6 +112,7 @@ type WorkerNode struct {
 	Cost           string         `json:"cost"`
 	Cpu            int            `json:"cpu,string"`
 	Disksize       int            `json:"disksize,string"`
+	Bandwidth      string         `json:"bandwidth"`
 	AppStatus      string         `json:"app_status"`
 	Ip             string         `json:"ip"`
 	Planid         int            `json:"planid,string"`
@@ -116,7 +120,8 @@ type WorkerNode struct {
 	PrivateNetwork PrivateNetwork `json:"private_network"`
 }
 type VpcDetails struct {
-	ID         int    `json:"id,string"`
+	ID         string `json:"id"`
+	IsVpc      string `json:"is_vpc"`
 	VpcNetwork string `json:"vpc_network"`
 }
 type PrivateNetwork struct {
@@ -125,25 +130,25 @@ type PrivateNetwork struct {
 	VpcNetwork string `json:"vpc_network"`
 }
 type K8sDclocation struct {
-	Location string `json:"location"`
-	Country  string `json:"country"`
-	Dc       string `json:"dc"`
-	Dccc     string `json:"dccc"`
+	Location string `json:"location" faker:"city"`
+	Country  string `json:"country" faker:"country"`
+	Dc       string `json:"dc" faker:"word"`
+	Dccc     string `json:"dccc" faker:"word"`
 }
 type K8sLoadbalancers struct {
 	ID   int    `json:"lbid,string"`
-	Name string `json:"name"`
-	IP   string `json:"ip"`
+	Name string `json:"name" faker:"word"`
+	IP   string `json:"ip" faker:"ipv4"`
 }
 type K8sTargetGroups struct {
 	ID       int    `json:"id,string"`
-	Name     string `json:"name"`
-	Protocol any    `json:"protocol"`
+	Name     string `json:"name" faker:"word"`
+	Protocol any    `json:"protocol" faker:"oneof: TCP, UDP"`
 	Port     string `json:"port"`
 }
 type K8sSecurityGroups struct {
 	ID   int    `json:"id,string"`
-	Name string `json:"name"`
+	Name string `json:"name" faker:"word"`
 }
 
 type CreateKubernetesParams struct {
@@ -153,6 +158,7 @@ type CreateKubernetesParams struct {
 	Nodepools      []CreateNodepoolsParams `json:"nodepools"`
 	Auth           string                  `json:"auth"`
 	Vpc            string                  `json:"vpc"`
+	Subnet         string                  `json:"subnet"`
 	NetworkType    string                  `json:"network_type"`
 	Firewall       string                  `json:"firewall"`
 	Cpumodel       string                  `json:"cpumodel"`
@@ -164,6 +170,7 @@ type CreateNodepoolsParams struct {
 	PoolType string                           `json:"pool_type"`
 	MaxCount string                           `json:"maxCount,omitempty"`
 	Count    string                           `json:"count"`
+	Ebs      []CreateNodePoolEbs              `json:"ebs"`
 	Policies []CreateKubernetesPoliciesParams `json:"policies,omitempty"`
 }
 type CreateKubernetesPoliciesParams struct {
@@ -268,9 +275,10 @@ type CreateKubernetesLoadbalancerParams struct {
 	LoadbalancerId int
 }
 
+// Loadbalancer
 func (k *KubernetesService) CreateLoadbalancer(ctx context.Context, params CreateKubernetesLoadbalancerParams) (*CreateResponse, error) {
 	reqUrl := fmt.Sprintf("kubernetes/%d/loadbalancer/%d", params.ClusterId, params.LoadbalancerId)
-	req, _ := k.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, nil)
 
 	var kubernetes CreateResponse
 	_, err := k.client.Do(req, &kubernetes)
@@ -345,9 +353,10 @@ type CreateKubernetesSecurityGroupParams struct {
 	KubernetesSecurityGroupId int
 }
 
+// SecurityGroup
 func (k *KubernetesService) CreateSecurityGroup(ctx context.Context, params CreateKubernetesSecurityGroupParams) (*CreateResponse, error) {
-	reqUrl := fmt.Sprintf("kubernetes/%d", params.ClusterId)
-	req, _ := k.client.NewRequest("POST", reqUrl, &params)
+	reqUrl := fmt.Sprintf("kubernetes/%d/securitygroup/%d", params.ClusterId, params.KubernetesSecurityGroupId)
+	req, _ := k.client.NewRequest("POST", reqUrl, nil)
 
 	var kubernetes CreateResponse
 	_, err := k.client.Do(req, &kubernetes)
@@ -422,9 +431,10 @@ type CreateKubernetesTargetgroupParams struct {
 	KubernetesTargetgroupId int
 }
 
+// Targetgroup
 func (k *KubernetesService) CreateTargetgroup(ctx context.Context, params CreateKubernetesTargetgroupParams) (*CreateResponse, error) {
 	reqUrl := fmt.Sprintf("kubernetes/%d/targetgroup/%d", params.ClusterId, params.KubernetesTargetgroupId)
-	req, _ := k.client.NewRequest("POST", reqUrl, &params)
+	req, _ := k.client.NewRequest("POST", reqUrl, nil)
 
 	var kubernetes CreateResponse
 	_, err := k.client.Do(req, &kubernetes)
@@ -499,8 +509,8 @@ func (k *KubernetesService) DeleteTargetgroup(ctx context.Context, clusterId, ku
 }
 
 func (k *KubernetesService) PowerOff(ctx context.Context, clusterId int) (*BasicResponse, error) {
-	reqUrl := fmt.Sprintf("kubernetes/%d/stop", clusterId)
-	req, _ := k.client.NewRequest("POST", reqUrl)
+	reqUrl := fmt.Sprintf("v2/kubernetes/%d/stop", clusterId)
+	req, _ := k.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := k.client.Do(req, &basicResponse)
@@ -516,7 +526,7 @@ func (k *KubernetesService) PowerOff(ctx context.Context, clusterId int) (*Basic
 
 func (k *KubernetesService) PowerOn(ctx context.Context, clusterId int) (*BasicResponse, error) {
 	reqUrl := fmt.Sprintf("kubernetes/%d/start", clusterId)
-	req, _ := k.client.NewRequest("POST", reqUrl)
+	req, _ := k.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
 	_, err := k.client.Do(req, &basicResponse)
@@ -601,13 +611,13 @@ func (k *KubernetesService) ListNodePools(ctx context.Context, clusterId int) ([
 type UpdateKubernetesAutoscaleNodepool struct {
 	ClusterId  int
 	NodePoolId string
-	Count      int    `json:"count"`
-	Label      string `json:"label,omitempty"`
-	PoolType   string `json:"pool_type,omitempty"`
-	Size       int    `json:"size,omitempty"`
-	Policies   string `json:"policies,omitempty"`
-	MinNodes   int    `json:"min_nodes,omitempty"`
-	MaxNodes   int    `json:"max_nodes,omitempty"`
+	Count      string                           `json:"count"`
+	Label      string                           `json:"label,omitempty"`
+	PoolType   string                           `json:"pool_type,omitempty"`
+	Size       string                           `json:"size,omitempty"`
+	Policies   []CreateKubernetesPoliciesParams `json:"policies,omitempty"`
+	MinNodes   int                              `json:"min_nodes,omitempty"`
+	MaxNodes   int                              `json:"max_nodes,omitempty"`
 }
 
 type UpdateKubernetesAutoscaleNodepoolResponse struct {
@@ -616,7 +626,7 @@ type UpdateKubernetesAutoscaleNodepoolResponse struct {
 	Cost      float64       `json:"cost"`
 	Planid    string        `json:"planid"`
 	Count     int           `json:"count"`
-	AutoScale bool          `json:"auto_scale"`
+	AutoScale int           `json:"auto_scale,string"`
 	MinNodes  int           `json:"min_nodes"`
 	MaxNodes  int           `json:"max_nodes"`
 	Policies  []interface{} `json:"policies"`
@@ -626,10 +636,9 @@ type UpdateKubernetesAutoscaleNodepoolResponse struct {
 	Message string `json:"message"`
 }
 
-// UpdateAutoscaleNodepool
 func (k *KubernetesService) UpdateNodePool(ctx context.Context, params UpdateKubernetesAutoscaleNodepool) (*UpdateKubernetesAutoscaleNodepoolResponse, error) {
 	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%s/update", params.ClusterId, params.NodePoolId)
-	req, _ := k.client.NewRequest("POST", reqUrl)
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)
 
 	var kubernetes UpdateKubernetesAutoscaleNodepoolResponse
 	_, err := k.client.Do(req, &kubernetes)
@@ -645,7 +654,7 @@ func (k *KubernetesService) UpdateNodePool(ctx context.Context, params UpdateKub
 
 type UpdateKubernetesStaticNodepool struct {
 	ClusterId  int
-	NodePoolId int
+	NodePoolId string
 	Count      string `json:"count"`
 	Label      string `json:"label"`
 	PoolType   string `json:"pool_type"`
@@ -653,8 +662,8 @@ type UpdateKubernetesStaticNodepool struct {
 }
 
 func (k *KubernetesService) UpdateStaticNodepool(ctx context.Context, params UpdateKubernetesStaticNodepool) (*UpdateResponse, error) {
-	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%d/update", params.ClusterId, params.NodePoolId)
-	req, _ := k.client.NewRequest("POST", reqUrl)
+	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%s/update", params.ClusterId, params.NodePoolId) // Updated path parameter name
+	req, _ := k.client.NewRequest("POST", reqUrl, &params)                                         // Added params to request body
 
 	var kubernetes UpdateResponse
 	_, err := k.client.Do(req, &kubernetes)

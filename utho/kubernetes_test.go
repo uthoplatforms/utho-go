@@ -8,48 +8,36 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestKubernetesService_Create_happyPath(t *testing.T) {
 	token := "token"
-
-	createNodepoolsParams := CreateNodepoolsParams{
-		Label:    "pool",
-		Size:     "10045",
-		PoolType: "static",
-		Count:    "2",
-	}
-	payload := CreateKubernetesParams{
-		Dcslug:         "innoida",
-		ClusterLabel:   "My_kubernetes",
-		ClusterVersion: "1.27.0",
-		Vpc:            "f1dd58f1-1bfa-46ef-8b94-f69f312c0245",
-		SecurityGroups: "23432613,23432615",
-		NetworkType:    "both",
-		Firewall:       "23433480",
-		Cpumodel:       "intel",
-		Nodepools:      []CreateNodepoolsParams{createNodepoolsParams},
-	}
+	var payload CreateKubernetesParams
+	_ = faker.FakeData(&payload)
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
-	URL := "/kubernetes/deploy"
-	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
+	var dummyResponse CreateResponse
+	_ = faker.FakeData(&dummyResponse)
+	dummyResponse.Status = "success"
+
+	serverResponse, _ := json.Marshal(dummyResponse)
+
+	mux.HandleFunc("/kubernetes/deploy", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateResponseJson)
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
 	ctx := context.Background()
 	got, err := client.Kubernetes().Create(ctx, payload)
 
-	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
-
 	assert.Nil(t, err)
-	assert.Equal(t, want, *got)
+	assert.Equal(t, dummyResponse, *got)
 }
 
 func TestKubernetesService_Create_invalidServer(t *testing.T) {
@@ -66,24 +54,28 @@ func TestKubernetesService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	expectedResponse := dummyReadKubernetesRes
-	serverResponse := dummyKubernetesServerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	clusterId := int(randomInts[0])
+	var dummyCluster KubernetesRead
+	_ = faker.FakeData(&dummyCluster)
+	dummyCluster.Info.Cluster.ID = clusterId
+
+	serverResponse, _ := json.Marshal(dummyCluster)
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want KubernetesCluster
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().Read(ctx, clusterId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
+	if !reflect.DeepEqual(*got, dummyCluster) {
+		t.Errorf("Response = %v, want %v", *got, dummyCluster)
 	}
 }
 
@@ -104,28 +96,32 @@ func TestKubernetesService_List_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyListKubernetesRes
-	serverResponse := dummyKubernetesServerRes
+	var dummyK8sList []K8s
+	for i := 0; i < 3; i++ { // Generate a list of 3 dummy Kubernetes clusters
+		var k8s K8s
+		_ = faker.FakeData(&k8s)
+		dummyK8sList = append(dummyK8sList, k8s)
+	}
 
-	URL := "/kubernetes"
-	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
-		testHttpMethod(t, req, "GET")
-		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+	serverResponse, _ := json.Marshal(KubernetesList{
+		K8s:     dummyK8sList,
+		Status:  "success",
+		Message: "success",
 	})
 
-	var want []K8s
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
+	mux.HandleFunc("/kubernetes", func(w http.ResponseWriter, req *http.Request) {
+		testHttpMethod(t, req, "GET")
+		testHeader(t, req, "Authorization", "Bearer token")
+		fmt.Fprint(w, string(serverResponse))
+	})
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().List(ctx)
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d stacks to be returned, instead got %d", len(want), len(got))
+	if len(got) != len(dummyK8sList) {
+		t.Errorf("Was expecting %d Kubernetes clusters to be returned, instead got %d", len(dummyK8sList), len(got))
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
-	}
+	assert.Equal(t, dummyK8sList, got)
 }
 
 func TestKubernetesService_List_invalidServer(t *testing.T) {
@@ -223,26 +219,31 @@ func TestKubernetesServices_ReadLoadbalancer_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	loadbalancerId := 22222
-	expectedResponse := dummyReadKubernetesLoadbalancerRes
-	serverResponse := dummyReadKubernetesLoadbalancerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	clusterId := int(randomInts[0])
+	loadbalancerId := randomInts[1]
+	var dummyLoadbalancer K8sLoadbalancers
+	_ = faker.FakeData(&dummyLoadbalancer)
+	dummyLoadbalancer.ID = loadbalancerId
+
+	serverResponse, _ := json.Marshal(KubernetesRead{
+		LoadBalancers: []K8sLoadbalancers{dummyLoadbalancer},
+		Status:        "success",
+	})
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want K8sLoadbalancers
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().ReadLoadbalancer(ctx, clusterId, loadbalancerId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
-	}
+	assert.Equal(t, dummyLoadbalancer, *got)
 }
 
 func TestKubernetesServices_ReadLoadbalancer_invalidServer(t *testing.T) {
@@ -262,29 +263,33 @@ func TestKubernetesServices_ListLoadbalancer_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	expectedResponse := dummyListKubernetesLoadbalancerRes
-	serverResponse := dummyKubernetesServerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	clusterId := int(randomInts[0])
+	var dummyLoadbalancers []K8sLoadbalancers
+	for i := 0; i < 3; i++ {
+		var loadbalancer K8sLoadbalancers
+		_ = faker.FakeData(&loadbalancer)
+		dummyLoadbalancers = append(dummyLoadbalancers, loadbalancer)
+	}
+
+	serverResponse, _ := json.Marshal(KubernetesRead{
+		LoadBalancers: dummyLoadbalancers,
+		Status:        "success",
+	})
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want []K8sLoadbalancers
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().ListLoadbalancers(ctx, clusterId)
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d kubernetes loadbalancer to be returned, instead got %d", len(want), len(got))
-	}
-
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
-	}
+	assert.Equal(t, dummyLoadbalancers, got)
 }
 
 func TestKubernetesServices_ListLoadbalancer_invalidServer(t *testing.T) {
@@ -380,26 +385,31 @@ func TestKubernetesServices_ReadSecurityGroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	securityGroupId := 44444
-	expectedResponse := dummyReadKubernetesSecurityGroupRes
-	serverResponse := dummyKubernetesServerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	clusterId := randomInts[0]
+	securityGroupId := randomInts[1]
+	var dummySecurityGroup K8sSecurityGroups
+	_ = faker.FakeData(&dummySecurityGroup)
+	dummySecurityGroup.ID = securityGroupId
+
+	serverResponse, _ := json.Marshal(KubernetesRead{
+		SecurityGroups: []K8sSecurityGroups{dummySecurityGroup},
+		Status:         "success",
+	})
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want K8sSecurityGroups
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().ReadSecurityGroup(ctx, clusterId, securityGroupId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
-	}
+	assert.Equal(t, dummySecurityGroup, *got)
 }
 
 func TestKubernetesServices_ReadSecurityGroup_invalidServer(t *testing.T) {
@@ -419,29 +429,33 @@ func TestKubernetesServices_ListSecurityGroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	expectedResponse := dummyListKubernetesSecurityGroupRes
-	serverResponse := dummyKubernetesServerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	clusterId := randomInts[0]
+	var dummySecurityGroups []K8sSecurityGroups
+	for i := 0; i < 3; i++ {
+		var securityGroup K8sSecurityGroups
+		_ = faker.FakeData(&securityGroup)
+		dummySecurityGroups = append(dummySecurityGroups, securityGroup)
+	}
+
+	serverResponse, _ := json.Marshal(KubernetesRead{
+		SecurityGroups: dummySecurityGroups,
+		Status:         "success",
+	})
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want []K8sSecurityGroups
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().ListSecurityGroups(ctx, clusterId)
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d kubernetes securitygroup to be returned, instead got %d", len(want), len(got))
-	}
-
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
-	}
+	assert.Equal(t, dummySecurityGroups, got)
 }
 
 func TestKubernetesServices_ListSecurityGroup_invalidServer(t *testing.T) {
@@ -537,26 +551,38 @@ func TestKubernetesServices_ReadTargetgroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	targetgroupId := 33333
-	expectedResponse := dummyReadKubernetesTargetgroupRes
-	serverResponse := dummyKubernetesServerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 { // Ensure at least two random integers are generated
+		t.Fatalf("failed to generate sufficient random ints: %v", err)
+	}
+	clusterId := randomInts[0]
+	targetgroupId := randomInts[1]
+
+	var dummyTargetGroup K8sTargetGroups
+	if err := faker.FakeData(&dummyTargetGroup); err != nil { // Ensure dummyTargetGroup is properly initialized
+		t.Fatalf("failed to generate fake data for target group: %v", err)
+	}
+	dummyTargetGroup.ID = targetgroupId
+
+	serverResponse, _ := json.Marshal(KubernetesRead{
+		Info:         KubernetesClusterInfo{Cluster: KubernetesClusterMetadata{ID: clusterId}},
+		TargetGroups: []K8sTargetGroups{dummyTargetGroup},
+		Status:       "success",
+	})
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
 
-	var want K8sTargetGroups
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
-
 	ctx := context.Background()
-	got, _ := client.Kubernetes().ReadTargetgroup(ctx, clusterId, targetgroupId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
+	got, err := client.Kubernetes().ReadTargetgroup(ctx, clusterId, targetgroupId)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
 	}
+	assert.Equal(t, dummyTargetGroup, *got)
 }
 
 func TestKubernetesServices_ReadTargetgroup_invalidServer(t *testing.T) {
@@ -576,29 +602,33 @@ func TestKubernetesServices_ListTargetgroup_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	clusterId := 1111
-	expectedResponse := dummyListKubernetesTargetgroupRes
-	serverResponse := dummyKubernetesServerRes
+	randomInts, err := faker.RandomInt(1000, 9999)
+	if err != nil || len(randomInts) == 0 {
+		t.Fatalf("failed to generate random int: %v", err)
+	}
+	clusterId := randomInts[0]
+	var dummyTargetGroups []K8sTargetGroups
+	for i := 0; i < 3; i++ {
+		var targetGroup K8sTargetGroups
+		_ = faker.FakeData(&targetGroup)
+		dummyTargetGroups = append(dummyTargetGroups, targetGroup)
+	}
+
+	serverResponse, _ := json.Marshal(KubernetesRead{
+		TargetGroups: dummyTargetGroups,
+		Status:       "success",
+	})
 
 	URL := fmt.Sprintf("/kubernetes/%d", clusterId)
 	mux.HandleFunc(URL, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want []K8sTargetGroups
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	ctx := context.Background()
 	got, _ := client.Kubernetes().ListTargetgroups(ctx, clusterId)
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d kubernetes targetgroup to be returned, instead got %d", len(want), len(got))
-	}
-
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
-	}
+	assert.Equal(t, dummyTargetGroups, got)
 }
 
 func TestKubernetesServices_ListTargetgroup_invalidServer(t *testing.T) {
@@ -687,7 +717,7 @@ func TestKubernetesService_PowerOn_invalidServer(t *testing.T) {
 
 func TestKubernetesService_PowerOff_happyPath(t *testing.T) {
 	token := "token"
-	clusterId := 0000
+	clusterId := 1111
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
