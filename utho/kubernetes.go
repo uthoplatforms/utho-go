@@ -8,8 +8,10 @@ import (
 
 type KubernetesService service
 
-type Kubernetes struct {
-	K8s     []K8s  `json:"k8s"`
+// List
+type KubernetesList struct {
+	K8s     []K8s  `json:"k8s,omitempty"`
+	Rcode   string `json:"rcode,omitempty"`
 	Status  string `json:"status" faker:"oneof: success, failure"`
 	Message string `json:"message" faker:"sentence"`
 }
@@ -23,8 +25,10 @@ type K8s struct {
 	RAM            int                 `json:"ram,string"`
 	CPU            int                 `json:"cpu,string"`
 	Disksize       int                 `json:"disksize,string"`
+	Bandwidth      string              `json:"bandwidth,omitempty"`
 	AppStatus      string              `json:"app_status" faker:"oneof: Active, Inactive"`
 	IP             string              `json:"ip" faker:"ipv4"`
+	Cost           int                 `json:"cost,omitempty"`
 	Cloudid        int                 `json:"cloudid,string"`
 	Powerstatus    string              `json:"powerstatus" faker:"oneof: On, Off"`
 	Dclocation     K8sDclocation       `json:"dclocation"`
@@ -34,16 +38,18 @@ type K8s struct {
 	TargetGroups   []K8sTargetGroups   `json:"target_groups"`
 	SecurityGroups []K8sSecurityGroups `json:"security_groups"`
 }
-type KubernetesCluster struct {
+
+// Read
+type KubernetesRead struct {
 	Info           KubernetesClusterInfo      `json:"info"`
 	Vpc            []VpcDetails               `json:"vpc"`
 	Nodepools      map[string]NodepoolDetails `json:"nodepools"`
 	LoadBalancers  []K8sLoadbalancers         `json:"load_balancers"`
 	TargetGroups   []K8sTargetGroups          `json:"target_groups"`
 	SecurityGroups []K8sSecurityGroups        `json:"security_groups"`
-	Rcode          string                     `json:"rcode"`
-	Status         string                     `json:"status"`
-	Message        string                     `json:"message"`
+	Rcode          string                     `json:"rcode,omitempty"`
+	Status         string                     `json:"status,omitempty"`
+	Message        string                     `json:"message,omitempty"`
 }
 type KubernetesClusterInfo struct {
 	Cluster KubernetesClusterMetadata `json:"cluster"`
@@ -51,29 +57,29 @@ type KubernetesClusterInfo struct {
 }
 type KubernetesClusterMetadata struct {
 	ID              int           `json:"id,string"`
-	Version         string        `json:"version"`
-	Label           string        `json:"label"`
-	Endpoint        string        `json:"endpoint"`
-	Dcslug          string        `json:"dcslug"`
-	AutoUpgrade     string        `json:"auto_upgrade"`
-	SurgeUpgrade    string        `json:"surge_upgrade"`
-	Ipv4            string        `json:"ipv4"`
-	ClusterSubnet   string        `json:"cluster_subnet"`
-	ServiceSubnet   string        `json:"service_subnet"`
-	Tags            string        `json:"tags"`
-	CreatedAt       string        `json:"created_at"`
-	UpdatedAt       string        `json:"updated_at"`
-	DeletedAt       string        `json:"deleted_at"`
-	Status          string        `json:"status"`
-	Nodepools       string        `json:"nodepools"`
-	Vpc             string        `json:"vpc"`
-	PublicIpEnabled string        `json:"public_ip_enabled"`
-	LoadBalancers   string        `json:"load_balancers"`
-	SecurityGroups  string        `json:"security_groups"`
-	TargetGroups    string        `json:"target_groups"`
-	Userid          string        `json:"userid"`
-	Powerstatus     string        `json:"powerstatus"`
-	Dns             string        `json:"dns"`
+	Version         string        `json:"version,omitempty"`
+	Label           string        `json:"label,omitempty"`
+	Endpoint        string        `json:"endpoint,omitempty"`
+	Dcslug          string        `json:"dcslug,omitempty"`
+	AutoUpgrade     string        `json:"auto_upgrade,omitempty"`
+	SurgeUpgrade    string        `json:"surge_upgrade,omitempty"`
+	Ipv4            string        `json:"ipv4,omitempty"`
+	ClusterSubnet   string        `json:"cluster_subnet,omitempty"`
+	ServiceSubnet   string        `json:"service_subnet,omitempty"`
+	Tags            string        `json:"tags,omitempty"`
+	CreatedAt       string        `json:"created_at,omitempty"`
+	UpdatedAt       string        `json:"updated_at,omitempty"`
+	DeletedAt       string        `json:"deleted_at,omitempty"`
+	Status          string        `json:"status,omitempty"`
+	Nodepools       string        `json:"nodepools,omitempty"`
+	Vpc             string        `json:"vpc,omitempty"`
+	PublicIpEnabled string        `json:"public_ip_enabled,omitempty"`
+	LoadBalancers   string        `json:"load_balancers,omitempty"`
+	SecurityGroups  string        `json:"security_groups,omitempty"`
+	TargetGroups    string        `json:"target_groups,omitempty"`
+	Userid          string        `json:"userid,omitempty"`
+	Powerstatus     string        `json:"powerstatus,omitempty"`
+	Dns             string        `json:"dns,omitempty"`
 	Dclocation      K8sDclocation `json:"dclocation"`
 }
 type MasterNodeDetails struct {
@@ -81,29 +87,35 @@ type MasterNodeDetails struct {
 	Hostname       string         `json:"hostname"`
 	Ram            int            `json:"ram,string"`
 	Cpu            int            `json:"cpu,string"`
-	Cost           string         `json:"cost"`
-	Disksize       string         `json:"disksize"`
-	Bandwidth      string         `json:"bandwidth"`
-	AppStatus      string         `json:"app_status"`
-	Dcslug         string         `json:"dcslug"`
-	Planid         int            `json:"planid,string"`
-	Ip             string         `json:"ip"`
-	PrivateNetwork PrivateNetwork `json:"private_network"`
-}
-type NodepoolDetails struct {
-	ID        string        `json:"id"`
-	Size      string        `json:"size"`
-	Cost      float64       `json:"cost"`
-	Planid    int           `json:"planid,string"`
-	Ip        string        `json:"ip"`
-	Count     int           `json:"count,string"`
-	AutoScale int           `json:"auto_scale,string"`
-	MinNodes  int           `json:"min_nodes,string"`
-	MaxNodes  int           `json:"max_nodes,string"`
-	Policies  []interface{} `json:"policies"`
-	Workers   []WorkerNode  `json:"workers"`
+	Cost           string         `json:"cost,omitempty"`
+	Disksize       string         `json:"disksize,omitempty"`
+	Bandwidth      string         `json:"bandwidth,omitempty"`
+	AppStatus      string         `json:"app_status,omitempty"`
+	Dcslug         string         `json:"dcslug,omitempty"`
+	Planid         int            `json:"planid,string,omitempty"`
+	Ip             string         `json:"ip,omitempty"`
+	PrivateNetwork PrivateNetwork `json:"private_network,omitempty"`
 }
 
+type VpcDetails struct {
+	ID         string `json:"id"`
+	IsVpc      string `json:"is_vpc,omitempty"`
+	VpcNetwork string `json:"vpc_network"`
+}
+
+type NodepoolDetails struct {
+	ID        string       `json:"id"`
+	Size      string       `json:"size"`
+	Cost      float64      `json:"cost"`
+	Planid    int          `json:"planid,string"`
+	Ip        string       `json:"ip"`
+	Count     int          `json:"count,string"`
+	AutoScale bool         `json:"auto_scale,omitempty"`
+	MinNodes  int          `json:"min_nodes,string,omitempty"`
+	MaxNodes  int          `json:"max_nodes,string,omitempty"`
+	Policies  []any        `json:"policies"`
+	Workers   []WorkerNode `json:"workers"`
+}
 type WorkerNode struct {
 	ID             int            `json:"cloudid,string"`
 	Nodepool       string         `json:"nodepool"`
@@ -119,33 +131,34 @@ type WorkerNode struct {
 	Status         string         `json:"status"`
 	PrivateNetwork PrivateNetwork `json:"private_network"`
 }
-type VpcDetails struct {
-	ID         string `json:"id"`
-	IsVpc      string `json:"is_vpc"`
-	VpcNetwork string `json:"vpc_network"`
-}
+
+// Generic
 type PrivateNetwork struct {
 	Ip         string `json:"ip"`
 	Vpc        string `json:"vpc"`
 	VpcNetwork string `json:"vpc_network"`
 }
+
 type K8sDclocation struct {
 	Location string `json:"location" faker:"city"`
 	Country  string `json:"country" faker:"country"`
 	Dc       string `json:"dc" faker:"word"`
 	Dccc     string `json:"dccc" faker:"word"`
 }
+
 type K8sLoadbalancers struct {
 	ID   int    `json:"lbid,string"`
 	Name string `json:"name" faker:"word"`
 	IP   string `json:"ip" faker:"ipv4"`
 }
+
 type K8sTargetGroups struct {
 	ID       int    `json:"id,string"`
 	Name     string `json:"name" faker:"word"`
-	Protocol any    `json:"protocol" faker:"oneof: TCP, UDP"`
+	Protocol any    `json:"protocol"`
 	Port     string `json:"port"`
 }
+
 type K8sSecurityGroups struct {
 	ID   int    `json:"id,string"`
 	Name string `json:"name" faker:"word"`
@@ -217,11 +230,11 @@ func (k *KubernetesService) Create(ctx context.Context, params CreateKubernetesP
 	return &kubernetes, nil
 }
 
-func (k *KubernetesService) Read(ctx context.Context, clusterId int) (*KubernetesCluster, error) {
+func (k *KubernetesService) Read(ctx context.Context, clusterId int) (*KubernetesRead, error) {
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetes KubernetesCluster
+	var kubernetes KubernetesRead
 	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
@@ -237,7 +250,7 @@ func (k *KubernetesService) List(ctx context.Context) ([]K8s, error) {
 	reqUrl := "kubernetes"
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetes Kubernetes
+	var kubernetes KubernetesList
 	_, err := k.client.Do(req, &kubernetes)
 	if err != nil {
 		return nil, err
@@ -296,7 +309,7 @@ func (k *KubernetesService) ReadLoadbalancer(ctx context.Context, clusterId, loa
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -321,7 +334,7 @@ func (k *KubernetesService) ListLoadbalancers(ctx context.Context, clusterId int
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -374,7 +387,7 @@ func (k *KubernetesService) ReadSecurityGroup(ctx context.Context, clusterId, se
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -399,7 +412,7 @@ func (k *KubernetesService) ListSecurityGroups(ctx context.Context, clusterId in
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -452,7 +465,7 @@ func (k *KubernetesService) ReadTargetgroup(ctx context.Context, clusterId, targ
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -481,7 +494,7 @@ func (k *KubernetesService) ListTargetgroups(ctx context.Context, clusterId int)
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -509,7 +522,7 @@ func (k *KubernetesService) DeleteTargetgroup(ctx context.Context, clusterId, ku
 }
 
 func (k *KubernetesService) PowerOff(ctx context.Context, clusterId int) (*BasicResponse, error) {
-	reqUrl := fmt.Sprintf("v2/kubernetes/%d/stop", clusterId)
+	reqUrl := fmt.Sprintf("kubernetes/%d/stop", clusterId)
 	req, _ := k.client.NewRequest("POST", reqUrl, nil)
 
 	var basicResponse BasicResponse
@@ -561,7 +574,7 @@ func (k *KubernetesService) ReadNodePool(ctx context.Context, clusterId int, nod
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
@@ -591,7 +604,7 @@ func (k *KubernetesService) ListNodePools(ctx context.Context, clusterId int) ([
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
-	var kubernetess KubernetesCluster
+	var kubernetess KubernetesRead
 	_, err := k.client.Do(req, &kubernetess)
 	if err != nil {
 		return nil, err
