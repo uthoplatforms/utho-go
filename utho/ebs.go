@@ -7,7 +7,7 @@ import (
 type EBService service
 
 type EBSs struct {
-	Ebs     []Ebs  `json:"ebs" faker:"-"`
+	Ebs     []Ebs  `json:"ebs"`
 	Status  string `json:"status" faker:"oneof: success, failure"`
 	Message string `json:"message" faker:"sentence"`
 }

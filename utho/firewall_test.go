@@ -14,14 +14,20 @@ import (
 func TestFirewallService_Create_happyPath(t *testing.T) {
 	token := "token"
 	payload := CreateFirewallParams{}
-	_ = faker.FakeData(&payload)
+	err := faker.FakeData(&payload)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
 	var dummyResponse CreateFirewallResponse
-	_ = faker.FakeData(&dummyResponse)
-
+	err = faker.FakeData(&dummyResponse)
+	if err != nil {
+		fmt.Println(err)
+	}
+	dummyResponse.Status = "success"
 	serverResponse, _ := json.Marshal(dummyResponse)
 
 	mux.HandleFunc("/firewall/create", func(w http.ResponseWriter, req *http.Request) {
@@ -51,7 +57,10 @@ func TestFirewallService_Read_happyPath(t *testing.T) {
 
 	firewallId := faker.UUIDDigit()
 	var dummyFirewall Firewall
-	_ = faker.FakeData(&dummyFirewall)
+	err := faker.FakeData(&dummyFirewall)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	serverResponse, _ := json.Marshal(Firewalls{
 		Firewalls: []Firewall{dummyFirewall},
@@ -89,7 +98,10 @@ func TestFirewallService_List_happyPath(t *testing.T) {
 	var dummyFirewallList []Firewall
 	for i := 0; i < 3; i++ { // Generate a list of 3 dummy firewalls
 		var firewall Firewall
-		_ = faker.FakeData(&firewall)
+		err := faker.FakeData(&firewall)
+		if err != nil {
+			fmt.Println(err)
+		}
 		dummyFirewallList = append(dummyFirewallList, firewall)
 	}
 
@@ -203,9 +215,20 @@ func TestFirewallService_ReadFirewallRule_happyPath(t *testing.T) {
 	defer teardown()
 
 	firewallId := faker.UUIDDigit()
-	firewallRuleId := faker.UUIDDigit()
 	var dummyFirewall Firewall
-	_ = faker.FakeData(&dummyFirewall)
+	err := faker.FakeData(&dummyFirewall)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	if len(dummyFirewall.Rules) == 0 {
+		var rule FirewallRule
+		_ = faker.FakeData(&rule)
+		dummyFirewall.Rules = append(dummyFirewall.Rules, rule)
+	}
+
+	firewallRuleId := faker.UUIDDigit()
+	firewallRuleId = dummyFirewall.Rules[0].ID
 
 	serverResponse, _ := json.Marshal(Firewalls{
 		Firewalls: []Firewall{dummyFirewall},
@@ -226,7 +249,10 @@ func TestFirewallService_ReadFirewallRule_happyPath(t *testing.T) {
 		}
 	}
 
-	got, _ := client.Firewall().ReadFirewallRule(firewallId, firewallRuleId)
+	got, err := client.Firewall().ReadFirewallRule(firewallId, firewallRuleId)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if !reflect.DeepEqual(*got, expectedRule) {
 		t.Errorf("Response = %v, want %v", *got, expectedRule)
 	}
@@ -250,13 +276,19 @@ func TestFirewallService_ListFirewallRule_happyPath(t *testing.T) {
 
 	firewallId := faker.UUIDDigit()
 	var dummyFirewall Firewall
-	_ = faker.FakeData(&dummyFirewall)
+	err := faker.FakeData(&dummyFirewall)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	// Ensure the dummy firewall has rules for testing
 	if len(dummyFirewall.Rules) == 0 {
 		for i := 0; i < 3; i++ { // Add 3 dummy rules
 			var rule FirewallRule
-			_ = faker.FakeData(&rule)
+			err := faker.FakeData(&rule)
+			if err != nil {
+				fmt.Println(err)
+			}
 			dummyFirewall.Rules = append(dummyFirewall.Rules, rule)
 		}
 	}

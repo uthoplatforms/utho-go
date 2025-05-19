@@ -7,33 +7,33 @@ import (
 type DomainService service
 
 type DnsDomains struct {
-	Domains []Domain `json:"domains" faker:"v4slice"`
-	Status  string   `json:"status,omitempty" faker:"status"`
-	Message string   `json:"message,omitempty" faker:"message"`
+	Domains []Domain `json:"domains"`
+	Status  string   `json:"status,omitempty"`
+	Message string   `json:"message,omitempty"`
 }
 type Domain struct {
-	Domain         string      `json:"domain" faker:"domain_name"`
-	Status         string      `json:"status" faker:"status"`
-	Message        string      `json:"message" faker:"message"`
-	Nspoint        string      `json:"nspoint" faker:"word"`
-	CreatedAt      string      `json:"created_at" faker:"date_time"`
-	DnsrecordCount string      `json:"dnsrecord_count" faker:"digit"`
-	Records        []DnsRecord `json:"records" faker:"v4slice"`
+	Domain         string      `json:"domain"`
+	Status         string      `json:"status"`
+	Message        string      `json:"message"`
+	Nspoint        string      `json:"nspoint"`
+	CreatedAt      string      `json:"created_at"`
+	DnsrecordCount string      `json:"dnsrecord_count"`
+	Records        []DnsRecord `json:"records"`
 }
 type DnsRecord struct {
-	ID       string `json:"id" faker:"uuid_digit"`
-	Hostname string `json:"hostname" faker:"domain_name"`
-	Type     string `json:"type" faker:"dns_type"`
-	Value    string `json:"value" faker:"ipv4"`
-	TTL      string `json:"ttl" faker:"digit"`
-	Priority string `json:"priority" faker:"digit"`
+	ID       string `json:"id"`
+	Hostname string `json:"hostname"`
+	Type     string `json:"type"`
+	Value    string `json:"value"`
+	TTL      string `json:"ttl"`
+	Priority string `json:"priority"`
 	Porttype string `json:"porttype"`
 	Port     string `json:"port"`
 	Weight   string `json:"weight"`
 }
 
 type CreateDomainParams struct {
-	Domain string `json:"domain" faker:"domain_name"`
+	Domain string `json:"domain"`
 }
 
 func (s *DomainService) CreateDomain(params CreateDomainParams) (*BasicResponse, error) {

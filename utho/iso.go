@@ -7,7 +7,7 @@ import (
 type ISOService service
 
 type ISOs struct {
-	ISOs    []ISO  `json:"isos" faker:"-"`
+	ISOs    []ISO  `json:"isos"`
 	Status  string `json:"status" faker:"oneof: success, failure"`
 	Message string `json:"message" faker:"sentence"`
 }

@@ -58,7 +58,7 @@ func TestDomainService_ReadDomain_happyPath(t *testing.T) {
 	}
 	fakeDomain.Status = "success"
 
-	client, mux, _, teardown := setup(faker.UUIDDigit())
+	client, mux, _, teardown := setup("token")
 	defer teardown()
 
 	domainName := fakeDomain.Domains[0].Domain
@@ -160,7 +160,10 @@ func TestDomainService_DeleteDomain_happyPath(t *testing.T) {
 
 	want := DeleteResponse{Status: "success", Message: "success"}
 
-	got, _ := client.Domain().DeleteDomain(domainName)
+	got, err := client.Domain().DeleteDomain(domainName)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -242,7 +245,7 @@ func TestDomainService_ReadDnsRecord_happyPath(t *testing.T) {
 	}
 	fakeDomainResponse.Status = "success"
 
-	client, mux, _, teardown := setup(faker.UUIDDigit())
+	client, mux, _, teardown := setup("token")
 	defer teardown()
 
 	domainName := fakeDomainResponse.Domains[0].Domain

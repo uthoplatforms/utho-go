@@ -7,7 +7,7 @@ import (
 type FirewallService service
 
 type Firewalls struct {
-	Firewalls []Firewall `json:"firewalls" faker:"-"`
+	Firewalls []Firewall `json:"firewalls"`
 	Status    string     `json:"status" faker:"oneof: success, failure"`
 	Message   string     `json:"message" faker:"sentence"`
 }
@@ -18,7 +18,7 @@ type Firewall struct {
 	CreatedAt    string         `json:"created_at" faker:"timestamp"`
 	Rulecount    string         `json:"rulecount" faker:"oneof: 0, 5, 10"`
 	Serverscount string         `json:"serverscount" faker:"oneof: 0, 1, 50"`
-	Rules        []FirewallRule `json:"rules" faker:"-"`
+	Rules        []FirewallRule `json:"rules"`
 }
 type FirewallRule struct {
 	ID         string `json:"id" faker:"uuid_digit"`
