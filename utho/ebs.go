@@ -29,10 +29,10 @@ type Ebs struct {
 }
 
 type Location struct {
-	City    string `json:"city" faker:"city"`
-	Country string `json:"country" faker:"country"`
-	Dc      string `json:"dc" faker:"word"`
-	Dccc    string `json:"dccc" faker:"word"`
+	City    string `json:"city"`
+	Country string `json:"country"`
+	Dc      string `json:"dc"`
+	Dccc    string `json:"dccc"`
 }
 
 type CreateEBSParams struct {

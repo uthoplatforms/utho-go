@@ -24,7 +24,7 @@ type FirewallRule struct {
 	ID         string `json:"id" faker:"uuid_digit"`
 	Firewallid string `json:"firewallid" faker:"uuid_digit"`
 	Type       string `json:"type" faker:"oneof: incoming, outgoing"`
-	Service    string `json:"service" faker:"word"`
+	Service    string `json:"service"`
 	Protocol   string `json:"protocol" faker:"oneof: TCP, UDP, ICMP"`
 	Port       string `json:"port" faker:"oneof: 22, 80, 443"`
 	Addresses  string `json:"addresses" faker:"ipv4"`

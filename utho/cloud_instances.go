@@ -72,10 +72,10 @@ type Features struct {
 	Backups string `json:"backups" faker:"oneof:0,1"`
 }
 type Image struct {
-	Name         string `json:"name" faker:"word"`
-	Distribution string `json:"distribution" faker:"word"`
+	Name         string `json:"name"`
+	Distribution string `json:"distribution"`
 	Version      string `json:"version" faker:"semver"`
-	Image        string `json:"image" faker:"word"`
+	Image        string `json:"image"`
 	Cost         string `json:"cost" faker:"amount"`
 }
 type Networks struct {
@@ -103,7 +103,7 @@ type V4Private struct {
 	Noip        int    `json:"noip" faker:"boundary_start=0,boundary_end=10"`
 	IPAddress   string `json:"ip_address,omitempty" faker:"ipv4"`
 	NatPublicIP string `json:"nat_publicip,omitempty" faker:"ipv4"`
-	VpcName     string `json:"vpc_name,omitempty" faker:"word"`
+	VpcName     string `json:"vpc_name,omitempty"`
 	Network     string `json:"network,omitempty" faker:"ipv4"`
 	VpcID       string `json:"vpc_id,omitempty" faker:"uuid_digit"`
 	Netmask     string `json:"netmask,omitempty" faker:"ipv4_netmask"`
@@ -137,11 +137,11 @@ type Snapshot struct {
 	Size      string `json:"size" faker:"oneof:1GB,50GB,100GB"`
 	CreatedAt string `json:"created_at" faker:"date"`
 	Note      string `json:"note" faker:"sentence"`
-	Name      string `json:"name" faker:"word"`
+	Name      string `json:"name"`
 }
 type CloudInstanceFirewall struct {
 	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Name      string `json:"name" faker:"word"`
+	Name      string `json:"name"`
 	CreatedAt string `json:"created_at" faker:"date"`
 }
 type Meta struct {
@@ -154,11 +154,11 @@ type Snapshots struct {
 	Size      string `json:"size" faker:"oneof:1GB,50GB,100GB"`
 	CreatedAt string `json:"created_at" faker:"date"`
 	Note      string `json:"note" faker:"sentence"`
-	Name      string `json:"name" faker:"word"`
+	Name      string `json:"name"`
 }
 type CloudInstanceFirewalls struct {
 	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Name      string `json:"name" faker:"word"`
+	Name      string `json:"name"`
 	CreatedAt string `json:"created_at" faker:"date"`
 }
 
@@ -168,10 +168,10 @@ type OsImages struct {
 	Message  string    `json:"message,omitempty" faker:"sentence"`
 }
 type OsImage struct {
-	Distro       string `json:"distro" faker:"word"`
-	Distribution string `json:"distribution" faker:"word"`
+	Distro       string `json:"distro"`
+	Distribution string `json:"distribution"`
 	Version      string `json:"version" faker:"semver"`
-	Image        string `json:"image" faker:"word"`
+	Image        string `json:"image"`
 	Cost         int    `json:"cost" faker:"boundary_start=0,boundary_end=10"`
 }
 

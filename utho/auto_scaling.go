@@ -14,16 +14,16 @@ type AutoScalings struct {
 type Groups struct {
 	ID                 string                     `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Userid             string                     `json:"userid" faker:"oneof: 00000,11111,22222,33333"`
-	Name               string                     `json:"name" faker:"word"`
-	Dcslug             string                     `json:"dcslug" faker:"word"`
+	Name               string                     `json:"name"`
+	Dcslug             string                     `json:"dcslug"`
 	Minsize            string                     `json:"minsize" faker:"oneof:1,2,3,4,5"`
 	Maxsize            string                     `json:"maxsize" faker:"oneof:1,2,3,4,5"`
 	Desiredsize        string                     `json:"desiredsize" faker:"oneof:1,2,3,4,5"`
 	Planid             string                     `json:"planid" faker:"oneof: 00000,11111,22222,33333"`
-	Planname           string                     `json:"planname" faker:"word"`
-	InstanceTemplateid string                     `json:"instance_templateid" faker:"word"`
-	Image              string                     `json:"image" faker:"word"`
-	ImageName          string                     `json:"image_name" faker:"word"`
+	Planname           string                     `json:"planname"`
+	InstanceTemplateid string                     `json:"instance_templateid"`
+	Image              string                     `json:"image"`
+	ImageName          string                     `json:"image_name"`
 	Snapshotid         string                     `json:"snapshotid" faker:"oneof: 00000,11111,22222,33333"`
 	Status             string                     `json:"status" faker:"oneof:Active,Stopped"`
 	CreatedAt          string                     `json:"created_at" faker:"date"`
@@ -39,7 +39,7 @@ type Groups struct {
 	SecurityGroups     []SecurityGroup            `json:"security_groups" faker:"slice_len=1"`
 	Backupid           string                     `json:"backupid" faker:"oneof: 00000,11111,22222,33333"`
 	Stack              string                     `json:"stack" faker:"oneof: 00000,11111,22222,33333"`
-	StackFields        string                     `json:"stack_fields" faker:"word"`
+	StackFields        string                     `json:"stack_fields"`
 	Instances          []Instances                `json:"instances" faker:"slice_len=1"`
 	Policies           []Policy                   `json:"policies" faker:"slice_len=1"`
 	Schedules          []Schedule                 `json:"schedules" faker:"slice_len=1"`
@@ -52,9 +52,9 @@ type AutoScalingVpc struct {
 	Total            int                    `json:"total" faker:"boundary_start=1,boundary_end=255"`
 	Available        int                    `json:"available" faker:"boundary_start=1,boundary_end=255"`
 	Network          string                 `json:"network" faker:"ipv4"`
-	Name             string                 `json:"name" faker:"word"`
+	Name             string                 `json:"name"`
 	Size             string                 `json:"size" faker:"oneof:24,16,8"`
-	Dcslug           string                 `json:"dcslug" faker:"word"`
+	Dcslug           string                 `json:"dcslug"`
 	Dclocation       AutoScalingDclocation  `json:"dclocation"`
 	IsDefault        string                 `json:"is_default" faker:"oneof:0,1"`
 	IsVpc            string                 `json:"is_vpc" faker:"oneof:0,1"`
@@ -64,10 +64,10 @@ type AutoScalingVpc struct {
 	Resources        []AutoScalingResources `json:"resources" faker:"slice_len=1"`
 }
 type AutoScalingResources struct {
-	Type         string                `json:"type" faker:"word"`
+	Type         string                `json:"type"`
 	ResourceID   string                `json:"resource_id" faker:"oneof: 00000,11111,22222,33333"`
 	ID           string                `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Name         string                `json:"name" faker:"word"`
+	Name         string                `json:"name"`
 	RAM          string                `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
 	CPU          string                `json:"cpu" faker:"oneof:1,2,4,8,16"`
 	Disksize     string                `json:"disksize" faker:"oneof:20,50,80,100"`
@@ -75,23 +75,23 @@ type AutoScalingResources struct {
 	Dclocation   AutoScalingDclocation `json:"dclocation"`
 	IP           string                `json:"ip" faker:"ipv4"`
 	PrivateIP    string                `json:"private_ip" faker:"ipv4"`
-	Vpc          string                `json:"vpc" faker:"word"`
-	Source       string                `json:"source" faker:"word"`
+	Vpc          string                `json:"vpc"`
+	Source       string                `json:"source"`
 }
 type AutoScalingLoadbalancers struct {
 	ID   string `json:"lbid" faker:"oneof: 00000,11111,22222,33333"`
-	Name string `json:"name" faker:"word"`
+	Name string `json:"name"`
 	IP   string `json:"ip" faker:"ipv4"`
 }
 type AutoScalingTargetGroup struct {
 	ID       string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Name     string `json:"name" faker:"word"`
-	Protocol string `json:"protocol" faker:"word"`
+	Name     string `json:"name"`
+	Protocol string `json:"protocol"`
 	Port     string `json:"port" faker:"oneof:80,443,8080"`
 }
 type SecurityGroup struct {
 	ID   string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Name string `json:"name" faker:"word"`
+	Name string `json:"name"`
 }
 type Instances struct {
 	ID        string `json:"cloudid" faker:"oneof: 00000,11111,22222,33333"`
@@ -103,11 +103,11 @@ type Instances struct {
 type Policy struct {
 	ID                 string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Userid             string `json:"userid" faker:"oneof: 00000,11111,22222,33333"`
-	Product            string `json:"product" faker:"word"`
+	Product            string `json:"product"`
 	Productid          string `json:"productid" faker:"oneof: 00000,11111,22222,33333"`
 	Groupid            string `json:"groupid" faker:"oneof: 00000,11111,22222,33333"`
-	Name               string `json:"name" faker:"word"`
-	Type               string `json:"type" faker:"word"`
+	Name               string `json:"name"`
+	Type               string `json:"type"`
 	Adjust             string `json:"adjust" faker:"oneof:1,2,3"`
 	Period             string `json:"period" faker:"oneof:5m,10m,15m"`
 	Cooldown           string `json:"cooldown" faker:"oneof:60,120,300"`
@@ -117,7 +117,7 @@ type Policy struct {
 	AlertID            string `json:"alert_id" faker:"oneof: 00000,11111,22222,33333"`
 	Status             string `json:"status" faker:"oneof:1,0"`
 	KubernetesID       string `json:"kubernetes_id" faker:"oneof: 00000,11111,22222,33333"`
-	KubernetesNodepool string `json:"kubernetes_nodepool" faker:"word"`
+	KubernetesNodepool string `json:"kubernetes_nodepool"`
 	Cloudid            string `json:"cloudid" faker:"oneof: 00000,11111,22222,33333"`
 	Maxsize            string `json:"maxsize" faker:"oneof:1,2,3,4,5"`
 	Minsize            string `json:"minsize" faker:"oneof:1,2,3,4,5"`
@@ -125,12 +125,12 @@ type Policy struct {
 type Schedule struct {
 	ID          string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Groupid     string `json:"groupid" faker:"oneof: 00000,11111,22222,33333"`
-	Name        string `json:"name" faker:"word"`
+	Name        string `json:"name"`
 	Desiredsize string `json:"desiredsize" faker:"oneof:1,2,3,4,5"`
-	Recurrence  string `json:"recurrence" faker:"word"`
+	Recurrence  string `json:"recurrence"`
 	StartDate   string `json:"start_date" faker:"date"`
 	Status      string `json:"status" faker:"oneof:1,0"`
-	Timezone    string `json:"timezone" faker:"word"`
+	Timezone    string `json:"timezone"`
 }
 type AutoScalingPlan struct {
 	Planid         string `json:"planid" faker:"oneof: 00000,11111,22222,33333"`
@@ -141,10 +141,10 @@ type AutoScalingPlan struct {
 	DedicatedVcore string `json:"dedicated_vcore" faker:"oneof:0,1"`
 }
 type AutoScalingDclocation struct {
-	Location string `json:"location" faker:"word"`
-	Country  string `json:"country,omitempty" faker:"word"`
-	DC       string `json:"dc,omitempty" faker:"word"`
-	Dccc     string `json:"dccc" faker:"word"`
+	Location string `json:"location"`
+	Country  string `json:"country,omitempty"`
+	DC       string `json:"dc,omitempty"`
+	Dccc     string `json:"dccc"`
 }
 
 type CreateAutoScalingParams struct {

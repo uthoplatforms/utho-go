@@ -18,9 +18,9 @@ type KubernetesList struct {
 type K8s struct {
 	ID             int                 `json:"id,string"`
 	CreatedAt      string              `json:"created_at" faker:"timestamp"`
-	Dcslug         string              `json:"dcslug" faker:"word"`
+	Dcslug         string              `json:"dcslug"`
 	RefID          string              `json:"ref_id" faker:"uuid_digit"`
-	Nodepool       string              `json:"nodepool" faker:"word"`
+	Nodepool       string              `json:"nodepool"`
 	Hostname       string              `json:"hostname"`
 	RAM            int                 `json:"ram,string"`
 	CPU            int                 `json:"cpu,string"`
@@ -140,28 +140,28 @@ type PrivateNetwork struct {
 }
 
 type K8sDclocation struct {
-	Location string `json:"location" faker:"city"`
-	Country  string `json:"country" faker:"country"`
-	Dc       string `json:"dc" faker:"word"`
-	Dccc     string `json:"dccc" faker:"word"`
+	Location string `json:"location"`
+	Country  string `json:"country"`
+	Dc       string `json:"dc"`
+	Dccc     string `json:"dccc"`
 }
 
 type K8sLoadbalancers struct {
 	ID   int    `json:"lbid,string"`
-	Name string `json:"name" faker:"word"`
+	Name string `json:"name"`
 	IP   string `json:"ip" faker:"ipv4"`
 }
 
 type K8sTargetGroups struct {
 	ID       int    `json:"id,string"`
-	Name     string `json:"name" faker:"word"`
+	Name     string `json:"name"`
 	Protocol any    `json:"protocol"`
 	Port     string `json:"port"`
 }
 
 type K8sSecurityGroups struct {
 	ID   int    `json:"id,string"`
-	Name string `json:"name" faker:"word"`
+	Name string `json:"name"`
 }
 
 type CreateKubernetesParams struct {

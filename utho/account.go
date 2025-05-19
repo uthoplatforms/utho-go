@@ -17,15 +17,15 @@ type User struct {
 	ID       string `json:"id,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 	Type     string `json:"type,omitempty" faker:"oneof: Individual, Business"`
 	Fullname string `json:"fullname,omitempty" faker:"name"`
-	Company  string `json:"company,omitempty" faker:"word"`
+	Company  string `json:"company,omitempty"`
 	Email    string `json:"email,omitempty" faker:"email"`
 
 	// Address Information
-	Address  string `json:"address,omitempty" faker:"word"`
-	City     string `json:"city,omitempty" faker:"word"`
-	State    string `json:"state,omitempty" faker:"word"`
-	Country  string `json:"country,omitempty" faker:"word"`
-	Postcode string `json:"postcode,omitempty" faker:"word"`
+	Address  string `json:"address,omitempty"`
+	City     string `json:"city,omitempty"`
+	State    string `json:"state,omitempty"`
+	Country  string `json:"country,omitempty"`
+	Postcode string `json:"postcode,omitempty"`
 
 	// Contact Information
 	Mobile   string `json:"mobile,omitempty" faker:"phone_number"`
@@ -35,12 +35,12 @@ type User struct {
 	Gstnumber string `json:"gstnumber,omitempty" faker:"len=15"`
 
 	// Support Information
-	SupportneedTitle        string `json:"supportneed_title,omitempty" faker:"word"`
-	SupportneedUsecase      string `json:"supportneed_usecase,omitempty" faker:"word"`
-	SupportneedBusinesstype string `json:"supportneed_businesstype,omitempty" faker:"word"`
-	SupportneedMonthlyspend string `json:"supportneed_monthlyspend,omitempty" faker:"word"`
-	SupportneedEmployeesize string `json:"supportneed_employeesize,omitempty" faker:"word"`
-	SupportFieldsRequired   string `json:"support_fields_required,omitempty" faker:"word"`
+	SupportneedTitle        string `json:"supportneed_title,omitempty"`
+	SupportneedUsecase      string `json:"supportneed_usecase,omitempty"`
+	SupportneedBusinesstype string `json:"supportneed_businesstype,omitempty"`
+	SupportneedMonthlyspend string `json:"supportneed_monthlyspend,omitempty"`
+	SupportneedEmployeesize string `json:"supportneed_employeesize,omitempty"`
+	SupportFieldsRequired   string `json:"support_fields_required,omitempty"`
 
 	// Financial Information
 	Currencyprefix  string  `json:"currencyprefix,omitempty" faker:"oneof: $, €, £"`
@@ -80,7 +80,7 @@ type User struct {
 
 	// Miscellaneous
 	Permissions      string `json:"permissions,omitempty" faker:"oneof: admin, user, full"`
-	Rvn              string `json:"rvn,omitempty" faker:"word"`
+	Rvn              string `json:"rvn,omitempty"`
 	CAdded           string `json:"c_added,omitempty" faker:"oneof: yes, no"`
 	AffiliateLoginid string `json:"affiliate_loginid,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 }

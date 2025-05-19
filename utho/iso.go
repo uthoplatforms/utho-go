@@ -12,23 +12,23 @@ type ISOs struct {
 	Message string `json:"message" faker:"sentence"`
 }
 type ISO struct {
-	Name       string        `json:"name" faker:"word"`
-	File       string        `json:"file" faker:"word"`
+	Name       string        `json:"name"`
+	File       string        `json:"file"`
 	Size       float64       `json:"size" faker:"boundary_start=1000, boundary_end=10000"`
 	AddedAt    string        `json:"added_at" faker:"timestamp"`
 	Download   string        `json:"download" faker:"oneof: 50, 100"`
-	Dc         string        `json:"dc" faker:"word"`
+	Dc         string        `json:"dc"`
 	Dclocation ISODclocation `json:"dclocation"`
 }
 type ISODclocation struct {
-	Dccc     string `json:"dccc" faker:"word"`
-	Location string `json:"location" faker:"city"`
+	Dccc     string `json:"dccc"`
+	Location string `json:"location"`
 }
 
 type CreateISOParams struct {
-	Dcslug string `json:"dcslug" faker:"word"`
+	Dcslug string `json:"dcslug"`
 	URL    string `json:"url" faker:"url"`
-	Name   string `json:"name" faker:"word"`
+	Name   string `json:"name"`
 }
 
 func (s *ISOService) Create(params CreateISOParams) (*CreateResponse, error) {
