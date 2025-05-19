@@ -19,41 +19,41 @@ type LoadbalancersService service
 
 type Loadbalancers struct {
 	Loadbalancers []Loadbalancer `json:"loadbalancers"`
-	Status        string         `json:"status"`
-	Message       string         `json:"message"`
+	Status        string         `json:"status" faker:"oneof: success, failure"`
+	Message       string         `json:"message" faker:"sentence"`
 }
 
 type Loadbalancer struct {
-	ID                  string      `json:"id"`
-	Userid              string      `json:"userid"`
-	IP                  string      `json:"ip"`
-	Name                string      `json:"name"`
-	Algorithm           string      `json:"algorithm"`
-	Cookie              string      `json:"cookie"`
+	ID                  string      `json:"id" faker:"uuid_digit"`
+	Userid              string      `json:"userid" faker:"uuid_digit"`
+	IP                  string      `json:"ip" faker:"ipv4"`
+	Name                string      `json:"name" faker:"name"`
+	Algorithm           string      `json:"algorithm" faker:"oneof: roundrobin, leastconn"`
+	Cookie              string      `json:"cookie" faker:"oneof: 0, 1"`
 	Cookiename          string      `json:"cookiename"`
-	Redirecthttps       string      `json:"redirecthttps"`
-	Type                string      `json:"type"`
+	Redirecthttps       string      `json:"redirecthttps" faker:"oneof: 0, 1"`
+	Type                string      `json:"type" faker:"oneof: application, network"`
 	Country             string      `json:"country"`
 	Cc                  string      `json:"cc"`
 	City                string      `json:"city"`
 	Backendcount        string      `json:"backendcount"`
-	CreatedAt           string      `json:"created_at"`
-	Status              string      `json:"status"`
-	AppStatus           string      `json:"app_status"`
-	KubernetesClusterid string      `json:"kubernetes_clusterid"`
+	CreatedAt           string      `json:"created_at" faker:"timestamp"`
+	Status              string      `json:"status" faker:"oneof: Active, Inactive"`
+	AppStatus           string      `json:"app_status" faker:"oneof: Pending, Installed"`
+	KubernetesClusterid string      `json:"kubernetes_clusterid" faker:"uuid_digit"`
 	Backends            []Backends  `json:"backends"`
 	Rules               []Rules     `json:"rules"`
 	Acls                []ACLs      `json:"acls"`
 	Routes              []Routes    `json:"routes"`
 	Frontends           []Frontends `json:"frontends"`
-	// ScalingGroups []any       `json:"scaling_groups"`
 }
+
 type Backends struct {
-	ID      string `json:"id"`
-	Lb      string `json:"lb"`
-	IP      string `json:"ip"`
-	Cloudid string `json:"cloudid"`
-	Name    string `json:"name"`
+	ID      string `json:"id" faker:"uuid_digit"`
+	Lb      string `json:"lb" faker:"uuid_digit"`
+	IP      string `json:"ip" faker:"ipv4"`
+	Cloudid string `json:"cloudid" faker:"uuid_digit"`
+	Name    string `json:"name" faker:"name"`
 	RAM     string `json:"ram"`
 	CPU     string `json:"cpu"`
 	Disk    string `json:"disk"`
@@ -62,58 +62,58 @@ type Backends struct {
 	City    string `json:"city"`
 }
 type Rules struct {
-	ID          string `json:"id"`
-	Lb          string `json:"lb"`
-	SrcProto    string `json:"src_proto"`
+	ID          string `json:"id" faker:"uuid_digit"`
+	Lb          string `json:"lb" faker:"uuid_digit"`
+	SrcProto    string `json:"src_proto" faker:"oneof: TCP, UDP"`
 	SrcPort     string `json:"src_port"`
-	DstProto    string `json:"dst_proto"`
+	DstProto    string `json:"dst_proto" faker:"oneof: TCP, UDP"`
 	DstPort     string `json:"dst_port"`
-	Timeadded   string `json:"timeadded"`
-	Timeupdated string `json:"timeupdated"`
+	Timeadded   string `json:"timeadded" faker:"timestamp"`
+	Timeupdated string `json:"timeupdated" faker:"timestamp"`
 }
 type ACLs struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
+	ID           string `json:"id" faker:"uuid_digit"`
+	Name         string `json:"name" faker:"name"`
 	ACLCondition string `json:"acl_condition"`
-	Value        string `json:"value"`
+	Value        string `json:"value" faker:"sentence"`
 }
 type Routes struct {
-	ID               string `json:"id"`
-	ACLID            string `json:"acl_id"`
-	ACLName          string `json:"acl_name"`
+	ID               string `json:"id" faker:"uuid_digit"`
+	ACLID            string `json:"acl_id" faker:"uuid_digit"`
+	ACLName          string `json:"acl_name" faker:"name"`
 	RoutingCondition string `json:"routing_condition"`
-	BackendID        string `json:"backend_id"`
+	BackendID        string `json:"backend_id" faker:"uuid_digit"`
 }
 
 type Frontends struct {
-	ID            string           `json:"id"`
-	Name          string           `json:"name"`
-	Algorithm     string           `json:"algorithm"`
-	Cookie        string           `json:"cookie"`
+	ID            string           `json:"id" faker:"uuid_digit"`
+	Name          string           `json:"name" faker:"name"`
+	Algorithm     string           `json:"algorithm" faker:"oneof: roundrobin, leastconn"`
+	Cookie        string           `json:"cookie" faker:"oneof: 0, 1"`
 	Cookiename    string           `json:"cookiename"`
-	Redirecthttps string           `json:"redirecthttps"`
-	CertificateID string           `json:"certificate_id"`
+	Redirecthttps string           `json:"redirecthttps" faker:"oneof: 0, 1"`
+	CertificateID string           `json:"certificate_id" faker:"uuid_digit"`
 	Port          string           `json:"port"`
-	Proto         string           `json:"proto"`
-	CreatedAt     string           `json:"created_at"`
-	UpdatedAt     string           `json:"updated_at"`
+	Proto         string           `json:"proto" faker:"oneof: HTTP, HTTPS"`
+	CreatedAt     string           `json:"created_at" faker:"timestamp"`
+	UpdatedAt     string           `json:"updated_at" faker:"timestamp"`
 	Acls          []ACLs           `json:"acls"`
 	Routes        []FrontendRoutes `json:"routes"`
 	// Backends      []any    `json:"backends"`
 	// Rules         []any    `json:"rules"`
 }
 type FrontendRoutes struct {
-	ID               string `json:"id"`
-	Lbid             string `json:"lbid"`
-	ACLID            string `json:"acl_id"`
+	ID               string `json:"id" faker:"uuid_digit"`
+	Lbid             string `json:"lbid" faker:"uuid_digit"`
+	ACLID            string `json:"acl_id" faker:"uuid_digit"`
 	RoutingCondition string `json:"routing_condition"`
-	TargetGroups     string `json:"target_groups"`
-	FrontendID       string `json:"frontend_id"`
-	BackendID        string `json:"backend_id"`
-	ACLName          string `json:"acl_name"`
+	TargetGroups     string `json:"target_groups" faker:"uuid_digit"`
+	FrontendID       string `json:"frontend_id" faker:"uuid_digit"`
+	BackendID        string `json:"backend_id" faker:"uuid_digit"`
+	ACLName          string `json:"acl_name" faker:"name"`
 }
 
-type CreateLoadbalancerParams struct {
+type CreateLoadblancerParams struct {
 	Name                string `json:"name"`
 	Dcslug              string `json:"dcslug"`
 	Type                string `json:"type"`
@@ -129,8 +129,8 @@ type CreateLoadbalancerResponse struct {
 	Message string `json:"message"`
 }
 
-func (s *LoadbalancersService) Create(params CreateLoadbalancerParams) (*CreateLoadbalancerResponse, error) {
-	reqUrl := "loadbalancer"
+func (s *LoadbalancersService) Create(params CreateLoadblancerParams) (*CreateLoadbalancerResponse, error) {
+	reqUrl := "loadbalancer/add"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
 	var loadbalancer CreateLoadbalancerResponse
@@ -181,7 +181,7 @@ func (s *LoadbalancersService) List() ([]Loadbalancer, error) {
 }
 
 func (s *LoadbalancersService) Delete(loadbalancerId string) (*DeleteResponse, error) {
-	reqUrl := "loadbalancer/" + loadbalancerId
+	reqUrl := "loadbalancer/" + loadbalancerId + "/destroy"
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -221,6 +221,30 @@ func (s *LoadbalancersService) CreateACL(params CreateLoadbalancerACLParams) (*C
 	return &res, nil
 }
 
+type UpdateLoadbalancerACLParams struct {
+	LoadbalancerId string
+	ACLId          string
+	Name           string `json:"name"`
+	ConditionType  string `json:"conditionType"`
+	FrontendID     string `json:"frontend_id"`
+	Value          string `json:"value"`
+}
+
+func (s *LoadbalancersService) UpdateACL(params UpdateLoadbalancerACLParams) (*UpdateResponse, error) {
+	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/acl/" + params.ACLId
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
+
+	var updateResponse UpdateResponse
+	if _, err := s.client.Do(req, &updateResponse); err != nil {
+		return nil, err
+	}
+
+	if updateResponse.Status != "success" && updateResponse.Status != "" {
+		return nil, errors.New(updateResponse.Message)
+	}
+	return &updateResponse, nil
+}
+
 func (s *LoadbalancersService) ReadACL(loadbalancerId, loadbalancerACLId string) (*ACLs, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
@@ -238,7 +262,11 @@ func (s *LoadbalancersService) ReadACL(loadbalancerId, loadbalancerACLId string)
 	for _, v := range loadbalancer.Loadbalancers[0].Acls {
 		if v.ID == loadbalancerACLId {
 			acl = v
+			break
 		}
+	}
+	if acl.ID == "" {
+		return nil, errors.New("Loadbalancer ACL not found")
 	}
 
 	return &acl, nil
@@ -255,6 +283,9 @@ func (s *LoadbalancersService) ListACLs(loadbalancerId string) ([]ACLs, error) {
 	}
 	if loadbalancer.Status != "success" && loadbalancer.Status != "" {
 		return nil, errors.New(loadbalancer.Message)
+	}
+	if len(loadbalancer.Loadbalancers) == 0 {
+		return []ACLs{}, nil
 	}
 
 	return loadbalancer.Loadbalancers[0].Acls, nil
@@ -347,7 +378,11 @@ func (s *LoadbalancersService) ReadFrontend(loadbalancerId, loadbalancerFrontend
 	for _, v := range loadbalancer.Loadbalancers[0].Frontends {
 		if v.ID == loadbalancerFrontendId {
 			frontend = v
+			break
 		}
+	}
+	if frontend.ID == "" {
+		return nil, errors.New("Loadbalancer Frontend not found")
 	}
 
 	return &frontend, nil
@@ -364,6 +399,9 @@ func (s *LoadbalancersService) ListFrontends(loadbalancerId string) ([]Frontends
 	}
 	if loadbalancer.Status != "success" && loadbalancer.Status != "" {
 		return nil, errors.New(loadbalancer.Message)
+	}
+	if len(loadbalancer.Loadbalancers) == 0 {
+		return []Frontends{}, nil
 	}
 
 	return loadbalancer.Loadbalancers[0].Frontends, nil
@@ -429,7 +467,11 @@ func (s *LoadbalancersService) ReadBackend(loadbalancerId, loadbalancerBackendId
 	for _, v := range loadbalancer.Loadbalancers[0].Backends {
 		if v.ID == loadbalancerBackendId {
 			backend = v
+			break
 		}
+	}
+	if backend.ID == "" {
+		return nil, errors.New("Loadbalancer Backend not found")
 	}
 
 	return &backend, nil
@@ -446,6 +488,9 @@ func (s *LoadbalancersService) ListBackends(loadbalancerId string) ([]Backends, 
 	}
 	if loadbalancer.Status != "success" && loadbalancer.Status != "" {
 		return nil, errors.New(loadbalancer.Message)
+	}
+	if len(loadbalancer.Loadbalancers) == 0 {
+		return []Backends{}, nil
 	}
 
 	return loadbalancer.Loadbalancers[0].Backends, nil
@@ -492,6 +537,30 @@ func (s *LoadbalancersService) CreateRoute(params CreateLoadbalancerRouteParams)
 	return &res, nil
 }
 
+type UpdateLoadbalancerRouteParams struct {
+	LoadbalancerId string
+	RouteId        string
+	ACLID          string `json:"acl_id"`
+	RouteCondition string `json:"route_condition"`
+	FrontendID     string `json:"frontend_id"`
+	TargetGroups   string `json:"target_groups"`
+}
+
+func (s *LoadbalancersService) UpdateRoute(params UpdateLoadbalancerRouteParams) (*UpdateResponse, error) {
+	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/route/" + params.RouteId
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
+
+	var updateResponse UpdateResponse
+	if _, err := s.client.Do(req, &updateResponse); err != nil {
+		return nil, err
+	}
+
+	if updateResponse.Status != "success" && updateResponse.Status != "" {
+		return nil, errors.New(updateResponse.Message)
+	}
+	return &updateResponse, nil
+}
+
 func (s *LoadbalancersService) ReadRoute(loadbalancerId, loadbalancerRouteId string) (*Routes, error) {
 	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("GET", reqUrl)
@@ -505,14 +574,18 @@ func (s *LoadbalancersService) ReadRoute(loadbalancerId, loadbalancerRouteId str
 		return nil, errors.New(loadbalancer.Message)
 	}
 
-	var backend Routes
+	var route Routes
 	for _, v := range loadbalancer.Loadbalancers[0].Routes {
 		if v.ID == loadbalancerRouteId {
-			backend = v
+			route = v
+			break
 		}
 	}
+	if route.ID == "" {
+		return nil, errors.New("Loadbalancer Route not found")
+	}
 
-	return &backend, nil
+	return &route, nil
 }
 
 func (s *LoadbalancersService) ListRoutes(loadbalancerId string) ([]Routes, error) {
@@ -526,6 +599,9 @@ func (s *LoadbalancersService) ListRoutes(loadbalancerId string) ([]Routes, erro
 	}
 	if loadbalancer.Status != "success" && loadbalancer.Status != "" {
 		return nil, errors.New(loadbalancer.Message)
+	}
+	if len(loadbalancer.Loadbalancers) == 0 {
+		return []Routes{}, nil
 	}
 
 	return loadbalancer.Loadbalancers[0].Routes, nil
@@ -546,7 +622,28 @@ func (s *LoadbalancersService) DeleteRoute(loadbalancerId, loadbalancerRouteId s
 	return &delResponse, nil
 }
 
-// Retry up to a configurable number of times if AppStatus is not "Installed"
+type UpdateLoadbalancerParams struct {
+	LoadbalancerId string
+	Dcslug         string `json:"dcslug"`
+	Name           string `json:"name"`
+	Type           string `json:"type"`
+}
+
+func (s *LoadbalancersService) Update(params UpdateLoadbalancerParams) (*UpdateResponse, error) {
+	reqUrl := "loadbalancer/" + params.LoadbalancerId + "/update"
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
+
+	var updateResponse UpdateResponse
+	if _, err := s.client.Do(req, &updateResponse); err != nil {
+		return nil, err
+	}
+
+	if updateResponse.Status != "success" && updateResponse.Status != "" {
+		return nil, errors.New(updateResponse.Message)
+	}
+	return &updateResponse, nil
+}
+
 func (s *LoadbalancersService) retryUntilReady(req *http.Request, maxRetries int, sleepDuration time.Duration) (CreateResponse, error) {
 	var res CreateResponse
 
