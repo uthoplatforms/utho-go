@@ -7,21 +7,16 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-faker/faker/v4"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestMonitoringService_CreateAlert_happyPath(t *testing.T) {
 	token := "token"
-	payload := CreateAlertParams{
-		Compare:  "below",
-		Contacts: "27",
-		For:      "5m",
-		Name:     "wqe",
-		RefIds:   "1277623",
-		RefType:  "cloud",
-		Status:   "Active",
-		Type:     "cpu",
-		Value:    "23",
+	payload := CreateAlertParams{}
+	err := faker.FakeData(&payload)
+	if err != nil {
+		t.Fatalf("Failed to fake data for CreateAlertParams: %v", err)
 	}
 
 	client, mux, _, teardown := setup(token)
@@ -30,13 +25,15 @@ func TestMonitoringService_CreateAlert_happyPath(t *testing.T) {
 	mux.HandleFunc("/alert", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateBasicResponseJson)
+		// We're no longer relying on dummy JSON constants, so we can mock a basic successful response
+		fmt.Fprint(w, `{"status":"success","message":"Alert created successfully"}`)
 	})
 
 	got, err := client.Monitoring().CreateAlert(payload)
 
 	var want BasicResponse
-	_ = json.Unmarshal([]byte(dummyCreateBasicResponseJson), &want)
+	// Adjust the expected response to match the mocked successful response
+	_ = json.Unmarshal([]byte(`{"status":"success","message":"Alert created successfully"}`), &want)
 
 	assert.Nil(t, err)
 	assert.Equal(t, want, *got)
@@ -55,18 +52,27 @@ func TestMonitoringService_ReadAlert_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	alertId := "11111"
-	expectedResponse := dummyReadAlertRes
-	serverResponse := dummyReadAlertServerRes
+	alertId := faker.UUIDDigit()
+
+	// Create a faker instance for the expected Alert object
+	var want Alert
+	err := faker.FakeData(&want)
+	if err != nil {
+		t.Fatalf("Failed to fake data for Alert: %v", err)
+	}
+	want.ID = alertId // Ensure the ID matches the requested one
+
+	// Marshal the faked 'want' object into JSON for the server response
+	serverResponse, err := json.Marshal(map[string][]Alert{"alerts": {want}})
+	if err != nil {
+		t.Fatalf("Failed to marshal faked alert: %v", err)
+	}
 
 	mux.HandleFunc("/alert", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want Alert
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	got, _ := client.Monitoring().ReadAlert(alertId)
 	if !reflect.DeepEqual(*got, want) {
@@ -90,17 +96,31 @@ func TestMonitoringService_ListAlert_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyReadAlertRes
-	serverResponse := "[" + dummyReadAlertServerRes + "]"
+	var alert1 Alert
+	err := faker.FakeData(&alert1)
+	if err != nil {
+		t.Fatalf("Failed to fake data for Alert: %v", err)
+	}
+
+	var alert2 Alert
+	err = faker.FakeData(&alert2)
+	if err != nil {
+		t.Fatalf("Failed to fake data for Alert: %v", err)
+	}
+
+	want := []Alert{alert1, alert2} // Create a slice of faked alerts
+
+	// Marshal the slice of faked alerts into JSON for the server response
+	serverResponse, err := json.Marshal(map[string][]Alert{"alerts": want})
+	if err != nil {
+		t.Fatalf("Failed to marshal faked alerts: %v", err)
+	}
 
 	mux.HandleFunc("/alert", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want []Alert
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	got, _ := client.Monitoring().ListAlerts()
 	if len(got) != len(want) {
@@ -126,15 +146,14 @@ func TestMonitoringService_ListAlert_invalidServer(t *testing.T) {
 
 // func TestMonitoringService_DeleteAlert_happyPath(t *testing.T) {
 // 	token := "token"
-// 	alertId := "someAlertId"
-
+// 	alertId := faker.UUIDDigit()
 // 	client, mux, _, teardown := setup(token)
 // 	defer teardown()
 
 // 	mux.HandleFunc("/alert/"+alertId, func(w http.ResponseWriter, req *http.Request) {
 // 		testHttpMethod(t, req, "DELETE")
 // 		testHeader(t, req, "Authorization", "Bearer "+token)
-// 		fmt.Fprint(w, dummyDeleteResponseJson)
+// 		fmt.Fprint(w, `{"status":"success","message":"success"}`)
 // 	})
 
 // 	want := DeleteResponse{Status: "success", Message: "success"}
@@ -157,14 +176,12 @@ func TestMonitoringService_ListAlert_invalidServer(t *testing.T) {
 // 	}
 // }
 
-// Contact
 func TestMonitoringService_CreateContact_happyPath(t *testing.T) {
 	token := "token"
-	payload := CreateContactParams{
-		Email:        "23@dwq.cw",
-		Mobilenumber: "123456",
-		Name:         "23",
-		Status:       "1",
+	payload := CreateContactParams{}
+	err := faker.FakeData(&payload)
+	if err != nil {
+		t.Fatalf("Failed to fake data for CreateContactParams: %v", err)
 	}
 
 	client, mux, _, teardown := setup(token)
@@ -173,13 +190,13 @@ func TestMonitoringService_CreateContact_happyPath(t *testing.T) {
 	mux.HandleFunc("/alert/contact/add", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyCreateResponseJson)
+		fmt.Fprint(w, `{"status":"success","message":"Contact created successfully"}`)
 	})
 
 	got, err := client.Monitoring().CreateContact(payload)
 
 	var want CreateResponse
-	_ = json.Unmarshal([]byte(dummyCreateResponseJson), &want)
+	_ = json.Unmarshal([]byte(`{"status":"success","message":"Contact created successfully"}`), &want)
 
 	assert.Nil(t, err)
 	assert.Equal(t, want, *got)
@@ -198,18 +215,27 @@ func TestMonitoringService_ReadContact_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	contactId := "11111"
-	expectedResponse := dummyReadContactRes
-	serverResponse := dummyReadContactServerRes
+	contactId := faker.UUIDDigit()
+
+	// Create a faker instance for the expected Contact object
+	var want Contact
+	err := faker.FakeData(&want)
+	if err != nil {
+		t.Fatalf("Failed to fake data for Contact: %v", err)
+	}
+	want.ID = contactId // Ensure the ID matches the requested one
+
+	// Marshal the faked 'want' object into JSON for the server response
+	serverResponse, err := json.Marshal(map[string][]Contact{"contacts": {want}})
+	if err != nil {
+		t.Fatalf("Failed to marshal faked contact: %v", err)
+	}
 
 	mux.HandleFunc("/alert/contact/list", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want Contact
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	got, _ := client.Monitoring().ReadContact(contactId)
 	if !reflect.DeepEqual(*got, want) {
@@ -233,17 +259,31 @@ func TestMonitoringService_ListContact_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	expectedResponse := dummyReadContactRes
-	serverResponse := "[" + dummyReadContactServerRes + "]"
+	var contact1 Contact
+	err := faker.FakeData(&contact1)
+	if err != nil {
+		t.Fatalf("Failed to fake data for Contact: %v", err)
+	}
+
+	var contact2 Contact
+	err = faker.FakeData(&contact2)
+	if err != nil {
+		t.Fatalf("Failed to fake data for Contact: %v", err)
+	}
+
+	want := []Contact{contact1, contact2} // Create a slice of faked contacts
+
+	// Marshal the slice of faked contacts into JSON for the server response
+	serverResponse, err := json.Marshal(map[string][]Contact{"contacts": want})
+	if err != nil {
+		t.Fatalf("Failed to marshal faked contacts: %v", err)
+	}
 
 	mux.HandleFunc("/alert/contact/list", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
-		fmt.Fprint(w, serverResponse)
+		fmt.Fprint(w, string(serverResponse))
 	})
-
-	var want []Contact
-	_ = json.Unmarshal([]byte(expectedResponse), &want)
 
 	got, _ := client.Monitoring().ListContacts()
 	if len(got) != len(want) {
@@ -269,7 +309,7 @@ func TestMonitoringService_ListContact_invalidServer(t *testing.T) {
 
 func TestMonitoringService_DeleteContact_happyPath(t *testing.T) {
 	token := "token"
-	contactId := "someContactId"
+	contactId := faker.UUIDDigit()
 
 	client, mux, _, teardown := setup(token)
 	defer teardown()
@@ -277,7 +317,7 @@ func TestMonitoringService_DeleteContact_happyPath(t *testing.T) {
 	mux.HandleFunc("/alert/contact/"+contactId+"/delete", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "DELETE")
 		testHeader(t, req, "Authorization", "Bearer "+token)
-		fmt.Fprint(w, dummyDeleteResponseJson)
+		fmt.Fprint(w, `{"status":"success","message":"success"}`)
 	})
 
 	want := DeleteResponse{Status: "success", Message: "success"}
@@ -299,53 +339,3 @@ func TestMonitoringService_DeleteContact_invalidServer(t *testing.T) {
 		t.Errorf("Was not expecting any reponse to be returned, instead got %v", delResponse)
 	}
 }
-
-const dummyReadAlertServerRes = `{
-    "alerts": [
-        {
-            "id": "11111",
-            "type": "cpu",
-            "name": "wqew",
-            "ref_ids": "12344",
-            "ref_type": "cloud",
-            "compare": "below",
-            "value": "231",
-            "for": "5m",
-            "contacts": "24",
-            "status": "1"
-        }
-    ]
-}`
-
-const dummyReadAlertRes = `{
-	"id": "11111",
-	"type": "cpu",
-	"name": "wqew",
-	"ref_ids": "12344",
-	"ref_type": "cloud",
-	"compare": "below",
-	"value": "231",
-	"for": "5m",
-	"contacts": "24",
-	"status": "1"
-}`
-
-const dummyReadContactServerRes = `{
-    "contacts": [
-        {
-            "id": "11111",
-            "name": "tested",
-            "email": "test22@test.com",
-            "slack": "",
-            "mobilenumber": "11111111"
-        }
-    ]
-}`
-
-const dummyReadContactRes = `{
-	"id": "11111",
-	"name": "tested",
-	"email": "test22@test.com",
-	"slack": "",
-	"mobilenumber": "11111111"
-}`

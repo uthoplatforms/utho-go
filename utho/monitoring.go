@@ -2,6 +2,7 @@ package utho
 
 import (
 	"errors"
+	"fmt"
 )
 
 type MonitoringService service
@@ -79,10 +80,16 @@ func (s *MonitoringService) ReadAlert(alertId string) (*Alert, error) {
 	}
 
 	var alert Alert
+	found := false
 	for _, v := range alerts.Alerts {
 		if v.ID == alertId {
 			alert = v
+			found = true
+			break
 		}
+	}
+	if !found {
+		return nil, errors.New("alert not found")
 	}
 
 	return &alert, nil
@@ -118,8 +125,8 @@ type UpdateAlertParams struct {
 }
 
 func (s *MonitoringService) UpdateAlert(params UpdateAlertParams) (*BasicResponse, error) {
-	reqUrl := "alert/" + params.AlertId + "/update"
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	reqUrl := fmt.Sprintf("alert/%s", params.AlertId)
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
 	var alert BasicResponse
 	_, err := s.client.Do(req, &alert)
@@ -133,20 +140,17 @@ func (s *MonitoringService) UpdateAlert(params UpdateAlertParams) (*BasicRespons
 	return &alert, nil
 }
 
-// func (s *MonitoringService) DeleteAlert(alertId string) (*DeleteResponse, error) {
-// 	reqUrl := "alert/" + alertId
-// 	req, _ := s.client.NewRequest("DELETE", reqUrl)
+func (s *MonitoringService) DeleteAlert(alertId string) (*DeleteResponse, error) {
+	reqUrl := "alert/" + alertId + "/delete"
+	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
-// 	var delResponse DeleteResponse
-// 	if _, err := s.client.Do(req, &delResponse); err != nil {
-// 		return nil, err
-// 	}
+	var delResponse DeleteResponse
+	if _, err := s.client.Do(req, &delResponse); err != nil {
+		return nil, err
+	}
 
-//		return &delResponse, nil
-//	}
-//
-
-// /////////////////////////////////////////////////////////////////
+	return &delResponse, nil
+}
 
 type CreateContactParams struct {
 	Name         string `json:"name"`
@@ -185,10 +189,16 @@ func (s *MonitoringService) ReadContact(contactId string) (*Contact, error) {
 	}
 
 	var contact Contact
+	found := false
 	for _, v := range contacts.Contacts {
 		if v.ID == contactId {
 			contact = v
+			found = true
+			break
 		}
+	}
+	if !found {
+		return nil, errors.New("contact not found")
 	}
 
 	return &contact, nil
@@ -220,7 +230,7 @@ type UpdateContactParams struct {
 
 func (s *MonitoringService) UpdateContact(params UpdateContactParams) (*BasicResponse, error) {
 	reqUrl := "alert/contact/" + params.ContactId + "/update"
-	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+	req, _ := s.client.NewRequest("PUT", reqUrl, &params)
 
 	var contact BasicResponse
 	_, err := s.client.Do(req, &contact)
