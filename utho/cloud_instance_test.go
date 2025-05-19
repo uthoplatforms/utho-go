@@ -284,11 +284,13 @@ func TestCloudInstanceService_CreateSnapshot_happyPath(t *testing.T) {
 
 	var fakeResp CreateBasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/snapshot/create", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
+		w.WriteHeader(http.StatusOK)
 		w.Write(respBytes)
 	})
 
@@ -297,7 +299,7 @@ func TestCloudInstanceService_CreateSnapshot_happyPath(t *testing.T) {
 	var want CreateBasicResponse
 	_ = json.Unmarshal(respBytes, &want)
 
-	assert.Nil(t, err)
+	assert.Nil(t, err) // Ensure no error is returned
 	assert.Equal(t, want, *got)
 }
 
@@ -360,6 +362,7 @@ func TestCloudInstanceService_EnableBackup_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/backups/enable", func(w http.ResponseWriter, req *http.Request) {
@@ -395,6 +398,7 @@ func TestCloudInstanceService_DisableBackup_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/backups/disable", func(w http.ResponseWriter, req *http.Request) {
@@ -430,6 +434,7 @@ func TestCloudInstanceService_HardReboot_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/hardreboot", func(w http.ResponseWriter, req *http.Request) {
@@ -465,6 +470,7 @@ func TestCloudInstanceService_PowerCycle_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/powercycle", func(w http.ResponseWriter, req *http.Request) {
@@ -500,6 +506,7 @@ func TestCloudInstanceService_PowerOff_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/poweroff", func(w http.ResponseWriter, req *http.Request) {
@@ -535,6 +542,7 @@ func TestCloudInstanceService_PowerOn_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/poweron", func(w http.ResponseWriter, req *http.Request) {
@@ -570,6 +578,7 @@ func TestCloudInstanceService_Rebuild_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/rebuild", func(w http.ResponseWriter, req *http.Request) {
@@ -644,6 +653,7 @@ func TestCloudInstanceService_Resize_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/resize", func(w http.ResponseWriter, req *http.Request) {
@@ -684,6 +694,7 @@ func TestCloudInstanceService_RestoreSnapshot_happyPath(t *testing.T) {
 
 	var fakeResp BasicResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/snapshot/"+snapshotId+"/restore", func(w http.ResponseWriter, req *http.Request) {

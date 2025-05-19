@@ -14,8 +14,8 @@ type CloudInstances struct {
 	Message       string          `json:"message,omitempty" faker:"sentence"`
 }
 type CloudInstance struct {
-	ID                string                   `json:"cloudid" faker:"boundary_start=100000,boundary_end=999999"`
-	Hostname          string                   `json:"hostname" faker:"hostname"`
+	ID                string                   `json:"cloudid" faker:"oneof: 00000,11111,22222,33333"`
+	Hostname          string                   `json:"hostname"`
 	CPU               string                   `json:"cpu" faker:"oneof:1,2,4,8,16"`
 	RAM               string                   `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
 	DiscountType      string                   `json:"discount_type" faker:"oneof:Percentage,Flat"`
@@ -113,7 +113,7 @@ type V4Private struct {
 	Primary     string `json:"primary,omitempty" faker:"oneof:1,0"`
 }
 type Storages struct {
-	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Size      int    `json:"size" faker:"boundary_start=20,boundary_end=500"`
 	DiskUsed  string `json:"disk_used" faker:"oneof:1GB,50GB,100GB"`
 	DiskFree  string `json:"disk_free" faker:"oneof:1GB,50GB,100GB"`
@@ -123,7 +123,7 @@ type Storages struct {
 	Type      string `json:"type" faker:"oneof:ssd,hdd"`
 }
 type Storage struct {
-	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Size      int    `json:"size" faker:"boundary_start=20,boundary_end=500"`
 	DiskUsed  string `json:"disk_used" faker:"oneof:1GB,50GB,100GB"`
 	DiskFree  string `json:"disk_free" faker:"oneof:1GB,50GB,100GB"`
@@ -133,14 +133,14 @@ type Storage struct {
 	Type      string `json:"type" faker:"oneof:ssd,hdd"`
 }
 type Snapshot struct {
-	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Size      string `json:"size" faker:"oneof:1GB,50GB,100GB"`
 	CreatedAt string `json:"created_at" faker:"date"`
 	Note      string `json:"note" faker:"sentence"`
 	Name      string `json:"name" faker:"word"`
 }
 type CloudInstanceFirewall struct {
-	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Name      string `json:"name" faker:"word"`
 	CreatedAt string `json:"created_at" faker:"date"`
 }
@@ -150,14 +150,14 @@ type Meta struct {
 	Currentpage int `json:"currentpage" faker:"boundary_start=1,boundary_end=5"`
 }
 type Snapshots struct {
-	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Size      string `json:"size" faker:"oneof:1GB,50GB,100GB"`
 	CreatedAt string `json:"created_at" faker:"date"`
 	Note      string `json:"note" faker:"sentence"`
 	Name      string `json:"name" faker:"word"`
 }
 type CloudInstanceFirewalls struct {
-	ID        string `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Name      string `json:"name" faker:"word"`
 	CreatedAt string `json:"created_at" faker:"date"`
 }
@@ -181,7 +181,7 @@ type Plans struct {
 	Message string `json:"message,omitempty" faker:"sentence"`
 }
 type Plan struct {
-	ID        string  `json:"id" faker:"boundary_start=100000,boundary_end=999999"`
+	ID        string  `json:"id" faker:"oneof: 00000,11111,22222,33333"`
 	Type      string  `json:"type" faker:"oneof:ramcpu,disk"`
 	Disk      string  `json:"disk" faker:"oneof:20GB,50GB,100GB"`
 	RAM       string  `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
@@ -219,7 +219,7 @@ type CloudHostname struct {
 }
 
 type CreateCloudInstanceResponse struct {
-	ID       string `json:"cloudid" faker:"boundary_start=100000,boundary_end=999999"`
+	ID       string `json:"cloudid" faker:"oneof: 00000,11111,22222,33333"`
 	Password string `json:"password" faker:"password"`
 	Ipv4     string `json:"ipv4" faker:"ipv4"`
 	Status   string `json:"status,omitempty" faker:"oneof:success,error"`

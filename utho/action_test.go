@@ -14,7 +14,10 @@ func TestActionService_List_happyPath(t *testing.T) {
 	defer teardown()
 
 	var fakeAction Action
-	_ = faker.FakeData(&fakeAction)
+	err := faker.FakeData(&fakeAction)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	actionsResp := Actions{Actions: []Action{fakeAction}, Status: "success"}
 	respBytes, _ := json.Marshal(actionsResp)
 
@@ -49,7 +52,10 @@ func TestActionService_List_withFaker(t *testing.T) {
 	var fakeActions []Action
 	for i := 0; i < 2; i++ {
 		var a Action
-		_ = faker.FakeData(&a)
+		err := faker.FakeData(&a)
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
 		fakeActions = append(fakeActions, a)
 	}
 	actionsResp := Actions{Actions: fakeActions, Status: "success"}
@@ -74,14 +80,24 @@ func TestActionService_Read_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
 
-	// Use faker to generate a single action for the read endpoint
 	var fakeAction Action
-	_ = faker.FakeData(&fakeAction)
-	respBytes, _ := json.Marshal(fakeAction)
+	err := faker.FakeData(&fakeAction)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	serverResp := struct {
+		Action Action `json:"action"`
+		Status string `json:"status"`
+	}{
+		Action: fakeAction,
+		Status: "success",
+	}
+	respBytes, _ := json.Marshal(serverResp)
 
 	mux.HandleFunc("/actions/"+fakeAction.ID, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
+		w.WriteHeader(http.StatusOK)
 		w.Write(respBytes)
 	})
 

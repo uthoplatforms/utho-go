@@ -19,7 +19,7 @@ type Action struct {
 	ResourceType string `json:"resource_type" faker:"oneof:cloud,vm,db"`
 	ResourceID   string `json:"resource_id" faker:"oneof:1277087,1627803,1277721"`
 	StartedAt    string `json:"started_at" faker:"date"`
-	CompletedAt  string `json:"completed_at" faker:"oneof:0000-00-00 00:00:00,2025-05-12 15:00:00"`
+	CompletedAt  string `json:"completed_at" faker:"oneof:date"`
 	Process      string `json:"process" faker:"oneof:95,96,97"`
 	Status       string `json:"status" faker:"oneof:Pending,Support,Success"`
 	Message      string `json:"message,omitempty"`
@@ -45,18 +45,22 @@ func (s *ActionService) Read(id string) (*Action, error) {
 	actionUrl := "actions/" + id
 	req, _ := s.client.NewRequest("GET", actionUrl)
 
-	var action Action
-	if _, err := s.client.Do(req, &action); err != nil {
+	var response struct {
+		Action Action `json:"action"`
+		Status string `json:"status"`
+	}
+
+	if _, err := s.client.Do(req, &response); err != nil {
 		return nil, errors.New("failed to fetch action information: " + err.Error())
 	}
 
-	if action.Status == "error" {
-		return nil, errors.New("action service error: " + action.Message)
+	if response.Status == "error" {
+		return nil, errors.New("action service error: " + response.Action.Message)
 	}
 
-	if action.ID == "" {
+	if response.Action.ID == "" {
 		return nil, errors.New("action not found in response")
 	}
 
-	return &action, nil
+	return &response.Action, nil
 }

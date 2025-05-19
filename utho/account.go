@@ -14,18 +14,18 @@ type Account struct {
 
 type User struct {
 	// Basic Information
-	ID       string `json:"id,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
+	ID       string `json:"id,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 	Type     string `json:"type,omitempty" faker:"oneof: Individual, Business"`
 	Fullname string `json:"fullname,omitempty" faker:"name"`
-	Company  string `json:"company,omitempty" faker:"company"`
+	Company  string `json:"company,omitempty" faker:"word"`
 	Email    string `json:"email,omitempty" faker:"email"`
 
 	// Address Information
-	Address  string `json:"address,omitempty" faker:"street_address"`
-	City     string `json:"city,omitempty" faker:"city"`
-	State    string `json:"state,omitempty" faker:"state"`
-	Country  string `json:"country,omitempty" faker:"country_code"`
-	Postcode string `json:"postcode,omitempty" faker:"postcode"`
+	Address  string `json:"address,omitempty" faker:"word"`
+	City     string `json:"city,omitempty" faker:"word"`
+	State    string `json:"state,omitempty" faker:"word"`
+	Country  string `json:"country,omitempty" faker:"word"`
+	Postcode string `json:"postcode,omitempty" faker:"word"`
 
 	// Contact Information
 	Mobile   string `json:"mobile,omitempty" faker:"phone_number"`
@@ -36,7 +36,7 @@ type User struct {
 
 	// Support Information
 	SupportneedTitle        string `json:"supportneed_title,omitempty" faker:"word"`
-	SupportneedUsecase      string `json:"supportneed_usecase,omitempty" faker:"sentence"`
+	SupportneedUsecase      string `json:"supportneed_usecase,omitempty" faker:"word"`
 	SupportneedBusinesstype string `json:"supportneed_businesstype,omitempty" faker:"word"`
 	SupportneedMonthlyspend string `json:"supportneed_monthlyspend,omitempty" faker:"word"`
 	SupportneedEmployeesize string `json:"supportneed_employeesize,omitempty" faker:"word"`
@@ -62,7 +62,7 @@ type User struct {
 
 	// Partner and Reseller Information
 	IsPartner  string `json:"is_partner,omitempty" faker:"oneof: 0, 1"`
-	Partnerid  string `json:"partnerid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
+	Partnerid  string `json:"partnerid,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 	IsReseller string `json:"is_reseller,omitempty" faker:"oneof: 0, 1"`
 
 	// Cloud and Resource Information
@@ -73,16 +73,16 @@ type User struct {
 
 	// Billing Information
 	Singleinvoice      string `json:"singleinvoice,omitempty" faker:"oneof: 0, 1"`
-	RazorpayCustomerid string `json:"razorpay_customerid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
-	RazorpayOrderid    string `json:"razorpay_orderid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
+	RazorpayCustomerid string `json:"razorpay_customerid,omitempty" faker:"oneof: 00000,11111,22222,33333"`
+	RazorpayOrderid    string `json:"razorpay_orderid,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 	RazorpaySub        string `json:"razorpay_sub,omitempty" faker:"oneof: 0, 1"`
-	StripeCustomer     string `json:"stripe_customer,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
+	StripeCustomer     string `json:"stripe_customer,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 
 	// Miscellaneous
 	Permissions      string `json:"permissions,omitempty" faker:"oneof: admin, user, full"`
-	Rvn              string `json:"rvn,omitempty" faker:"amount"`
+	Rvn              string `json:"rvn,omitempty" faker:"word"`
 	CAdded           string `json:"c_added,omitempty" faker:"oneof: yes, no"`
-	AffiliateLoginid string `json:"affiliate_loginid,omitempty" faker:"boundary_start=100000,boundary_end=999999"`
+	AffiliateLoginid string `json:"affiliate_loginid,omitempty" faker:"oneof: 00000,11111,22222,33333"`
 }
 
 type Resources struct {

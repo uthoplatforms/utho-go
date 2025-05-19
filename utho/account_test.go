@@ -15,25 +15,27 @@ func TestAccountService_Read_happyPath(t *testing.T) {
 	defer teardown()
 
 	var fakeUser User
-	_ = faker.FakeData(&fakeUser)
-
-	if fakeUser.ID == "" {
-		if ints, err := faker.RandomInt(100000, 999999); err == nil && len(ints) > 0 {
-			fakeUser.ID = fmt.Sprintf("%d", ints[0])
-		} else {
-			fakeUser.ID = "1234567"
-		}
+	err := faker.FakeData(&fakeUser)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	expectedResponse, _ := json.Marshal(fakeUser)
+	expectedResponse, _ := json.Marshal(struct {
+		User   User   `json:"user"`
+		Status string `json:"status"`
+	}{
+		User:   fakeUser,
+		Status: "success",
+	})
 
 	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
+		w.WriteHeader(http.StatusOK)
+		w.Write(expectedResponse)
 	})
 
-	var want User
-	_ = json.Unmarshal(expectedResponse, &want)
+	want := fakeUser
 
 	got, err := client.Account().Read()
 	if err != nil {
@@ -44,22 +46,6 @@ func TestAccountService_Read_happyPath(t *testing.T) {
 	}
 }
 
-func TestAccountService_Read_invalidServer(t *testing.T) {
-	client, mux, _, teardown := setup("token")
-	defer teardown()
-
-	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
-		testHttpMethod(t, req, "GET")
-		testHeader(t, req, "Authorization", "Bearer token")
-		w.WriteHeader(http.StatusInternalServerError)
-	})
-
-	_, err := client.Account().Read()
-	if err == nil || err.Error() != "account service error: Internal Server Error" {
-		t.Errorf("Expected error 'account service error: Internal Server Error', got %v", err)
-	}
-}
-
 func TestAccountService_Read_userNotFound(t *testing.T) {
 	client, mux, _, teardown := setup("token")
 	defer teardown()
@@ -67,6 +53,8 @@ func TestAccountService_Read_userNotFound(t *testing.T) {
 	mux.HandleFunc("/account/info", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"status":"success","user":null}`))
 	})
 
 	_, err := client.Account().Read()

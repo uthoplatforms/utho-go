@@ -61,23 +61,26 @@ func TestApiKeyService_List_happyPath(t *testing.T) {
 		fakeApiKeys = append(fakeApiKeys, k)
 	}
 
-	expectedResponse, _ := json.Marshal(fakeApiKeys)
+	expectedResponse := ApiKeys{Status: "success", API: fakeApiKeys}
+	respBytes, _ := json.Marshal(expectedResponse)
 
 	mux.HandleFunc("/api", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
+		w.WriteHeader(http.StatusOK)
+		w.Write(respBytes) // Write the response
 	})
 
-	var want []ApiKey
-	_ = json.Unmarshal(expectedResponse, &want)
-
-	got, _ := client.ApiKey().List()
-	if len(got) != len(want) {
-		t.Errorf("Was expecting %d apikey to be returned, instead got %d", len(want), len(got))
+	got, err := client.ApiKey().List()
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if len(got) != len(fakeApiKeys) {
+		t.Errorf("Was expecting %d apikey to be returned, instead got %d", len(fakeApiKeys), len(got))
 	}
 
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("Response = %v, want %v", got, want)
+	if !reflect.DeepEqual(got, fakeApiKeys) {
+		t.Errorf("Response = %v, want %v", got, fakeApiKeys)
 	}
 }
 
@@ -100,16 +103,22 @@ func TestApiKeyService_Delete_happyPath(t *testing.T) {
 	client, mux, _, teardown := setup(token)
 	defer teardown()
 
+	expectedResponse := DeleteResponse{Status: "success", Message: "success"}
+	respBytes, _ := json.Marshal(expectedResponse)
+
 	mux.HandleFunc("/api/"+apiKeyId+"/delete", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "DELETE")
 		testHeader(t, req, "Authorization", "Bearer "+token)
+		w.WriteHeader(http.StatusOK)
+		w.Write(respBytes) // Write the response
 	})
 
-	want := DeleteResponse{Status: "success", Message: "success"}
-
-	got, _ := client.ApiKey().Delete(apiKeyId)
-	if !reflect.DeepEqual(*got, want) {
-		t.Errorf("Response = %v, want %v", *got, want)
+	got, err := client.ApiKey().Delete(apiKeyId)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !reflect.DeepEqual(*got, expectedResponse) {
+		t.Errorf("Response = %v, want %v", *got, expectedResponse)
 	}
 }
 

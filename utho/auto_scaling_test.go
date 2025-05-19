@@ -771,12 +771,12 @@ func TestAutoScalingService_ReadSecurityGroup_happyPath(t *testing.T) {
 	defer teardown()
 
 	autoScalingeId := "11111"
-	autoscalingSecurityGroupId := "55555"
+	securityGroupId := "55555"
 
 	var fakeGroup Groups
 	_ = faker.FakeData(&fakeGroup)
 	var fakeSecurityGroup SecurityGroup
-	_ = faker.FakeData(&fakeSecurityGroup)
+	fakeSecurityGroup.ID = securityGroupId // Ensure the ID matches the test case
 	fakeGroup.SecurityGroups = []SecurityGroup{fakeSecurityGroup}
 	serverResp := struct {
 		Groups []Groups `json:"groups"`
@@ -786,18 +786,20 @@ func TestAutoScalingService_ReadSecurityGroup_happyPath(t *testing.T) {
 		Status: "success",
 	}
 	serverResponse, _ := json.Marshal(serverResp)
-	expectedResponse, _ := json.Marshal(fakeSecurityGroup)
 
 	mux.HandleFunc("/autoscaling/"+autoScalingeId, func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, "GET")
 		testHeader(t, req, "Authorization", "Bearer token")
+		w.WriteHeader(http.StatusOK)
 		w.Write(serverResponse)
 	})
 
-	var want SecurityGroup
-	_ = json.Unmarshal(expectedResponse, &want)
+	want := fakeSecurityGroup
 
-	got, _ := client.AutoScaling().ReadSecurityGroup(autoScalingeId, autoscalingSecurityGroupId)
+	got, err := client.AutoScaling().ReadSecurityGroup(autoScalingeId, securityGroupId)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
@@ -962,9 +964,12 @@ func TestAutoScalingService_ReadTargetgroup_happyPath(t *testing.T) {
 
 	var fakeGroup Groups
 	_ = faker.FakeData(&fakeGroup)
+
 	var fakeTargetGroup AutoScalingTargetGroup
 	_ = faker.FakeData(&fakeTargetGroup)
+	fakeTargetGroup.ID = autoscalingTargetgroupId
 	fakeGroup.TargetGroups = []AutoScalingTargetGroup{fakeTargetGroup}
+
 	serverResp := struct {
 		Groups []Groups `json:"groups"`
 		Status string   `json:"status"`
@@ -984,7 +989,10 @@ func TestAutoScalingService_ReadTargetgroup_happyPath(t *testing.T) {
 	var want AutoScalingTargetGroup
 	_ = json.Unmarshal(expectedResponse, &want)
 
-	got, _ := client.AutoScaling().ReadTargetgroup(autoScalingeId, autoscalingTargetgroupId)
+	got, err := client.AutoScaling().ReadTargetgroup(autoScalingeId, autoscalingTargetgroupId)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 	if !reflect.DeepEqual(*got, want) {
 		t.Errorf("Response = %v, want %v", *got, want)
 	}
