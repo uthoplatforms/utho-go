@@ -1,6 +1,7 @@
 # make publish tag=0.1.30
 .PHONY: publish
 publish: tidy
+	git push origin
 	git tag v$(tag)
 	git push origin v$(tag)
 	GOPROXY=proxy.golang.org go list -m github.com/uthoplatforms/utho-go@v$(tag)
