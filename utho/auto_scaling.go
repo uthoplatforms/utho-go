@@ -8,7 +8,7 @@ import (
 type AutoScalingService service
 
 type AutoScalings struct {
-	Groups  []Groups `json:"groups" faker:"slice_len=1"`
+	Groups  []Groups `json:"groups"`
 	Status  string   `json:"status" faker:"oneof:success,error"`
 	Message string   `json:"message" faker:"sentence"`
 }
@@ -33,25 +33,25 @@ type Groups struct {
 	StartedAt          string                     `json:"started_at" faker:"date"`
 	DeletedAt          string                     `json:"deleted_at" faker:"date"`
 	PublicIPEnabled    string                     `json:"public_ip_enabled" faker:"oneof:0,1"`
-	Vpc                []AutoScalingVpc           `json:"vpc" faker:"slice_len=1"`
+	Vpc                []AutoScalingVpc           `json:"vpc"`
 	CooldownTill       string                     `json:"cooldown_till" faker:"date"`
-	Loadbalancers      []AutoScalingLoadbalancers `json:"load_balancers" faker:"slice_len=1"`
-	TargetGroups       []AutoScalingTargetGroup   `json:"target_groups" faker:"slice_len=1"`
-	SecurityGroups     []SecurityGroup            `json:"security_groups" faker:"slice_len=1"`
+	Loadbalancers      []AutoScalingLoadbalancers `json:"load_balancers"`
+	TargetGroups       []AutoScalingTargetGroup   `json:"target_groups"`
+	SecurityGroups     []SecurityGroup            `json:"security_groups"`
 	Backupid           string                     `json:"backupid" faker:"oneof: 00000,11111,22222,33333"`
 	Stack              string                     `json:"stack" faker:"oneof: 00000,11111,22222,33333"`
 	StackFields        string                     `json:"stack_fields"`
-	Instances          []Instances                `json:"instances" faker:"slice_len=1"`
-	Policies           []Policy                   `json:"policies" faker:"slice_len=1"`
-	Schedules          []Schedule                 `json:"schedules" faker:"slice_len=1"`
+	Instances          []Instances                `json:"instances"`
+	Policies           []Policy                   `json:"policies"`
+	Schedules          []Schedule                 `json:"schedules"`
 	DeletedInstances   []any                      `json:"deleted_instances"`
 	Dclocation         AutoScalingDclocation      `json:"dclocation"`
 	Plan               AutoScalingPlan            `json:"plan"`
 }
 type AutoScalingVpc struct {
 	ID               string                 `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Total            int                    `json:"total" faker:"boundary_start=1,boundary_end=255"`
-	Available        int                    `json:"available" faker:"boundary_start=1,boundary_end=255"`
+	Total            int                    `json:"total"`
+	Available        int                    `json:"available"`
 	Network          string                 `json:"network" faker:"ipv4"`
 	Name             string                 `json:"name"`
 	Size             string                 `json:"size" faker:"oneof:24,16,8"`
@@ -62,7 +62,7 @@ type AutoScalingVpc struct {
 	Routetable       []any                  `json:"routetable"`
 	Subnets          []any                  `json:"subnets"`
 	InternetGateways []any                  `json:"internet_gateways"`
-	Resources        []AutoScalingResources `json:"resources" faker:"slice_len=1"`
+	Resources        []AutoScalingResources `json:"resources"`
 }
 type AutoScalingResources struct {
 	Type         string                `json:"type"`

@@ -23,8 +23,8 @@ type CloudInstance struct {
 	ManagedOs         string                   `json:"managed_os,omitempty"`
 	ManagedFull       string                   `json:"managed_full,omitempty"`
 	ManagedOnetime    string                   `json:"managed_onetime,omitempty"`
-	PlanDisksize      int                      `json:"plan_disksize" faker:"boundary_start=20,boundary_end=500"`
-	Disksize          int                      `json:"disksize" faker:"boundary_start=20,boundary_end=500"`
+	PlanDisksize      int                      `json:"plan_disksize"`
+	Disksize          int                      `json:"disksize"`
 	Ha                string                   `json:"ha" faker:"oneof:0,1"`
 	Status            string                   `json:"status" faker:"oneof:Active,Stopped,Pending"`
 	Iso               string                   `json:"iso,omitempty"`
@@ -32,14 +32,14 @@ type CloudInstance struct {
 	Billingcycle      string                   `json:"billingcycle" faker:"oneof:hourly,monthly"`
 	Cost              float64                  `json:"cost" faker:"amount"`
 	Vmcost            float64                  `json:"vmcost" faker:"amount"`
-	Imagecost         int                      `json:"imagecost" faker:"boundary_start=0,boundary_end=10"`
+	Imagecost         int                      `json:"imagecost"`
 	Backupcost        float64                  `json:"backupcost" faker:"amount"`
 	Hourlycost        float64                  `json:"hourlycost" faker:"amount"`
 	Cloudhourlycost   float64                  `json:"cloudhourlycost" faker:"amount"`
-	Imagehourlycost   int                      `json:"imagehourlycost" faker:"boundary_start=0,boundary_end=10"`
+	Imagehourlycost   int                      `json:"imagehourlycost"`
 	Backuphourlycost  float64                  `json:"backuphourlycost" faker:"amount"`
 	Creditrequired    float64                  `json:"creditrequired" faker:"amount"`
-	Creditreserved    int                      `json:"creditreserved" faker:"boundary_start=0,boundary_end=10"`
+	Creditreserved    int                      `json:"creditreserved"`
 	Nextinvoiceamount float64                  `json:"nextinvoiceamount" faker:"amount"`
 	Nextinvoicehours  string                   `json:"nextinvoicehours" faker:"oneof:1,2,3,4,5,6,7,8,9,10"`
 	Consolepassword   string                   `json:"consolepassword" faker:"password"`
@@ -48,8 +48,8 @@ type CloudInstance struct {
 	UpdatedAt         string                   `json:"updated_at" faker:"date"`
 	Nextduedate       string                   `json:"nextduedate" faker:"date"`
 	Bandwidth         string                   `json:"bandwidth" faker:"oneof:100,500,1000,2000"`
-	BandwidthUsed     int                      `json:"bandwidth_used" faker:"boundary_start=0,boundary_end=1000"`
-	BandwidthFree     int                      `json:"bandwidth_free" faker:"boundary_start=0,boundary_end=1000"`
+	BandwidthUsed     int                      `json:"bandwidth_used"`
+	BandwidthFree     int                      `json:"bandwidth_free"`
 	Features          Features                 `json:"features"`
 	Image             Image                    `json:"image"`
 	Dclocation        Dclocation               `json:"dclocation"`
@@ -58,15 +58,15 @@ type CloudInstance struct {
 	V4Private         V4Private                `json:"v4private"`
 	Storages          []Storages               `json:"storages,omitempty" faker:"slice_len=1"`
 	Storage           Storage                  `json:"storage"`
-	DiskUsed          int                      `json:"disk_used" faker:"boundary_start=0,boundary_end=500"`
-	DiskFree          int                      `json:"disk_free" faker:"boundary_start=0,boundary_end=500"`
-	DiskUsedp         int                      `json:"disk_usedp" faker:"boundary_start=0,boundary_end=100"`
+	DiskUsed          int                      `json:"disk_used"`
+	DiskFree          int                      `json:"disk_free"`
+	DiskUsedp         int                      `json:"disk_usedp"`
 	Backups           []any                    `json:"backups,omitempty"`
 	Snapshots         []Snapshots              `json:"snapshots,omitempty" faker:"slice_len=1"`
 	Firewalls         []CloudInstanceFirewalls `json:"firewalls,omitempty" faker:"slice_len=1"`
 	GpuAvailable      string                   `json:"gpu_available,omitempty" faker:"oneof:0,1"`
 	Gpus              []any                    `json:"gpus,omitempty"`
-	Rescue            int                      `json:"rescue" faker:"boundary_start=0,boundary_end=1"`
+	Rescue            int                      `json:"rescue"`
 }
 type Features struct {
 	Backups string `json:"backups" faker:"oneof:0,1"`
@@ -100,7 +100,7 @@ type Private struct {
 	V4 []V4Private `json:"v4" faker:"slice_len=1"`
 }
 type V4Private struct {
-	Noip        int    `json:"noip" faker:"boundary_start=0,boundary_end=10"`
+	Noip        int    `json:"noip"`
 	IPAddress   string `json:"ip_address,omitempty" faker:"ipv4"`
 	NatPublicIP string `json:"nat_publicip,omitempty" faker:"ipv4"`
 	VpcName     string `json:"vpc_name,omitempty"`
@@ -114,20 +114,20 @@ type V4Private struct {
 }
 type Storages struct {
 	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Size      int    `json:"size" faker:"boundary_start=20,boundary_end=500"`
+	Size      int    `json:"size"`
 	DiskUsed  string `json:"disk_used" faker:"oneof:1GB,50GB,100GB"`
 	DiskFree  string `json:"disk_free" faker:"oneof:1GB,50GB,100GB"`
-	DiskUsedp int    `json:"disk_usedp" faker:"boundary_start=0,boundary_end=100"`
+	DiskUsedp string `json:"disk_usedp"`
 	CreatedAt string `json:"created_at" faker:"date"`
 	Bus       string `json:"bus" faker:"oneof:virtio,sata"`
 	Type      string `json:"type" faker:"oneof:ssd,hdd"`
 }
 type Storage struct {
 	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
-	Size      int    `json:"size" faker:"boundary_start=20,boundary_end=500"`
+	Size      int    `json:"size"`
 	DiskUsed  string `json:"disk_used" faker:"oneof:1GB,50GB,100GB"`
 	DiskFree  string `json:"disk_free" faker:"oneof:1GB,50GB,100GB"`
-	DiskUsedp int    `json:"disk_usedp" faker:"boundary_start=0,boundary_end=100"`
+	DiskUsedp string `json:"disk_usedp"`
 	CreatedAt string `json:"created_at" faker:"date"`
 	Bus       string `json:"bus" faker:"oneof:virtio,sata"`
 	Type      string `json:"type" faker:"oneof:ssd,hdd"`
@@ -145,9 +145,9 @@ type CloudInstanceFirewall struct {
 	CreatedAt string `json:"created_at" faker:"date"`
 }
 type Meta struct {
-	Total       int `json:"total" faker:"boundary_start=1,boundary_end=10"`
-	Totalpages  int `json:"totalpages" faker:"boundary_start=1,boundary_end=5"`
-	Currentpage int `json:"currentpage" faker:"boundary_start=1,boundary_end=5"`
+	Total       int `json:"total"`
+	Totalpages  int `json:"totalpages"`
+	Currentpage int `json:"currentpage"`
 }
 type Snapshots struct {
 	ID        string `json:"id" faker:"oneof: 00000,11111,22222,33333"`
@@ -168,11 +168,11 @@ type OsImages struct {
 	Message  string    `json:"message,omitempty" faker:"sentence"`
 }
 type OsImage struct {
-	Distro       string `json:"distro"`
+	Distro       string `json:"distro,omitempty"`
 	Distribution string `json:"distribution"`
 	Version      string `json:"version" faker:"semver"`
 	Image        string `json:"image"`
-	Cost         int    `json:"cost" faker:"boundary_start=0,boundary_end=10"`
+	Cost         int    `json:"cost"`
 }
 
 type Plans struct {

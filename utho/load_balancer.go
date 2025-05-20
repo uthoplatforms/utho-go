@@ -130,7 +130,7 @@ type CreateLoadbalancerResponse struct {
 }
 
 func (s *LoadbalancersService) Create(params CreateLoadblancerParams) (*CreateLoadbalancerResponse, error) {
-	reqUrl := "loadbalancer/add"
+	reqUrl := "loadbalancer"
 	req, _ := s.client.NewRequest("POST", reqUrl, &params)
 
 	var loadbalancer CreateLoadbalancerResponse
@@ -181,7 +181,7 @@ func (s *LoadbalancersService) List() ([]Loadbalancer, error) {
 }
 
 func (s *LoadbalancersService) Delete(loadbalancerId string) (*DeleteResponse, error) {
-	reqUrl := "loadbalancer/" + loadbalancerId + "/destroy"
+	reqUrl := "loadbalancer/" + loadbalancerId
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
