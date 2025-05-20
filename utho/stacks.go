@@ -29,6 +29,7 @@ type CreateStacksParams struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Images      string `json:"images"`
+	Status      string `json:"status"`
 	IsPublic    string `json:"is_public"`
 	Script      string `json:"script"`
 }
@@ -66,6 +67,7 @@ func (s *StacksService) Read(stackId string) (*Stack, error) {
 	for _, r := range stacks.Stacks {
 		if r.ID == stackId {
 			stack = r
+			break
 		}
 	}
 	if len(stack.ID) == 0 {
@@ -96,6 +98,7 @@ type UpdateStacksParams struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Images      string `json:"images"`
+	Status      string `json:"status"`
 	IsPublic    string `json:"is_public"`
 	Script      string `json:"script"`
 }

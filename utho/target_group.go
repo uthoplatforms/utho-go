@@ -91,6 +91,7 @@ func (s *TargetGroupService) Read(targetGroupId string) (*TargetGroup, error) {
 	for _, r := range targetgroup.Targetgroups {
 		if r.ID == targetGroupId {
 			targetGroup = r
+			break
 		}
 	}
 	if len(targetGroup.ID) == 0 {
@@ -147,7 +148,6 @@ func (s *TargetGroupService) Update(params UpdateTargetGroupParams) (*UpdateResp
 
 func (s *TargetGroupService) Delete(targetGroupId, targetGroupName string) (*DeleteResponse, error) {
 	reqUrl := "targetgroup/" + targetGroupId + "?name=" + targetGroupName
-	// targetgroup/:id?name=target_group_name
 	req, _ := s.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
@@ -198,24 +198,30 @@ func (s *TargetGroupService) ReadTarget(targetGroupId, targetId string) (*Target
 		return nil, errors.New(targetgroup.Message)
 	}
 
-	var targetGroup TargetGroup
+	var foundTargetGroup TargetGroup
+	foundTg := false
 	for _, r := range targetgroup.Targetgroups {
 		if r.ID == targetGroupId {
-			targetGroup = r
+			foundTargetGroup = r
+			foundTg = true
+			break
 		}
 	}
-	if len(targetGroup.ID) == 0 {
+	if !foundTg {
 		return nil, errors.New("target groupId not found")
 	}
 
 	var target Target
-	for _, r := range targetGroup.Targets {
+	foundTarget := false
+	for _, r := range foundTargetGroup.Targets {
 		if r.ID == targetId {
 			target = r
+			foundTarget = true
+			break
 		}
 	}
-	if len(target.ID) == 0 {
-		return nil, errors.New("target groupId not found")
+	if !foundTarget {
+		return nil, errors.New("target not found in group")
 	}
 
 	return &target, nil
@@ -235,12 +241,15 @@ func (s *TargetGroupService) ListTargets(targetGroupId string) ([]Target, error)
 	}
 
 	var targetGroup TargetGroup
+	foundTg := false
 	for _, r := range targetgroups.Targetgroups {
 		if r.ID == targetGroupId {
 			targetGroup = r
+			foundTg = true
+			break
 		}
 	}
-	if len(targetGroup.ID) == 0 {
+	if !foundTg {
 		return nil, errors.New("target groupId not found")
 	}
 

@@ -67,12 +67,15 @@ func (s *SslService) Read(certId string) (*Certificates, error) {
 	}
 
 	var cert Certificates
+	found := false
 	for _, r := range ssl.Certificates {
 		if r.ID == certId {
 			cert = r
+			found = true
+			break
 		}
 	}
-	if len(cert.ID) == 0 {
+	if !found {
 		return nil, errors.New("certificate not found")
 	}
 

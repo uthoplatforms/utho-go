@@ -93,3 +93,28 @@ func (s *SqsService) Delete(sqsId, sqsName string) (*DeleteResponse, error) {
 
 	return &delResponse, nil
 }
+
+type CreateQueueParams struct {
+	SqsID                  string
+	Name                   string `json:"name"`
+	FifoQueue              string `json:"FifoQueue"`
+	VisibilityTimeout      string `json:"VisibilityTimeout"`
+	MessageRetentionPeriod string `json:"MessageRetentionPeriod"`
+	MaximumMessageSize     string `json:"maximumMessageSize"`
+}
+
+func (s *SqsService) CreateQueue(params CreateQueueParams) (*CreateResponse, error) {
+	reqUrl := "sqs/" + params.SqsID + "/queue"
+	req, _ := s.client.NewRequest("POST", reqUrl, &params)
+
+	var queue CreateResponse
+	_, err := s.client.Do(req, &queue)
+	if err != nil {
+		return nil, err
+	}
+	if queue.Status != "success" && queue.Status != "" {
+		return nil, errors.New(queue.Message)
+	}
+
+	return &queue, nil
+}
