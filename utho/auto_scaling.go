@@ -2,6 +2,7 @@ package utho
 
 import (
 	"errors"
+	"time"
 )
 
 type AutoScalingService service
@@ -180,15 +181,15 @@ type CreatePoliciesParams struct {
 }
 
 type CreateSchedulesParams struct {
-	Name         string `json:"name"`
-	Desiredsize  string `json:"desiredsize"`
-	Recurrence   string `json:"recurrence"`
-	StartDate    string `json:"start_date"`
-	SelectedTime string `json:"selectedTime"`
-	SelectedDate string `json:"selectedDate"`
-	Adjust       string `json:"adjust"`
-	Period       string `json:"period"`
-	Cooldown     string `json:"cooldown"`
+	Name         string    `json:"name"`
+	Desiredsize  string    `json:"desiredsize"`
+	Recurrence   string    `json:"recurrence"`
+	StartDate    time.Time `json:"start_date"`
+	SelectedTime string    `json:"selectedTime"`
+	SelectedDate string    `json:"selectedDate"`
+	Adjust       string    `json:"adjust"`
+	Period       string    `json:"period"`
+	Cooldown     string    `json:"cooldown"`
 }
 
 type CreateAutoScalingResponse struct {
