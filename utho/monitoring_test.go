@@ -54,15 +54,13 @@ func TestMonitoringService_ReadAlert_happyPath(t *testing.T) {
 
 	alertId := faker.UUIDDigit()
 
-	// Create a faker instance for the expected Alert object
 	var want Alert
 	err := faker.FakeData(&want)
 	if err != nil {
 		t.Fatalf("Failed to fake data for Alert: %v", err)
 	}
-	want.ID = alertId // Ensure the ID matches the requested one
+	want.ID = alertId
 
-	// Marshal the faked 'want' object into JSON for the server response
 	serverResponse, err := json.Marshal(map[string][]Alert{"alerts": {want}})
 	if err != nil {
 		t.Fatalf("Failed to marshal faked alert: %v", err)
@@ -223,7 +221,7 @@ func TestMonitoringService_ReadContact_happyPath(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to fake data for Contact: %v", err)
 	}
-	want.ID = contactId // Ensure the ID matches the requested one
+	want.ID = contactId
 
 	// Marshal the faked 'want' object into JSON for the server response
 	serverResponse, err := json.Marshal(map[string][]Contact{"contacts": {want}})

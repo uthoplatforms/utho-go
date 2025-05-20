@@ -776,7 +776,7 @@ func TestAutoScalingService_ReadSecurityGroup_happyPath(t *testing.T) {
 	var fakeGroup Groups
 	_ = faker.FakeData(&fakeGroup)
 	var fakeSecurityGroup SecurityGroup
-	fakeSecurityGroup.ID = securityGroupId // Ensure the ID matches the test case
+	fakeSecurityGroup.ID = securityGroupId
 	fakeGroup.SecurityGroups = []SecurityGroup{fakeSecurityGroup}
 	serverResp := struct {
 		Groups []Groups `json:"groups"`

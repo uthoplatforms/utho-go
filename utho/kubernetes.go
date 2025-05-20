@@ -113,7 +113,7 @@ type NodepoolDetails struct {
 	AutoScale bool         `json:"auto_scale,omitempty"`
 	MinNodes  int          `json:"min_nodes,string,omitempty"`
 	MaxNodes  int          `json:"max_nodes,string,omitempty"`
-	Policies  []any        `json:"policies"`
+	Policies  []any        `json:"policies" faker:"-"`
 	Workers   []WorkerNode `json:"workers"`
 }
 type WorkerNode struct {
@@ -155,7 +155,7 @@ type K8sLoadbalancers struct {
 type K8sTargetGroups struct {
 	ID       int    `json:"id,string"`
 	Name     string `json:"name"`
-	Protocol any    `json:"protocol"`
+	Protocol any    `json:"protocol" faker:"-"`
 	Port     string `json:"port"`
 }
 

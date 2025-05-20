@@ -552,14 +552,14 @@ func TestKubernetesServices_ReadTargetgroup_happyPath(t *testing.T) {
 	defer teardown()
 
 	randomInts, err := faker.RandomInt(1000, 9999)
-	if err != nil || len(randomInts) == 0 { // Ensure at least two random integers are generated
+	if err != nil || len(randomInts) == 0 {
 		t.Fatalf("failed to generate sufficient random ints: %v", err)
 	}
 	clusterId := randomInts[0]
 	targetgroupId := randomInts[1]
 
 	var dummyTargetGroup K8sTargetGroups
-	if err := faker.FakeData(&dummyTargetGroup); err != nil { // Ensure dummyTargetGroup is properly initialized
+	if err := faker.FakeData(&dummyTargetGroup); err != nil {
 		t.Fatalf("failed to generate fake data for target group: %v", err)
 	}
 	dummyTargetGroup.ID = targetgroupId

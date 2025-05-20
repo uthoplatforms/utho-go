@@ -299,7 +299,7 @@ func TestCloudInstanceService_CreateSnapshot_happyPath(t *testing.T) {
 	var want CreateBasicResponse
 	_ = json.Unmarshal(respBytes, &want)
 
-	assert.Nil(t, err) // Ensure no error is returned
+	assert.Nil(t, err)
 	assert.Equal(t, want, *got)
 }
 
@@ -618,11 +618,14 @@ func TestCloudInstanceService_ResetPassword_happyPath(t *testing.T) {
 
 	var fakeResp ResetPasswordResponse
 	_ = faker.FakeData(&fakeResp)
+	fakeResp.Status = "success"
+	fakeResp.Password = "newpassword123"
 	respBytes, _ := json.Marshal(fakeResp)
 
 	mux.HandleFunc("/cloud/"+instanceId+"/resetpassword", func(w http.ResponseWriter, req *http.Request) {
 		testHttpMethod(t, req, http.MethodPost)
 		testHeader(t, req, "Authorization", "Bearer "+token)
+		w.WriteHeader(http.StatusOK)
 		w.Write(respBytes)
 	})
 
