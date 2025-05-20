@@ -118,7 +118,7 @@ type CreateLoadblancerParams struct {
 	Dcslug              string `json:"dcslug"`
 	Type                string `json:"type"`
 	Cpumodel            string `json:"cpumodel"`
-	Vpc                 string `json:"vpc"`
+	VpcID               string `json:"vpc"`
 	Firewall            string `json:"firewall"`
 	EnablePublicip      string `json:"enable_publicip"`
 	KubernetesClusterid string `json:"kubernetes_clusterid"`

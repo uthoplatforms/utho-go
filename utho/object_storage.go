@@ -83,7 +83,7 @@ type Pricing struct {
 	Bandwidth      string `json:"bandwidth"`
 	IsFeatured     string `json:"is_featured"`
 	DedicatedVcore string `json:"dedicated_vcore"`
-	Price          string `json:"price"`
+	Price          int    `json:"price"`
 	Monthly        string `json:"monthly"`
 }
 
