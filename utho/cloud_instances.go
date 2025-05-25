@@ -8,7 +8,7 @@ import (
 type CloudInstancesService service
 
 type CloudInstances struct {
-	CloudInstance []CloudInstance `json:"cloud" faker:"slice_len=2"`
+	CloudInstance []CloudInstance `json:"cloud"`
 	Meta          Meta            `json:"meta"`
 	Status        string          `json:"status,omitempty" faker:"oneof:success,error"`
 	Message       string          `json:"message,omitempty" faker:"sentence"`
@@ -30,17 +30,17 @@ type CloudInstance struct {
 	Iso               string                   `json:"iso,omitempty"`
 	IP                string                   `json:"ip" faker:"ipv4"`
 	Billingcycle      string                   `json:"billingcycle" faker:"oneof:hourly,monthly"`
-	Cost              float64                  `json:"cost" faker:"amount"`
-	Vmcost            float64                  `json:"vmcost" faker:"amount"`
+	Cost              float64                  `json:"cost"`
+	Vmcost            float64                  `json:"vmcost"`
 	Imagecost         int                      `json:"imagecost"`
-	Backupcost        float64                  `json:"backupcost" faker:"amount"`
-	Hourlycost        float64                  `json:"hourlycost" faker:"amount"`
-	Cloudhourlycost   float64                  `json:"cloudhourlycost" faker:"amount"`
+	Backupcost        float64                  `json:"backupcost"`
+	Hourlycost        float64                  `json:"hourlycost"`
+	Cloudhourlycost   float64                  `json:"cloudhourlycost"`
 	Imagehourlycost   int                      `json:"imagehourlycost"`
-	Backuphourlycost  float64                  `json:"backuphourlycost" faker:"amount"`
-	Creditrequired    float64                  `json:"creditrequired" faker:"amount"`
+	Backuphourlycost  float64                  `json:"backuphourlycost"`
+	Creditrequired    float64                  `json:"creditrequired"`
 	Creditreserved    int                      `json:"creditreserved"`
-	Nextinvoiceamount float64                  `json:"nextinvoiceamount" faker:"amount"`
+	Nextinvoiceamount float64                  `json:"nextinvoiceamount"`
 	Nextinvoicehours  string                   `json:"nextinvoicehours" faker:"oneof:1,2,3,4,5,6,7,8,9,10"`
 	Consolepassword   string                   `json:"consolepassword" faker:"password"`
 	Powerstatus       string                   `json:"powerstatus" faker:"oneof:Running,Stopped"`
@@ -56,14 +56,14 @@ type CloudInstance struct {
 	V4                V4Public                 `json:"v4"`
 	Networks          Networks                 `json:"networks"`
 	V4Private         V4Private                `json:"v4private"`
-	Storages          []Storages               `json:"storages,omitempty" faker:"slice_len=1"`
+	Storages          []Storages               `json:"storages,omitempty"`
 	Storage           Storage                  `json:"storage"`
 	DiskUsed          int                      `json:"disk_used"`
 	DiskFree          int                      `json:"disk_free"`
 	DiskUsedp         int                      `json:"disk_usedp"`
 	Backups           []any                    `json:"backups,omitempty"`
-	Snapshots         []Snapshots              `json:"snapshots,omitempty" faker:"slice_len=1"`
-	Firewalls         []CloudInstanceFirewalls `json:"firewalls,omitempty" faker:"slice_len=1"`
+	Snapshots         []Snapshots              `json:"snapshots,omitempty"`
+	Firewalls         []CloudInstanceFirewalls `json:"firewalls,omitempty"`
 	GpuAvailable      string                   `json:"gpu_available,omitempty" faker:"oneof:0,1"`
 	Gpus              []any                    `json:"gpus,omitempty"`
 	Rescue            int                      `json:"rescue"`
@@ -76,14 +76,14 @@ type Image struct {
 	Distribution string `json:"distribution"`
 	Version      string `json:"version" faker:"semver"`
 	Image        string `json:"image"`
-	Cost         string `json:"cost" faker:"amount"`
+	Cost         string `json:"cost"`
 }
 type Networks struct {
 	Public  Public  `json:"public"`
 	Private Private `json:"private"`
 }
 type Public struct {
-	V4 V4PublicArray `json:"v4" faker:"slice_len=1"`
+	V4 V4PublicArray `json:"v4"`
 }
 type V4Public struct {
 	IPAddress string `json:"ip_address,omitempty" faker:"ipv4"`
@@ -97,7 +97,7 @@ type V4Public struct {
 }
 
 type Private struct {
-	V4 []V4Private `json:"v4" faker:"slice_len=1"`
+	V4 []V4Private `json:"v4"`
 }
 type V4Private struct {
 	Noip        int    `json:"noip"`
@@ -163,20 +163,20 @@ type CloudInstanceFirewalls struct {
 }
 
 type OsImages struct {
-	OsImages []OsImage `json:"images" faker:"slice_len=5"`
+	OsImages []OsImage `json:"images"`
 	Status   string    `json:"status,omitempty" faker:"oneof:success,error"`
 	Message  string    `json:"message,omitempty" faker:"sentence"`
 }
 type OsImage struct {
-	Distro       string `json:"distro,omitempty"`
-	Distribution string `json:"distribution"`
-	Version      string `json:"version" faker:"semver"`
-	Image        string `json:"image"`
-	Cost         int    `json:"cost"`
+	Distro       string  `json:"distro,omitempty"`
+	Distribution string  `json:"distribution"`
+	Version      string  `json:"version" faker:"semver"`
+	Image        string  `json:"image"`
+	Cost         float64 `json:"cost"`
 }
 
 type Plans struct {
-	Plans   []Plan `json:"plans" faker:"slice_len=3"`
+	Plans   []Plan `json:"plans"`
 	Status  string `json:"status,omitempty" faker:"oneof:success,error"`
 	Message string `json:"message,omitempty" faker:"sentence"`
 }
@@ -187,9 +187,9 @@ type Plan struct {
 	RAM       string  `json:"ram" faker:"oneof:1024,2048,4096,8192,16384"`
 	CPU       string  `json:"cpu" faker:"oneof:1,2,4,8,16"`
 	Bandwidth string  `json:"bandwidth" faker:"oneof:100,500,1000,2000"`
-	Slug      string  `json:"slug" faker:"slug"`
-	Price     float64 `json:"price" faker:"amount"`
-	Monthly   float64 `json:"monthly" faker:"amount"`
+	Slug      string  `json:"slug"`
+	Price     float64 `json:"price"`
+	Monthly   float64 `json:"monthly"`
 	Plantype  string  `json:"plantype" faker:"oneof:cloud,dedicated"`
 }
 

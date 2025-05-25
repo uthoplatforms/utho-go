@@ -158,12 +158,13 @@ type CreateAutoScalingParams struct {
 	Planid             string                  `json:"planid"`
 	Planname           string                  `json:"planname"`
 	InstanceTemplateid string                  `json:"instance_templateid"`
-	PublicIPEnabled    string                  `json:"public_ip_enabled"`
+	PublicIPEnabled    bool                    `json:"public_ip_enabled"`
 	Vpc                string                  `json:"vpc"`
 	LoadBalancers      string                  `json:"load_balancers"`
 	SecurityGroups     string                  `json:"security_groups"`
 	Policies           []CreatePoliciesParams  `json:"policies"`
 	Schedules          []CreateSchedulesParams `json:"schedules"`
+	Stack              string                  `json:"stack"`
 	Stackid            string                  `json:"stackid"`
 	Stackimage         string                  `json:"stackimage"`
 	TargetGroups       string                  `json:"target_groups"`
