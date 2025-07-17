@@ -600,7 +600,7 @@ func (k *KubernetesService) ReadNodePool(ctx context.Context, clusterId int, nod
 	return &nodepools, nil
 }
 
-func (k *KubernetesService) ListNodePools(ctx context.Context, clusterId int) ([]NodepoolDetails, error) {
+func (k *KubernetesService) ListNodePools(ctx context.Context, clusterId string) ([]NodepoolDetails, error) {
 	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
