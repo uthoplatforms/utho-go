@@ -601,7 +601,7 @@ func (k *KubernetesService) ReadNodePool(ctx context.Context, clusterId int, nod
 }
 
 func (k *KubernetesService) ListNodePools(ctx context.Context, clusterId string) ([]NodepoolDetails, error) {
-	reqUrl := fmt.Sprintf("kubernetes/%d", clusterId)
+	reqUrl := fmt.Sprintf("kubernetes/%s", clusterId)
 	req, _ := k.client.NewRequest("GET", reqUrl)
 
 	var kubernetess KubernetesRead
