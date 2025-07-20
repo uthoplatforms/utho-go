@@ -111,8 +111,8 @@ type NodepoolDetails struct {
 	Ip        string       `json:"ip"`
 	Count     int          `json:"count,string"`
 	AutoScale bool         `json:"auto_scale,omitempty"`
-	MinNodes  int          `json:"min_nodes,string,omitempty"`
-	MaxNodes  int          `json:"max_nodes,string,omitempty"`
+	MinNodes  int          `json:"min_size,omitempty"`
+	MaxNodes  int          `json:"max_size,omitempty"`
 	Policies  []any        `json:"policies" faker:"-"`
 	Workers   []WorkerNode `json:"workers"`
 }
