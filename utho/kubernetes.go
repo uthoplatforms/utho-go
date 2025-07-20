@@ -697,7 +697,7 @@ type DeleteNodeParams struct {
 }
 
 func (k *KubernetesService) DeleteNode(ctx context.Context, params DeleteNodeParams) (*DeleteResponse, error) {
-	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%s/node/%s/delete", params.ClusterId, params.PoolId, params.NodeId)
+	reqUrl := fmt.Sprintf("kubernetes/%d/nodepool/%s/%s/delete", params.ClusterId, params.PoolId, params.NodeId)
 	req, _ := k.client.NewRequest("DELETE", reqUrl)
 
 	var delResponse DeleteResponse
