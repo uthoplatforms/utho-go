@@ -42,6 +42,7 @@ type CreateEBSParams struct {
 	Iops       string `json:"iops"`
 	Throughput string `json:"throughput"`
 	DiskType   string `json:"disk_type"`
+	ResourceId string `json:"resourceid,omitempty"`
 }
 
 func (s *EBService) Create(params CreateEBSParams) (*CreateResponse, error) {
